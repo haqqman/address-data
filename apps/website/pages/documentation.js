@@ -1,11 +1,10 @@
-import Head from 'next/head'
-import PageTitle from '../components/PageTitle'
+import Meta from '../components/Meta'
 import Brands from '../components/Brands'
 
 export default function Documentation() {
   return (
     <>
-      <PageTitle title="Documentation" />
+      <Meta title='Documentation' />
 
       <div className="main">
         {/* Start Hero Section */}

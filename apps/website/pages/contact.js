@@ -1,10 +1,9 @@
-import Head from 'next/head'
-import PageTitle from '../components/PageTitle'
+import Meta from '../components/Meta'
 
 export default function Contact() {
   return (
     <>
-      <PageTitle title="Contact" />
+      <Meta title='Contact' />
 
       <div className="main">
         {/* Start Hero Section */}

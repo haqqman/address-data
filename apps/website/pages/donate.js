@@ -1,11 +1,10 @@
-import Head from 'next/head'
-import PageTitle from '../components/PageTitle'
+import Meta from '../components/Meta'
 import Brands from '../components/Brands'
 
 export default function Donate() {
   return (
     <>
-      <PageTitle title="Donate" />
+      <Meta title='Donate' />
 
       <div className="main">
         {/* Start Hero Section */}

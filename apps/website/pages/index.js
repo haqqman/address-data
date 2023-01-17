@@ -1,6 +1,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import PageTitle from '../components/PageTitle'
+import Meta from '../components/Meta'
 import curveShapeTop from '../public/assets/images/curve-shape-top.svg'
 import image10 from '../public/assets/images/image-10.png'
 import pamelaImg from '../public/assets/images/pamela.png'
@@ -13,7 +13,7 @@ import Brands from '../components/Brands'
 export default function Index() {
   return (
     <>
-      <PageTitle title="About" />
+      <Meta title='About' />
 
       <div className="main">
         {/* Start Hero Section */}

@@ -22,11 +22,7 @@ function CustomApp({ Component, pageProps }) {
           name="viewport"
           content="width=device-width, initial-scale=1, shrink-to-fit=no"
         />
-        {/* SEO Meta description */}
-        <meta
-          name="description"
-          content="Hyper-accurate Nigeria Address Validation Tool"
-        />
+        {/* SEO Meta description */}        
         <meta name="author" content="Haqqman.Agency, agency@haqqman.com" />
         <meta name="designer" content="Abdulhaqq Sule" />
         {/* Meta Tags for Facebook, Twitter and LinkedIn */}
