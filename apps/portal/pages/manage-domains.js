@@ -1,11 +1,13 @@
 import Link from 'next/link'
-import SideBar from '../components/Sidebar.jsx'
-import Header from '../components/Header.jsx'
+import Meta from '../components/Meta'
+import SideBar from '../components/Sidebar'
+import Header from '../components/Header'
 
-// import {MySnackbar} from '../components/inline-scripts.jsx'
 export default function ManageDomains() {
   return (
     <>
+      {/* Meta data and Title */}
+          <Meta title={"Portal — Manage Domains"}/>
       {/* Wrapper */}
       <div id="wrapper">
         {/* Import Header Component */}

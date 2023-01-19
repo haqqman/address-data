@@ -1,7 +1,10 @@
+import Meta from '../components/Meta'
 import Link from "next/link"
 export default function Index() {
   return (
     <>
+        {/* Meta data and Title */}
+        <Meta />
 {/* Start Title Bar */}
   <div id="titlebar" className="gradient">
     <div className="container">
