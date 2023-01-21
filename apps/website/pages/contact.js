@@ -3,7 +3,7 @@ import Meta from '../components/Meta'
 export default function Contact() {
   return (
     <>
-      <Meta title='Contact' />
+      <Meta titlePrefix='Contact' />
 
       <div className="main">
         {/* Start Hero Section */}

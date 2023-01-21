@@ -7,7 +7,7 @@ export default function Dashboard() {
   return (
     <>
     {/* Meta data and Title */}
-    <Meta title={"Portal — Dashboard"}/>
+    <Meta titlePrefix={'Dashboard'}/>
       {/* Wrapper */}
       <div id="wrapper">
         <Header />

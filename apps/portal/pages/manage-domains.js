@@ -7,7 +7,7 @@ export default function ManageDomains() {
   return (
     <>
       {/* Meta data and Title */}
-          <Meta title={"Portal — Manage Domains"}/>
+          <Meta titlePrefix={'Manage Domains'}/>
       {/* Wrapper */}
       <div id="wrapper">
         {/* Import Header Component */}

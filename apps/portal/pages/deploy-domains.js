@@ -6,7 +6,7 @@ export default function DeployDomains() {
   return (
     <>
         {/* Meta data and Title */}
-        <Meta title={"Portal — Deploy Domains"}/>
+        <Meta titlePrefix={'Deploy Domains'} />
       {/* Wrapper */}
       <div id="wrapper">
         {/* Import Header Component */}

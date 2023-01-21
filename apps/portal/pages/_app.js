@@ -1,4 +1,3 @@
-import Meta from '../components/Meta'
 import Script from 'next/script'
 import '../public/assets/css/style.css'
 import '../public/assets/css/green.css'
@@ -9,7 +8,6 @@ function CustomApp({ Component, pageProps }) {
       <main className="app">
         <Component {...pageProps} />
       </main>
-      <Meta />
       <Script src="/assets/js/jquery-3.3.1.min.js"></Script>
       <Script src="/assets/js/jquery-migrate-3.0.0.min.js"></Script>
       <Script src="/assets/js/mmenu.min.js"></Script>

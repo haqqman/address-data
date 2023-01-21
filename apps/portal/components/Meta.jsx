@@ -1,11 +1,10 @@
 import Head from "next/head"
-export default function Meta ({title,description}){
+export default function Meta ({titlePrefix,titleSufix,description}){
     return(
 
     
     <Head>
-        {/* Basic Page Needs */}
-        <title className="myTitle">{title}</title>
+        <title className="myTitle">{`${titlePrefix} — ${titleSufix}`}</title>
         <meta
           name="description"
           content={description}
@@ -33,6 +32,7 @@ export default function Meta ({title,description}){
         )
 }
 Meta.defaultProps={
-    title:"Portal — Address Data",
+    titlePrefix:"Portal",
+    titleSufix:"Address-data",//Address data is used as the default prop value because it is used more often,  now assuming 
     description:"Deploy, configure and hyper-accurate Nigeria Address Validation Tool."
 }
