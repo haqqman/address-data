@@ -5,8 +5,8 @@ import SideBar from '../components/Sidebar'
 export default function DeployDomains() {
   return (
     <>
-        {/* Meta data and Title */}
-        <Meta titlePrefix={'Deploy Domains'} />
+      {/* Meta Tags */}
+      <Meta titlePrefix={'Deploy Domains'} />
       {/* Wrapper */}
       <div id="wrapper">
         {/* Import Header Component */}

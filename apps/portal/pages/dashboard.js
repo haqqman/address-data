@@ -6,8 +6,8 @@ import SideBar from '../components/Sidebar'
 export default function Dashboard() {
   return (
     <>
-    {/* Meta data and Title */}
-    <Meta titlePrefix={'Dashboard'}/>
+      {/* Meta Tags */}
+      <Meta titlePrefix={'Dashboard'} />
       {/* Wrapper */}
       <div id="wrapper">
         <Header />

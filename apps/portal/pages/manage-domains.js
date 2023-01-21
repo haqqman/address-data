@@ -6,8 +6,8 @@ import Header from '../components/Header'
 export default function ManageDomains() {
   return (
     <>
-      {/* Meta data and Title */}
-          <Meta titlePrefix={'Manage Domains'}/>
+      {/* Meta Tags */}
+      <Meta titlePrefix={'Manage Domains'} />
       {/* Wrapper */}
       <div id="wrapper">
         {/* Import Header Component */}
@@ -16,8 +16,7 @@ export default function ManageDomains() {
         {/* Dashboard Container */}
         <div className="dashboard-container">
           <SideBar />
-          {/* Dashboard Content
-	================================================== */}
+          {/* Dashboard Content */}
           <div className="dashboard-content-container" data-simplebar="">
             <div className="dashboard-content-inner">
               {/* Dashboard Headline */}

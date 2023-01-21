@@ -1,10 +1,10 @@
-import Meta from "../components/Meta";
-import Link from "next/link";
+import Meta from '../components/Meta'
+import Link from 'next/link'
 export default function Index() {
   return (
     <>
-      {/* Meta data and Title */}
-      <Meta titlePrefix={'Login'} />
+      {/* Meta Tags */}
+      <Meta titlePrefix={'Log In'} />
       {/* Start Title Bar */}
       <div id="titlebar" className="gradient">
         <div className="container">
