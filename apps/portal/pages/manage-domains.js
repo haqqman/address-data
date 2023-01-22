@@ -1,11 +1,13 @@
 import Link from 'next/link'
-import SideBar from '../components/Sidebar.jsx'
-import Header from '../components/Header.jsx'
+import Meta from '../components/Meta'
+import SideBar from '../components/Sidebar'
+import Header from '../components/Header'
 
-// import {MySnackbar} from '../components/inline-scripts.jsx'
 export default function ManageDomains() {
   return (
     <>
+      {/* Meta Tags */}
+      <Meta titlePrefix={'Manage Domains'} />
       {/* Wrapper */}
       <div id="wrapper">
         {/* Import Header Component */}
@@ -14,8 +16,7 @@ export default function ManageDomains() {
         {/* Dashboard Container */}
         <div className="dashboard-container">
           <SideBar />
-          {/* Dashboard Content
-	================================================== */}
+          {/* Dashboard Content */}
           <div className="dashboard-content-container" data-simplebar="">
             <div className="dashboard-content-inner">
               {/* Dashboard Headline */}

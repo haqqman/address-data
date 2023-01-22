@@ -1,15 +1,13 @@
 import Link from 'next/link'
-import Head from 'next/head'
+import Meta from '../components/Meta'
 import Header from '../components/Header'
 import SideBar from '../components/Sidebar'
 
 export default function Dashboard() {
   return (
     <>
-      <Head>
-        {/* title */}
-        <title>Deploy Domains — Haqqman Form Endpoints.</title>
-      </Head>
+      {/* Meta Tags */}
+      <Meta titlePrefix={'Dashboard'} />
       {/* Wrapper */}
       <div id="wrapper">
         <Header />

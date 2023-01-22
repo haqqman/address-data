@@ -1,14 +1,12 @@
-import Head from 'next/head'
 import Link from 'next/link'
-import Header from '../components/Header.jsx'
-import SideBar from '../components/Sidebar.jsx'
+import Meta from '../components/Meta'
+import Header from '../components/Header'
+import SideBar from '../components/Sidebar'
 export default function DeployDomains() {
   return (
     <>
-      <Head>
-        {/* title */}
-        <title>Deploy Domains — Haqqman Form Endpoints.</title>
-      </Head>
+      {/* Meta Tags */}
+      <Meta titlePrefix={'Deploy Domains'} />
       {/* Wrapper */}
       <div id="wrapper">
         {/* Import Header Component */}
