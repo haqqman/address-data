@@ -1,21 +1,63 @@
 import Head from 'next/head'
 
-const Meta = ({ title, description }) => {
-
+export default function Meta({ titlePrefix, titleSuffix, description, keywords }) {
   return (
+
     <Head>
-      <title>{`${title}`} &mdash; Address Data</title>
+      <title>{`${titlePrefix} — ${titleSuffix}`}</title>
       <meta
         name="description"
         content={description}
       />
+      <meta
+        name="keywords"
+        content={keywords}
+      />
+      {/* Default Meta */}
+      <meta charSet="utf-8" />
+      <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1.0"
+      />
+      {/* Favicon & Icons */}
+      <link
+        rel="shortcut icon"
+        href="/assets/favicon.png"
+        type="image/png"
+      />
+      {/* Twitter Card data */}
+      <meta name="twitter:title" content={`${titlePrefix} — ${titleSuffix}`} />
+      <meta name="twitter:site" content="@addressdata" />
+      <meta name="twitter:card" content="Address Data" />
+      <meta
+        name="twitter:description"
+        content={description}
+      />
+      <meta name="twitter:creator" content="@addressdata" />
+      <meta name="twitter:image" content="#" />
+      {/* Open Graph data */}
+      <meta property="og:title" content={`${titlePrefix} — ${titleSuffix}`} />
+      <meta property="og:url" content="#" />
+      <meta property="og:image" content="#" />
+      <meta
+        property="og:description"
+        content={description}
+      />
+      {/* Credit */}
+      <meta
+        name="founder"
+        content="Abdulhaqq Sule, writeme@abdulhaqqsule.com"
+      />
+      <meta
+        name="contributors"
+        content="https://addressdata.ng/contributors"
+      />
     </Head>
   )
 }
-
 Meta.defaultProps = {
-  title: 'Home',
-  description: 'Hyper-accurate Nigeria Address Validation Tool',
+  titlePrefix: "Website",
+  titleSuffix: "Address Data",
+  description: "Hyper-accurate Nigeria Address Validation Tool.",
+  keywords: "address, data, location, map"
 }
-
-export default Meta

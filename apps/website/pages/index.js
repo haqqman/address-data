@@ -13,7 +13,7 @@ import Brands from '../components/Brands'
 export default function Index() {
   return (
     <>
-      <Meta title='About' />
+      <Meta titlePrefix={'About'} />
 
       <div className="main">
         {/* Start Hero Section */}

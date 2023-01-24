@@ -4,7 +4,7 @@ import Brands from '../components/Brands'
 export default function Donate() {
   return (
     <>
-      <Meta title='Donate' />
+      <Meta titlePrefix={'Donate'} />
 
       <div className="main">
         {/* Start Hero Section */}

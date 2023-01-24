@@ -4,7 +4,7 @@ import Brands from '../components/Brands'
 export default function Documentation() {
   return (
     <>
-      <Meta title='Documentation' />
+      <Meta titlePrefix={'Documentation'} />
 
       <div className="main">
         {/* Start Hero Section */}
