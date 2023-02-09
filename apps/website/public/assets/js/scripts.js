@@ -58,7 +58,10 @@ jQuery(function ($) {
 
   // 3. closes the responsive menu on menu item click
   $('.navbar-nav li a').on('click', function (event) {
-    if (!$(this).parent().hasClass('dropdown'))
+    if (
+      !$(this).parent().hasClass('dropdown') &&
+      !$(this).hasClass('dropdown-toggle')
+    )
       $('.navbar-collapse').collapse('hide')
   })
 

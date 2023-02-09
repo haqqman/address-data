@@ -9,6 +9,12 @@ import {
   clientLogo7,
   clientLogo8,
 } from '../public/assets/images/images_export'
+import { options1 } from '../public/assets/js/owlcarousel-scripts'
+import dynamic from 'next/dynamic'
+
+const OwlCarousel = dynamic(import('react-owl-carousel'), {
+  ssr: false,
+})
 
 export default function Brands({ lead }) {
   return (
@@ -20,14 +26,21 @@ export default function Brands({ lead }) {
             <div className="col-md-8">
               <div className="section-heading text-center mb-5">
                 <h2>Earned Trust</h2>
-                <p className="lead">Taking the address world by storm for its genius, quality, and value, Address Data is relied on by some of the most respected brands in Nigeria</p>
+                <p className="lead">
+                  Taking the address world by storm for its genius, quality, and
+                  value, Address Data is relied on by some of the most respected
+                  brands in Nigeria
+                </p>
               </div>
             </div>
           </div>
           <div className="row align-items-center">
             <div className="col-md-12">
               <div className="overlay-opacity-gradient" />
-              <div className="owl-carousel owl-theme clients-carousel dot-indicator">
+              <OwlCarousel
+                className="owl-carousel owl-theme clients-carousel dot-indicator"
+                {...options1}
+              >
                 <div className="item single-client">
                   <Image
                     src={clientLogo1}
@@ -84,7 +97,7 @@ export default function Brands({ lead }) {
                     className="img-fluid client-img"
                   />
                 </div>
-              </div>
+              </OwlCarousel>
             </div>
           </div>
           {/*clients logo end*/}

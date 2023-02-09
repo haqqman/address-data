@@ -9,6 +9,12 @@ import nenyeImg from '../public/assets/images/nenye.png'
 import omawumiImg from '../public/assets/images/omawumi.jpg'
 import viralFaq from '../public/assets/images/viral-faq.svg'
 import Brands from '../components/Brands'
+import { options2 } from '../public/assets/js/owlcarousel-scripts'
+import dynamic from 'next/dynamic'
+
+const OwlCarousel = dynamic(import('react-owl-carousel'), {
+  ssr: false,
+})
 
 export default function Index() {
   return (
@@ -256,7 +262,10 @@ export default function Index() {
             </div>
             <div className="row">
               <div className="col-md-12 col-lg-12">
-                <div className="owl-carousel owl-theme client-testimonial">
+                <OwlCarousel
+                  className="owl-carousel owl-theme client-testimonial"
+                  {...options2}
+                >
                   <div className="item">
                     <div className="testimonial-single shadow-sm gray-light-bg rounded p-4">
                       <blockquote>
@@ -394,7 +403,7 @@ export default function Index() {
                       </div>
                     </div>
                   </div>
-                </div>
+                </OwlCarousel>
               </div>
             </div>
           </div>
@@ -576,7 +585,6 @@ export default function Index() {
           </div>
         </section>
         {/* End Download Section */}
-
       </div>
       {/* End Body Content Wrap */}
     </>
