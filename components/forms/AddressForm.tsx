@@ -4,7 +4,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, Controller } from "react-hook-form";
 import * as z from "zod";
-import { Button as NextUIButton, Input as NextUIInput, Card as NextUICard, CardHeader as NextUICardHeader, CardBody as NextUICardBody } from "@nextui-org/react";
+import { Button as NextUIButton, Input as NextUIInput, Card as NextUICard, CardBody as NextUICardBody } from "@nextui-org/react";
 import { submitAddress } from "@/app/actions/addressActions";
 import { CheckCircle, Loader2, AlertTriangle, Info } from "lucide-react"; // Added Info icon
 import { useState } from "react";
@@ -111,7 +111,7 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
               <NextUIInput
                 {...field}
                 label="Street Address"
-                placeholder="e.g., 123 Main Street, XYZ Layout"
+                placeholder="123 Main Street, XYZ Layout"
                 variant="bordered"
                 isInvalid={!!errors.streetAddress}
                 errorMessage={errors.streetAddress?.message}
@@ -127,7 +127,7 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
               <NextUIInput
                 {...field}
                 label="Area / District"
-                placeholder="e.g., Ikeja GRA, Asokoro"
+                placeholder="Ikeja GRA, Asokoro"
                 variant="bordered"
                 isInvalid={!!errors.areaDistrict}
                 errorMessage={errors.areaDistrict?.message}
@@ -142,7 +142,7 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
               <NextUIInput
                 {...field}
                 label="City / Town"
-                placeholder="e.g., Lagos, Abuja"
+                placeholder="Lagos, Abuja"
                 variant="bordered"
                 isInvalid={!!errors.city}
                 errorMessage={errors.city?.message}
@@ -157,7 +157,7 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
               <NextUIInput
                 {...field}
                 label="LGA (Local Government Area)"
-                placeholder="e.g., Ikeja, Abuja Municipal"
+                placeholder="Ikeja, Abuja Municipal"
                 variant="bordered"
                 isInvalid={!!errors.lga}
                 errorMessage={errors.lga?.message}
@@ -172,7 +172,7 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
               <NextUIInput
                 {...field}
                 label="State"
-                placeholder="e.g., Lagos, FCT"
+                placeholder="Lagos, FCT"
                 variant="bordered"
                 isInvalid={!!errors.state}
                 errorMessage={errors.state?.message}
@@ -187,7 +187,7 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
               <NextUIInput
                 {...field}
                 label="Zip Code (Optional)"
-                placeholder="e.g., 100001"
+                placeholder="100001"
                 variant="bordered"
                 isInvalid={!!errors.zipCode}
                 errorMessage={errors.zipCode?.message}
@@ -212,7 +212,7 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
           />
         </div>
         <NextUIButton type="submit" color="warning" className="w-full md:w-auto text-white" isLoading={isSubmitting} disabled={isSubmitting || !user}>
-          {isSubmitting ? "Submitting..." : "Submit Address"}
+          {isSubmitting ? "Submitting..." : "Submit"}
         </NextUIButton>
       </form>
     </>

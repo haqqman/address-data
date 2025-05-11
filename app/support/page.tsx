@@ -106,7 +106,7 @@ export default function SupportPage() {
                     <NextUIInput
                       id="subject"
                       label="Subject"
-                      placeholder="e.g., API Key Issue"
+                      placeholder="API Key Issue"
                       variant="bordered"
                       classNames={{ label: "text-base" }}
                     />
@@ -160,5 +160,3 @@ export default function SupportPage() {
     </div>
   );
 }
-
-    

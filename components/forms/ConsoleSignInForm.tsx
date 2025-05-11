@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -23,6 +24,8 @@ export function ConsoleSignInForm() {
   const router = useRouter();
   const { signInWithEmail } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
 
   const { control, handleSubmit, formState: { errors } } = useForm<ConsoleSignInFormValues>({
     resolver: zodResolver(consoleSignInSchema),
@@ -34,15 +37,16 @@ export function ConsoleSignInForm() {
 
   async function onSubmit(values: ConsoleSignInFormValues) {
     setIsLoading(true);
-    // toast removed
+    setErrorMessage(null);
     try {
       await signInWithEmail(values.email, values.password, true); // true for isAdmin
-      // toast removed
       router.push('/console/dashboard');
     } catch (error: any) {
-      const errorMessage = error.message || "Invalid console credentials or unauthorized email domain.";
-      console.error("Console Log In Failed:", errorMessage);
-      // toast removed
+      const friendlyErrorMessage = error.code === 'auth/invalid-credential' 
+        ? "Invalid email or password. Please try again."
+        : error.message || "An unexpected error occurred. Please try again.";
+      console.error("Console Log In Failed:", error);
+      setErrorMessage(friendlyErrorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -50,6 +54,11 @@ export function ConsoleSignInForm() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      {errorMessage && (
+        <div className="p-3 bg-danger-50 border border-danger-200 rounded-md text-danger-700 text-sm">
+          {errorMessage}
+        </div>
+      )}
       <Controller
         name="email"
         control={control}
@@ -59,7 +68,7 @@ export function ConsoleSignInForm() {
             label="Email Address"
             placeholder="example@haqqman.com"
             variant="bordered"
-            isInvalid={!!errors.email}
+            isInvalid={!!errors.email || !!errorMessage}
             errorMessage={errors.email?.message}
             fullWidth
           />
@@ -75,7 +84,7 @@ export function ConsoleSignInForm() {
             type="password"
             placeholder="••••••••"
             variant="bordered"
-            isInvalid={!!errors.password}
+            isInvalid={!!errors.password || !!errorMessage}
             errorMessage={errors.password?.message}
             fullWidth
           />
@@ -83,10 +92,11 @@ export function ConsoleSignInForm() {
       />
       <NextUIButton 
         type="submit" 
-        color="warning" // Mapped from accent
+        color="warning" 
         fullWidth 
         isLoading={isLoading}
         disabled={isLoading}
+        className="text-white"
       >
         {isLoading ? "Logging In..." : "Log In"}
       </NextUIButton>
