@@ -29,7 +29,7 @@ export default function GeographyManagementPage() {
   return (
     <div className="space-y-8">
       <div className="flex justify-between items-center">
-        <div>
+        <div className="flex flex-col space-y-1">
           <h1 className="text-3xl font-bold tracking-tight">Geography Management</h1>
           <p className="text-foreground-500">
             Manage states, Local Government Areas (LGAs), and cities.
@@ -49,7 +49,7 @@ export default function GeographyManagementPage() {
         <Tab key="states" title="States">
           <NextUICard className="shadow-xl rounded-xl">
             <NextUICardHeader className="px-6 pt-6 pb-2 flex justify-between items-center">
-              <div>
+              <div className="flex flex-col space-y-0.5">
                 <h2 className="text-xl font-semibold">Manage States</h2>
                 <p className="text-sm text-foreground-500">Add, edit, or remove states.</p>
               </div>
@@ -79,7 +79,7 @@ export default function GeographyManagementPage() {
         <Tab key="lgas" title="LGAs">
           <NextUICard className="shadow-xl rounded-xl">
             <NextUICardHeader className="px-6 pt-6 pb-2 flex justify-between items-center">
-              <div>
+              <div className="flex flex-col space-y-0.5">
                 <h2 className="text-xl font-semibold">Manage LGAs</h2>
                 <p className="text-sm text-foreground-500">Add, edit, or remove Local Government Areas.</p>
               </div>
@@ -109,7 +109,7 @@ export default function GeographyManagementPage() {
         <Tab key="cities" title="Cities/Towns">
           <NextUICard className="shadow-xl rounded-xl">
             <NextUICardHeader className="px-6 pt-6 pb-2 flex justify-between items-center">
-              <div>
+              <div className="flex flex-col space-y-0.5">
                 <h2 className="text-xl font-semibold">Manage Cities/Towns</h2>
                 <p className="text-sm text-foreground-500">Add, edit, or remove cities or towns within LGAs.</p>
               </div>

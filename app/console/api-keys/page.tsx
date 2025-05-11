@@ -1,3 +1,4 @@
+
 "use client"; 
 
 import { useState, useEffect, useCallback } from "react";
@@ -123,7 +124,7 @@ export default function ConsoleApiKeysPage() {
   return (
     <div className="space-y-8">
       <div className="flex justify-between items-center">
-        <div>
+        <div className="flex flex-col space-y-1">
             <h1 className="text-3xl font-bold tracking-tight">Manage Developer API Keys</h1>
             <p className="text-foreground-500">
             Oversee, create, and revoke API keys for developers using the platform.
@@ -141,10 +142,12 @@ export default function ConsoleApiKeysPage() {
 
       <NextUICard className="shadow-xl rounded-xl">
         <NextUICardHeader className="px-6 pt-6 pb-2">
-          <h2 className="text-xl font-semibold">All Developer API Keys</h2>
-          <p className="text-sm text-foreground-500">
-            A list of all API keys issued to developers. Manage their status and usage.
-          </p>
+          <div className="flex flex-col space-y-0.5">
+            <h2 className="text-xl font-semibold">All Developer API Keys</h2>
+            <p className="text-sm text-foreground-500">
+              A list of all API keys issued to developers. Manage their status and usage.
+            </p>
+          </div>
         </NextUICardHeader>
         <NextUICardBody className="p-2 md:p-4">
           {isLoading && (

@@ -1,3 +1,4 @@
+
 "use client"; 
 
 import { useState, useEffect, useCallback } from "react";
@@ -45,7 +46,7 @@ export default function DashboardPage() {
   return (
     <div className="space-y-8">
       <div className="flex justify-between items-center">
-        <div>
+        <div className="flex flex-col space-y-1">
           <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
           <p className="text-foreground-500">Manage your addresses and API keys.</p>
         </div>

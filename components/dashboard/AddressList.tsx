@@ -32,7 +32,9 @@ export function AddressList({ addresses }: AddressListProps) {
     return (
       <NextUICard className="shadow-lg rounded-xl mt-8">
         <NextUICardHeader className="px-6 pt-6 pb-2">
-          <h2 className="text-xl font-semibold">My Address Submissions</h2>
+          <div className="flex flex-col space-y-0.5">
+            <h2 className="text-xl font-semibold">My Address Submissions</h2>
+          </div>
         </NextUICardHeader>
         <NextUICardBody className="p-6">
           <p className="text-foreground-500">You haven't submitted any addresses yet.</p>
@@ -44,8 +46,10 @@ export function AddressList({ addresses }: AddressListProps) {
   return (
     <NextUICard className="shadow-lg rounded-xl mt-8">
       <NextUICardHeader className="px-6 pt-6 pb-2">
-        <h2 className="text-xl font-semibold">My Address Submissions</h2>
-        <p className="text-sm text-foreground-500">View the status of your submitted addresses.</p>
+        <div className="flex flex-col space-y-0.5">
+          <h2 className="text-xl font-semibold">My Address Submissions</h2>
+          <p className="text-sm text-foreground-500">View the status of your submitted addresses.</p>
+        </div>
       </NextUICardHeader>
       <NextUICardBody className="p-0 md:p-2"> {/* Adjusted padding for table */}
         <ScrollShadow hideScrollBar className="h-[400px] w-full">

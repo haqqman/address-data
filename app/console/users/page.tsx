@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
@@ -49,7 +50,7 @@ export default function ConsoleUserSubmissionsPage() {
 
   return (
     <div className="space-y-8">
-      <div>
+      <div className="flex flex-col space-y-1">
         <h1 className="text-3xl font-bold tracking-tight">User Submissions</h1>
         <p className="text-foreground-500">
           View and manage all address submissions from users.
@@ -58,10 +59,12 @@ export default function ConsoleUserSubmissionsPage() {
 
       <NextUICard className="shadow-xl rounded-xl">
         <NextUICardHeader className="px-6 pt-6 pb-2">
-          <h2 className="text-xl font-semibold">All Submissions</h2>
-          <p className="text-sm text-foreground-500">
-            A comprehensive list of all addresses submitted by users and their current status.
-          </p>
+          <div className="flex flex-col space-y-0.5">
+            <h2 className="text-xl font-semibold">All Submissions</h2>
+            <p className="text-sm text-foreground-500">
+              A comprehensive list of all addresses submitted by users and their current status.
+            </p>
+          </div>
         </NextUICardHeader>
         <NextUICardBody className="p-2 md:p-4">
           {(isLoading || authLoading) && (

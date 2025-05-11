@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
@@ -100,10 +101,12 @@ export function ApiKeyDisplay() {
     <>
       <NextUICard className="shadow-lg rounded-xl mb-8">
         <NextUICardHeader className="px-6 pt-6 pb-2">
-          <h2 className="text-xl font-semibold">Generate New API Key</h2>
-          <p className="text-sm text-foreground-500">
-            Create a new pair of API keys to access Address Data services.
-          </p>
+          <div className="flex flex-col space-y-0.5">
+            <h2 className="text-xl font-semibold">Generate New API Key</h2>
+            <p className="text-sm text-foreground-500">
+              Create a new pair of API keys to access Address Data services.
+            </p>
+          </div>
         </NextUICardHeader>
         <NextUICardBody className="space-y-6 p-6">
           {newlyGeneratedKey && (
@@ -198,10 +201,12 @@ export function ApiKeyDisplay() {
 
       <NextUICard className="shadow-lg rounded-xl">
         <NextUICardHeader className="px-6 pt-6 pb-2">
-          <h2 className="text-xl font-semibold">Your Existing API Keys</h2>
-           <p className="text-sm text-foreground-500">
-            Manage your existing API keys.
-          </p>
+          <div className="flex flex-col space-y-0.5">
+            <h2 className="text-xl font-semibold">Your Existing API Keys</h2>
+            <p className="text-sm text-foreground-500">
+              Manage your existing API keys.
+            </p>
+          </div>
         </NextUICardHeader>
         <NextUICardBody className="p-6">
           {isLoadingKeys && <div className="flex justify-center items-center py-8"><Spinner label="Loading your keys..." color="warning" /></div>}
