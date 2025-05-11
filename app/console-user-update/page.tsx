@@ -23,7 +23,8 @@ import type { User as UserType } from "@/types";
 
 const consoleUserUpdateSchema = z.object({
   userIdToUpdate: z.enum(["abdulhaqq", "joshua"], { required_error: "Please select a user to update."}),
-  name: z.string().min(1, "Name is required."),
+  firstName: z.string().min(1, "First name is required."),
+  lastName: z.string().min(1, "Last name is required."),
   phoneNumber: z.string().min(1, "Phone number is required."),
   role: z.enum(["cto", "administrator", "manager"], { required_error: "Role is required."}),
 });
@@ -52,7 +53,8 @@ export default function ConsoleUserUpdatePage() {
     resolver: zodResolver(consoleUserUpdateSchema),
     defaultValues: {
       userIdToUpdate: undefined,
-      name: "",
+      firstName: "",
+      lastName: "",
       phoneNumber: "",
       role: undefined,
     },
@@ -135,21 +137,38 @@ export default function ConsoleUserUpdatePage() {
                 </NextUISelect>
               )}
             />
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Controller
+                name="firstName"
+                control={control}
+                render={({ field }) => (
+                  <NextUIInput
+                    {...field}
+                    label="First Name"
+                    placeholder="Enter first name"
+                    variant="bordered"
+                    isInvalid={!!errors.firstName}
+                    errorMessage={errors.firstName?.message}
+                  />
+                )}
+              />
+              <Controller
+                name="lastName"
+                control={control}
+                render={({ field }) => (
+                  <NextUIInput
+                    {...field}
+                    label="Last Name"
+                    placeholder="Enter last name"
+                    variant="bordered"
+                    isInvalid={!!errors.lastName}
+                    errorMessage={errors.lastName?.message}
+                  />
+                )}
+              />
+            </div>
 
-            <Controller
-              name="name"
-              control={control}
-              render={({ field }) => (
-                <NextUIInput
-                  {...field}
-                  label="Full Name"
-                  placeholder="Enter full name"
-                  variant="bordered"
-                  isInvalid={!!errors.name}
-                  errorMessage={errors.name?.message}
-                />
-              )}
-            />
             <Controller
               name="phoneNumber"
               control={control}
@@ -202,3 +221,4 @@ export default function ConsoleUserUpdatePage() {
     </div>
   );
 }
+

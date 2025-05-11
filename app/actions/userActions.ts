@@ -14,7 +14,8 @@ const CONSOLE_USER_UIDS = {
 
 const consoleUserUpdateSchema = z.object({
   userIdToUpdate: z.enum(["abdulhaqq", "joshua"]),
-  name: z.string().min(1, "Name is required."),
+  firstName: z.string().min(1, "First name is required."),
+  lastName: z.string().min(1, "Last name is required."),
   phoneNumber: z.string().min(1, "Phone number is required."),
   role: z.enum(["cto", "administrator", "manager"], { required_error: "Role is required."}),
 });
@@ -25,7 +26,7 @@ export async function updateConsoleUserDetails(
   values: ConsoleUserUpdateFormValues
 ): Promise<{ success: boolean; message: string }> {
   try {
-    const { userIdToUpdate, name, phoneNumber, role } = values;
+    const { userIdToUpdate, firstName, lastName, phoneNumber, role } = values;
     const uid = CONSOLE_USER_UIDS[userIdToUpdate];
 
     if (!uid || uid.startsWith("CONSOLE_USER_UID_")) {
@@ -35,8 +36,10 @@ export async function updateConsoleUserDetails(
     const userRef = doc(db, "users", uid);
     const userDoc = await getDoc(userRef);
 
+    const fullName = `${firstName} ${lastName}`;
+
     const dataToUpdate: Partial<User> = {
-      name: name,
+      name: fullName,
       phoneNumber: phoneNumber,
       role: role,
     };
@@ -52,10 +55,10 @@ export async function updateConsoleUserDetails(
         createdAt: new Date(), // Add createdAt if creating new
         authProvider: "password", // Assuming password auth
       });
-      return { success: true, message: `Successfully created and updated details for ${name}.` };
+      return { success: true, message: `Successfully created and updated details for ${fullName}.` };
     } else {
       await updateDoc(userRef, dataToUpdate);
-      return { success: true, message: `Successfully updated details for ${name}.` };
+      return { success: true, message: `Successfully updated details for ${fullName}.` };
     }
 
   } catch (error) {
@@ -64,3 +67,4 @@ export async function updateConsoleUserDetails(
     return { success: false, message: `Failed to update user details: ${errorMessage}` };
   }
 }
+
