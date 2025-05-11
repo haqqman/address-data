@@ -1,4 +1,3 @@
-
 export interface User {
   id: string;
   email?: string | null;
@@ -57,4 +56,5 @@ export interface AddressSubmission {
   submittedAt: Date;
   reviewedAt?: Date;
   reviewerId?: string;
+  reviewNotes?: string; // Notes from admin review, e.g., reason for rejection
 }

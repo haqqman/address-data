@@ -1,4 +1,3 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -8,6 +7,7 @@ import { Button as NextUIButton, Input as NextUIInput, Textarea as NextUITextare
 import { submitAddress } from "@/app/actions/addressActions";
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
+import { useAuth } from "@/contexts/auth-context"; // Import useAuth
 
 const addressSchema = z.object({
   streetAddress: z.string().min(1, "Street address is required"),
@@ -27,6 +27,7 @@ interface AddressFormProps {
 
 export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { user } = useAuth(); // Get user from AuthContext
 
   const { control, handleSubmit, formState: { errors }, reset } = useForm<AddressFormValues>({
     resolver: zodResolver(addressSchema),
@@ -42,6 +43,13 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
   });
 
   async function onSubmit(values: AddressFormValues) {
+    if (!user) {
+      // Handle case where user is not authenticated, though dashboard layout should prevent this
+      console.error("User not authenticated for address submission.");
+      // Optionally show a toast or message to the user
+      return;
+    }
+
     setIsSubmitting(true);
     const formData = new FormData();
     Object.entries(values).forEach(([key, value]) => {
@@ -50,21 +58,21 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
       }
     });
 
-    const result = await submitAddress(formData);
+    // Pass user details to the action
+    const result = await submitAddress({ 
+        formData, 
+        user: { id: user.id, name: user.name, email: user.email } 
+    });
     setIsSubmitting(false);
 
     if (result.success) {
       console.log("Submission Successful", result.message);
-      // toast removed
       reset();
       if (onSubmissionSuccess) {
         onSubmissionSuccess();
       }
     } else {
       console.error("Submission Failed", result.message, result.errors);
-      // toast removed
-      // Server-side validation errors could be mapped to form errors if needed
-      // For now, relying on client-side validation primarily.
     }
   }
 
@@ -187,7 +195,7 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
               )}
             />
           </div>
-          <NextUIButton type="submit" color="warning" className="w-full md:w-auto text-white" isLoading={isSubmitting} disabled={isSubmitting}>
+          <NextUIButton type="submit" color="warning" className="w-full md:w-auto text-white" isLoading={isSubmitting} disabled={isSubmitting || !user}>
             {isSubmitting ? "Submitting..." : "Submit Address"}
           </NextUIButton>
         </form>

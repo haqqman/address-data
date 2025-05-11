@@ -1,4 +1,3 @@
-
 "use client";
 
 import type { AddressSubmission } from "@/types";
@@ -15,6 +14,7 @@ import { format } from "date-fns";
 import { CheckCircle, XCircle, AlertTriangle, Info } from "lucide-react";
 import { updateAddressStatus } from "@/app/actions/addressActions";
 import { useState } from "react";
+import { useAuth } from "@/contexts/auth-context"; // Import useAuth
 
 interface FlaggedAddressTableProps {
   addresses: AddressSubmission[];
@@ -26,20 +26,25 @@ export function FlaggedAddressTable({ addresses, onActionComplete }: FlaggedAddr
   const { isOpen: isRejectOpen, onOpen: onRejectOpen, onClose: onRejectClose, onOpenChange: onRejectOpenChange } = useDisclosure();
   const [selectedSubmissionId, setSelectedSubmissionId] = useState<string | null>(null);
   const [reviewNotes, setReviewNotes] = useState("");
+  const { user } = useAuth(); // Get admin user from AuthContext
 
   const handleAction = async (newStatus: "approved" | "rejected") => {
-    if (!selectedSubmissionId) return;
+    if (!selectedSubmissionId || !user || user.role !== 'admin') {
+        console.error("Action cannot be performed. Admin user not found or invalid submission.");
+        // Optionally, show an error toast/message
+        return;
+    }
 
-    const result = await updateAddressStatus(selectedSubmissionId, newStatus, reviewNotes);
+    const result = await updateAddressStatus(selectedSubmissionId, newStatus, user.id, reviewNotes);
     if (result.success) {
       console.log("Action Successful", result.message);
       onActionComplete(); 
     } else {
       console.error("Action Failed", result.message);
+      // Optionally, show an error toast/message to the admin
     }
     setReviewNotes(""); 
-    selectedSubmissionId === "approve" ? onApproveClose() : onRejectClose(); // This line had a small logic error, fixed to close correct modal.
-    if (newStatus === "approved") onApproveClose(); else onRejectClose(); // Explicitly close based on action type
+    if (newStatus === "approved") onApproveClose(); else onRejectClose();
     setSelectedSubmissionId(null);
   };
   
@@ -98,8 +103,11 @@ export function FlaggedAddressTable({ addresses, onActionComplete }: FlaggedAddr
                       variant="flat"
                       color="warning"
                       startContent={<AlertTriangle className="h-3 w-3" />}
+                      className="max-w-full whitespace-normal h-auto py-1" // Allow chip to wrap text
                     >
-                      {submission.aiFlaggedReason}
+                     <span className="truncate block" title={submission.aiFlaggedReason}>
+                        {submission.aiFlaggedReason}
+                      </span>
                     </NextUIChip>
                   ) : (
                     <NextUIChip size="sm" variant="flat" color="default" startContent={<Info className="h-3 w-3" />}>
@@ -109,26 +117,30 @@ export function FlaggedAddressTable({ addresses, onActionComplete }: FlaggedAddr
                 </NextUITableCell>
                 <NextUITableCell>{format(new Date(submission.submittedAt), "PPp")}</NextUITableCell>
                 <NextUITableCell className="text-right space-x-2">
-                  <NextUIButton
-                    isIconOnly
-                    size="sm"
-                    variant="light"
-                    color="success"
-                    onPress={() => openModal(submission.id, "approve")}
-                    aria-label="Approve"
-                  >
-                    <CheckCircle className="h-5 w-5" />
-                  </NextUIButton>
-                  <NextUIButton
-                    isIconOnly
-                    size="sm"
-                    variant="light"
-                    color="danger"
-                    onPress={() => openModal(submission.id, "reject")}
-                    aria-label="Reject"
-                  >
-                    <XCircle className="h-5 w-5" />
-                  </NextUIButton>
+                  <Tooltip content="Approve Submission" placement="top">
+                    <NextUIButton
+                      isIconOnly
+                      size="sm"
+                      variant="light"
+                      color="success"
+                      onPress={() => openModal(submission.id, "approve")}
+                      aria-label="Approve"
+                    >
+                      <CheckCircle className="h-5 w-5" />
+                    </NextUIButton>
+                  </Tooltip>
+                  <Tooltip content="Reject Submission" placement="top">
+                    <NextUIButton
+                      isIconOnly
+                      size="sm"
+                      variant="light"
+                      color="danger"
+                      onPress={() => openModal(submission.id, "reject")}
+                      aria-label="Reject"
+                    >
+                      <XCircle className="h-5 w-5" />
+                    </NextUIButton>
+                  </Tooltip>
                 </NextUITableCell>
               </NextUITableRow>
             )}
@@ -139,7 +151,7 @@ export function FlaggedAddressTable({ addresses, onActionComplete }: FlaggedAddr
       {/* Approve Modal */}
       <Modal isOpen={isApproveOpen} onOpenChange={onApproveOpenChange} backdrop="blur">
         <ModalContent>
-          {(onCloseModal) => ( // Renamed onClose to avoid conflict with outer scope if any
+          {(onCloseModal) => ( 
             <>
               <ModalHeader className="flex flex-col gap-1">Approve Address?</ModalHeader>
               <ModalBody>
@@ -167,7 +179,7 @@ export function FlaggedAddressTable({ addresses, onActionComplete }: FlaggedAddr
       {/* Reject Modal */}
       <Modal isOpen={isRejectOpen} onOpenChange={onRejectOpenChange} backdrop="blur">
         <ModalContent>
-          {(onCloseModal) => ( // Renamed onClose to avoid conflict
+          {(onCloseModal) => ( 
             <>
               <ModalHeader className="flex flex-col gap-1">Reject Address?</ModalHeader>
               <ModalBody>

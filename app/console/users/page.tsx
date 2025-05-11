@@ -6,16 +6,31 @@ import { getAddressSubmissions } from "@/app/actions/addressActions";
 import type { AddressSubmission } from "@/types";
 import { Skeleton as NextUISkeleton, Card as NextUICard, CardHeader as NextUICardHeader, CardBody as NextUICardBody } from "@nextui-org/react";
 import { AlertTriangle } from "lucide-react"; 
+import { useAuth } from "@/contexts/auth-context";
 
 export default function ConsoleUserSubmissionsPage() { 
   const [allSubmissions, setAllSubmissions] = useState<AddressSubmission[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { user, loading: authLoading } = useAuth();
+
 
   const fetchAllSubmissions = useCallback(async () => {
+    if (!user || user.role !== 'admin') {
+      setIsLoading(false);
+       if (!authLoading) {
+        setAllSubmissions([]);
+        setError("Unauthorized access or user not loaded.");
+      }
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
     try {
+      // Passing a generic admin identifier. The `getAddressSubmissions` action
+      // has logic to fetch all if it recognizes an admin-like ID.
+      // The layout already protects this route for admins.
       const data = await getAddressSubmissions("mockAdminId"); 
       setAllSubmissions(data);
     } catch (err) {
@@ -24,11 +39,13 @@ export default function ConsoleUserSubmissionsPage() {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [user, authLoading]);
 
   useEffect(() => {
-    fetchAllSubmissions();
-  }, [fetchAllSubmissions]);
+    if (!authLoading) {
+        fetchAllSubmissions();
+    }
+  }, [fetchAllSubmissions, authLoading]);
 
   return (
     <div className="space-y-8">
@@ -47,7 +64,7 @@ export default function ConsoleUserSubmissionsPage() {
           </p>
         </NextUICardHeader>
         <NextUICardBody className="p-2 md:p-4">
-          {isLoading && (
+          {(isLoading || authLoading) && (
             <div className="space-y-4">
               <NextUISkeleton className="h-10 w-full rounded-lg" />
               <NextUISkeleton className="h-10 w-full rounded-lg" />
@@ -55,7 +72,7 @@ export default function ConsoleUserSubmissionsPage() {
             </div>
           )}
 
-          {error && (
+          {error && !isLoading && (
             <NextUICard className="mt-4 bg-danger-50 border-danger-200 rounded-xl">
               <NextUICardBody className="p-4">
                 <div className="flex items-center">
@@ -69,7 +86,7 @@ export default function ConsoleUserSubmissionsPage() {
             </NextUICard>
           )}
 
-          {!isLoading && !error && (
+          {!isLoading && !authLoading && !error && (
             <UserSubmissionsTable submissions={allSubmissions} />
           )}
         </NextUICardBody>

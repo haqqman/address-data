@@ -2,7 +2,7 @@
 
 import { z } from "zod";
 import { flagAddressDiscrepancies } from "@/ai/flows/flag-address-discrepancies";
-import type { AddressSubmission } from "@/types";
+import type { AddressSubmission, User } from "@/types";
 import { db } from "@/lib/firebase/config";
 import { 
   collection, 
@@ -35,8 +35,7 @@ const convertTimestamps = (docData: any): any => {
     if (data[key] instanceof Timestamp) {
       data[key] = data[key].toDate();
     } else if (typeof data[key] === 'object' && data[key] !== null) {
-      // Recursively convert for nested objects if any (e.g. submittedAddress)
-      // Though for AddressSubmission, top-level dates are submittedAt, reviewedAt
+      // Recursively convert for nested objects if any
     }
   }
   return data;
@@ -52,7 +51,12 @@ async function fetchGoogleMapsAddress(addressParts: z.infer<typeof addressSchema
   return `${streetAddress}, ${areaDistrict}, ${city}, ${state}, ${zipCode || ''}, ${country}`.replace(/,\s*,/g, ',').trim();
 }
 
-export async function submitAddress(formData: FormData) {
+interface SubmitAddressParams {
+  formData: FormData;
+  user: Pick<User, 'id' | 'name' | 'email'> | null;
+}
+
+export async function submitAddress({ formData, user }: SubmitAddressParams) {
   const rawFormData = {
     streetAddress: formData.get("streetAddress") as string,
     areaDistrict: formData.get("areaDistrict") as string,
@@ -70,6 +74,14 @@ export async function submitAddress(formData: FormData) {
       success: false,
       errors: validation.error.flatten().fieldErrors,
       message: "Validation failed.",
+    };
+  }
+
+  if (!user || !user.id) {
+    return {
+      success: false,
+      message: "User authentication required.",
+      errors: null,
     };
   }
 
@@ -95,15 +107,15 @@ export async function submitAddress(formData: FormData) {
       status = "approved"; 
     }
     
-    const newSubmissionData = {
-      userId: "formSubmitUserId", // Placeholder for actual authenticated user ID
-      userName: "Form User", // Placeholder
-      userEmail: "formuser@example.com", // Placeholder
+    const newSubmissionData: Omit<AddressSubmission, 'id' | 'submittedAt'> & { submittedAt: any } = {
+      userId: user.id,
+      userName: user.name || "User",
+      userEmail: user.email || "user@example.com",
       submittedAddress: submittedAddressData,
       googleMapsSuggestion: googleMapsAddress,
       status: status,
       aiFlaggedReason: aiFlaggedReason,
-      submittedAt: serverTimestamp(), // Use Firestore server timestamp
+      submittedAt: serverTimestamp(), 
       reviewedAt: null,
       reviewerId: null,
     };
@@ -113,7 +125,7 @@ export async function submitAddress(formData: FormData) {
     return {
       success: true,
       message: `Address submitted. Status: ${status}.${aiFlaggedReason ? ` Reason: ${aiFlaggedReason}` : ''}`,
-      submission: { id: docRef.id, ...newSubmissionData, submittedAt: new Date() }, // Return with current date for immediate display
+      submission: { id: docRef.id, ...newSubmissionData, submittedAt: new Date() }, 
     };
 
   } catch (error) {
@@ -130,12 +142,15 @@ export async function getAddressSubmissions(userId: string): Promise<AddressSubm
   try {
     const submissionsCol = collection(db, "addressSubmissions");
     let q;
-
-    if (userId === "mockAdminId" || userId === "abdulhaqq_cto_id" || userId === "joshua_manager_id") {
-      // Admins see all submissions
+    
+    // Logic for admin check: if userId corresponds to an admin ID, fetch all.
+    // This part might need refinement if admin IDs are not fixed strings.
+    // For now, assuming specific IDs like "abdulhaqq_cto_id" or "joshua_manager_id" are admin identifiers passed from console.
+    // Or a more robust role check could be performed here if user roles are stored in Firestore alongside users.
+    const adminIds = ["mockAdminId", "abdulhaqq_cto_id", "joshua_manager_id"]; // Example admin identifiers
+    if (adminIds.includes(userId)) { 
       q = query(submissionsCol, orderBy("submittedAt", "desc"));
     } else {
-      // Regular users see only their own submissions
       q = query(submissionsCol, where("userId", "==", userId), orderBy("submittedAt", "desc"));
     }
 
@@ -147,7 +162,7 @@ export async function getAddressSubmissions(userId: string): Promise<AddressSubm
     return submissions;
   } catch (error) {
     console.error("Error fetching address submissions from Firestore:", error);
-    return []; // Return empty array on error
+    return []; 
   }
 }
 
@@ -168,11 +183,10 @@ export async function getFlaggedAddresses(): Promise<AddressSubmission[]> {
   }
 }
 
-export async function updateAddressStatus(submissionId: string, newStatus: "approved" | "rejected", reviewNotes?: string, reviewerId?: string): Promise<{success: boolean, message: string}> {
+export async function updateAddressStatus(submissionId: string, newStatus: "approved" | "rejected", reviewerId: string, reviewNotes?: string): Promise<{success: boolean, message: string}> {
   try {
     const submissionRef = doc(db, "addressSubmissions", submissionId);
     
-    // Check if document exists before updating (optional, updateDoc will fail if not found)
     const docSnap = await getDoc(submissionRef);
     if (!docSnap.exists()) {
       return { success: false, message: "Submission not found." };
@@ -181,12 +195,10 @@ export async function updateAddressStatus(submissionId: string, newStatus: "appr
     const updateData: any = {
       status: newStatus,
       reviewedAt: serverTimestamp(),
-      reviewerId: reviewerId || "mockAdminId", // Use provided reviewerId or default
+      reviewerId: reviewerId, 
     };
 
-    // In a real app, reviewNotes might be handled more robustly.
-    // For now, if we add a reviewNotes field to AddressSubmission type and Firestore:
-    // if (reviewNotes) updateData.reviewNotes = reviewNotes;
+    if (reviewNotes) updateData.reviewNotes = reviewNotes; // Assuming reviewNotes field exists in AddressSubmission type
 
     await updateDoc(submissionRef, updateData);
     
