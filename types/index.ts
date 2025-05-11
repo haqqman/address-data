@@ -60,3 +60,34 @@ export interface AddressSubmission {
   reviewerId?: string | null; // Allow null
   reviewNotes?: string; // Notes from admin review, e.g., reason for rejection
 }
+
+// Types for Firestore Geography Data
+export interface FirestoreGeographyStateData {
+  name: string;
+  capital: string;
+}
+export interface GeographyState extends FirestoreGeographyStateData {
+  id: string; // Document ID from Firestore
+}
+
+export interface FirestoreGeographyLGAData {
+  name: string;
+  stateId: string; // Reference to parent state document ID
+}
+export interface GeographyLGA extends Omit<FirestoreGeographyLGAData, 'stateId'> {
+  id: string; // Document ID from Firestore (LGA name sanitized)
+  name: string;
+  stateId: string; // Keep stateId for context
+}
+
+export interface FirestoreGeographyCityData {
+  name: string;
+  stateId: string; // Reference to parent state document ID
+  lgaId: string;   // Reference to parent LGA document ID
+}
+export interface GeographyCity extends Omit<FirestoreGeographyCityData, 'stateId' | 'lgaId'> {
+  id: string; // Document ID from Firestore (City name sanitized)
+  name: string;
+  stateId: string; // Keep stateId for context
+  lgaId: string;   // Keep lgaId for context
+}
