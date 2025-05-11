@@ -34,7 +34,7 @@ export default function ConsoleUserSubmissionsPage() {
       // The layout already protects this route for admins.
       const data = await getAddressSubmissions("mockAdminId"); 
       setAllSubmissions(data);
-    } catch (err) {
+    } catch (err)_ {
       setError("Failed to load user submissions.");
       console.error(err);
     } finally {
@@ -51,16 +51,16 @@ export default function ConsoleUserSubmissionsPage() {
   return (
     <div className="space-y-8">
       <div className="flex flex-col space-y-1">
-        <h1 className="text-3xl font-bold tracking-tight">User Submissions</h1>
+        <h1 className="text-3xl font-bold tracking-tight text-primary">User Submissions</h1>
         <p className="text-foreground-500">
           View and manage all address submissions from users.
         </p>
       </div>
 
-      <NextUICard className="shadow-xl rounded-xl">
+      <NextUICard className="shadow-xl rounded-xl bg-background">
         <NextUICardHeader className="px-6 pt-6 pb-2">
           <div className="flex flex-col space-y-0.5">
-            <h2 className="text-xl font-semibold">All Submissions</h2>
+            <h2 className="text-xl font-semibold text-primary">All Submissions</h2>
             <p className="text-sm text-foreground-500">
               A comprehensive list of all addresses submitted by users and their current status.
             </p>
@@ -69,9 +69,9 @@ export default function ConsoleUserSubmissionsPage() {
         <NextUICardBody className="p-2 md:p-4">
           {(isLoading || authLoading) && (
             <div className="space-y-4">
-              <NextUISkeleton className="h-10 w-full rounded-lg" />
-              <NextUISkeleton className="h-10 w-full rounded-lg" />
-              <NextUISkeleton className="h-10 w-full rounded-lg" />
+              <NextUISkeleton className="h-10 w-full rounded-lg bg-default-200" />
+              <NextUISkeleton className="h-10 w-full rounded-lg bg-default-200" />
+              <NextUISkeleton className="h-10 w-full rounded-lg bg-default-200" />
             </div>
           )}
 

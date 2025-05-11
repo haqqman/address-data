@@ -2,21 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Removed ShadCN HSL theme variables */
 /* NextUI's Tailwind plugin and Provider handle theming */
 
-/* Retain basic body styling if needed, or let NextUI Provider handle it */
 @layer base {
   body {
-    /* Example: Tailwind's default bg-background and text-foreground will be applied
-       based on NextUI's theme configuration in tailwind.config.ts */
     @apply bg-background text-foreground;
   }
 
-  /* Ensure NextUI components can properly apply border colors based on theme */
-  * {
-     /* border-color: hsl(var(--border)); Tailwind's border-border might conflict or be redundant with NextUI.
-        NextUI components usually manage their own borders. If issues arise, this can be revisited.
-        For now, removing explicit global border color to let NextUI manage it. */
+  h1, h2, h3 {
+    /* Apply the primary color from the theme to headings */
+    /* This requires that 'primary' in tailwind.config.ts is correctly defined */
+    @apply text-primary; 
   }
 }

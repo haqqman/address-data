@@ -35,17 +35,17 @@ export default function ConsoleDashboardPage() {
     <div className="space-y-8">
       <div className="flex justify-between items-center">
         <div className="flex flex-col space-y-1">
-          <h1 className="text-3xl font-bold tracking-tight">Address Review Queue</h1>
+          <h1 className="text-3xl font-bold tracking-tight text-primary">Address Review Queue</h1>
           <p className="text-foreground-500">
             Review addresses flagged by the AI or requiring manual verification.
           </p>
         </div>
       </div>
       
-      <NextUICard className="shadow-xl rounded-xl">
+      <NextUICard className="shadow-xl rounded-xl bg-background">
         <NextUICardHeader className="px-6 pt-6 pb-2">
           <div className="flex flex-col space-y-0.5">
-            <h2 className="text-xl font-semibold">Pending Reviews</h2>
+            <h2 className="text-xl font-semibold text-primary">Pending Reviews</h2>
             <p className="text-sm text-foreground-500">
               The following addresses require manual review. Approve or reject them based on verification.
             </p>
@@ -54,9 +54,9 @@ export default function ConsoleDashboardPage() {
         <NextUICardBody className="p-2 md:p-4">
           {isLoading && (
             <div className="space-y-4">
-              <NextUISkeleton className="h-10 w-full rounded-lg" />
-              <NextUISkeleton className="h-10 w-full rounded-lg" />
-              <NextUISkeleton className="h-10 w-full rounded-lg" />
+              <NextUISkeleton className="h-10 w-full rounded-lg bg-default-200" />
+              <NextUISkeleton className="h-10 w-full rounded-lg bg-default-200" />
+              <NextUISkeleton className="h-10 w-full rounded-lg bg-default-200" />
             </div>
           )}
 

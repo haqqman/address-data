@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -83,18 +84,18 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         {submissionStatus && (
           <NextUICard 
-            className={`mb-6 ${submissionStatus.type === 'success' ? 'bg-success-50 border-success-200' : submissionStatus.type === 'error' ? 'bg-danger-50 border-danger-200' : 'bg-primary-50 border-primary-200'}`}
+            className={`mb-6 ${submissionStatus.type === 'success' ? 'bg-success-50 border-success-200' : submissionStatus.type === 'error' ? 'bg-danger-50 border-danger-200' : 'bg-secondary-50 border-secondary-200'}`} // Use secondary for info
           >
             <NextUICardBody className="p-4">
               <div className="flex items-center">
                 {submissionStatus.type === 'success' && <CheckCircle className="h-5 w-5 text-success mr-3" />}
                 {submissionStatus.type === 'error' && <AlertTriangle className="h-5 w-5 text-danger mr-3" />}
-                {submissionStatus.type === 'info' && <Info className="h-5 w-5 text-primary mr-3" />}
+                {submissionStatus.type === 'info' && <Info className="h-5 w-5 text-secondary mr-3" />}
                 <div>
-                  <p className={`font-semibold ${submissionStatus.type === 'success' ? 'text-success-700' : submissionStatus.type === 'error' ? 'text-danger-700' : 'text-primary-700'}`}>
+                  <p className={`font-semibold ${submissionStatus.type === 'success' ? 'text-success-700' : submissionStatus.type === 'error' ? 'text-danger-700' : 'text-secondary-700'}`}>
                     {submissionStatus.type === 'success' ? 'Success' : submissionStatus.type === 'error' ? 'Error' : 'Info'}
                   </p>
-                  <p className={`text-sm ${submissionStatus.type === 'success' ? 'text-success-600' : submissionStatus.type === 'error' ? 'text-danger-600' : 'text-primary-600'}`}>
+                  <p className={`text-sm ${submissionStatus.type === 'success' ? 'text-success-600' : submissionStatus.type === 'error' ? 'text-danger-600' : 'text-secondary-600'}`}>
                     {submissionStatus.message}
                   </p>
                 </div>
@@ -213,7 +214,7 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
         <NextUIButton 
           type="submit" 
           color="warning" 
-          className="w-full md:w-auto text-white shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out" 
+          className="w-full md:w-auto text-primary shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out" // text-primary for button text
           isLoading={isSubmitting} 
           disabled={isSubmitting || !user}
         >

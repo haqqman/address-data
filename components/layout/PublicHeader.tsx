@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -15,7 +16,7 @@ export function PublicHeader() {
             width={24} 
             height={24}
           />
-          <span className="font-bold text-lg">Address Data</span>
+          <span className="font-bold text-lg text-primary">Address Data</span>
         </Link>
         <nav className="ml-auto flex items-center space-x-1 md:space-x-2">
           <NextUIButton variant="light" as={Link} href="/about" className="text-foreground">
@@ -28,11 +29,11 @@ export function PublicHeader() {
             Get Help
           </NextUIButton>
           <NextUIButton 
-            color="warning" 
+            color="warning" // Changed from primary to warning to use accent color
             as={Link} 
             href="/login" 
             radius="md"
-            className="text-white shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out"
+            className="text-primary-foreground shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out"
           >
             Portal
           </NextUIButton>
@@ -41,3 +42,4 @@ export function PublicHeader() {
     </header>
   );
 }
+

@@ -15,20 +15,20 @@ export default function SupportPage() {
       <PublicHeader />
       <main className="flex-grow container mx-auto px-4 py-12">
         <div className="max-w-3xl mx-auto">
-          <NextUICard className="shadow-xl rounded-xl p-2">
+          <NextUICard className="shadow-xl rounded-xl p-2 bg-background">
             <NextUICardHeader className="flex flex-col items-center text-center pt-6 pb-2">
-              <div className="inline-flex items-center justify-center rounded-full bg-primary/10 p-3 mb-4">
-                <LifeBuoy className="h-10 w-10 text-primary" />
+              <div className="inline-flex items-center justify-center rounded-full bg-secondary/10 p-3 mb-4">
+                <LifeBuoy className="h-10 w-10 text-secondary" />
               </div>
-              <h1 className="text-3xl font-bold">Get Help &amp; Support</h1>
+              <h1 className="text-3xl font-bold text-primary">Get Help &amp; Support</h1>
               <p className="text-lg text-muted-foreground mt-1">
                 We&apos;re here to assist you with any questions or issues.
               </p>
             </NextUICardHeader>
-            <NextUICardBody className="space-y-10 pt-0">
+            <NextUICardBody className="space-y-10 pt-0 text-foreground/90">
               <div className="flex justify-center my-6">
                 <Image
-                  src="https://res.cloudinary.com/seapane-cloud/seapane-bucket/address-data/meta/address-illustration-pana.svg"
+                  src="https://res.cloudinary.com/seapane-cloud/seapane-bucket/address-data/meta/address-illustration-pana.svg" // Changed from bro to pana as per previous image use
                   alt="Support Illustration"
                   width={300}
                   height={250}
@@ -37,8 +37,8 @@ export default function SupportPage() {
               </div>
               <section className="grid md:grid-cols-2 gap-6">
                 <div className="space-y-3">
-                  <h2 className="text-2xl font-semibold flex items-center">
-                    <Mail className="mr-2 h-6 w-6 text-primary" /> Email Support
+                  <h2 className="text-2xl font-semibold flex items-center text-primary">
+                    <Mail className="mr-2 h-6 w-6 text-secondary" /> Email Support
                   </h2>
                   <p>
                     For general inquiries, technical support, or API integration help, please email us. We aim to respond within 24-48 business hours.
@@ -46,16 +46,16 @@ export default function SupportPage() {
                   <NextUIButton
                     as={Link}
                     href="mailto:support@addressdata.ng"
-                    color="primary"
-                    className="w-full md:w-auto shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out"
+                    color="warning" // Use warning for accent color
+                    className="w-full md:w-auto shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out text-primary" // Ensure button text has contrast
                     radius="md"
                   >
                     support@addressdata.ng
                   </NextUIButton>
                 </div>
                 <div className="space-y-3">
-                  <h2 className="text-2xl font-semibold flex items-center">
-                    <MessageSquare className="mr-2 h-6 w-6 text-primary" /> Community Forum
+                  <h2 className="text-2xl font-semibold flex items-center text-primary">
+                    <MessageSquare className="mr-2 h-6 w-6 text-secondary" /> Community Forum
                   </h2>
                   <p>
                     Join our community forum to ask questions, share solutions, and connect with other developers and users of Address Data.
@@ -64,6 +64,7 @@ export default function SupportPage() {
                     as={Link}
                     href="#"
                     variant="bordered"
+                    color="secondary" // Bordered secondary button
                     className="w-full md:w-auto shadow-sm hover:shadow-md hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out"
                     isDisabled
                     radius="md"
@@ -76,7 +77,7 @@ export default function SupportPage() {
               <hr className="my-4 border-border" />
 
               <section>
-                <h2 className="text-2xl font-semibold mb-6 text-center">Contact Us Directly</h2>
+                <h2 className="text-2xl font-semibold mb-6 text-center text-primary">Contact Us Directly</h2>
                 <form className="space-y-6">
                   <div className="grid md:grid-cols-2 gap-6">
                     <NextUIInput
@@ -84,14 +85,14 @@ export default function SupportPage() {
                       label="First Name"
                       placeholder="Your First Name"
                       variant="bordered"
-                      classNames={{ label: "text-base" }}
+                      classNames={{ label: "text-base text-primary" }} // Label color
                     />
                     <NextUIInput
                       id="lastName"
                       label="Last Name"
                       placeholder="Your Last Name"
                       variant="bordered"
-                      classNames={{ label: "text-base" }}
+                      classNames={{ label: "text-base text-primary" }}
                     />
                   </div>
                   <div>
@@ -101,7 +102,7 @@ export default function SupportPage() {
                       label="Email Address"
                       placeholder="your.email@example.com"
                       variant="bordered"
-                      classNames={{ label: "text-base" }}
+                      classNames={{ label: "text-base text-primary" }}
                       value={formEmail}
                       onValueChange={(value) => {
                         const transformedValue = value.toLowerCase().replace(/\s+/g, '');
@@ -115,7 +116,7 @@ export default function SupportPage() {
                       label="Subject"
                       placeholder="API Key Issue"
                       variant="bordered"
-                      classNames={{ label: "text-base" }}
+                      classNames={{ label: "text-base text-primary" }}
                     />
                   </div>
                   <div>
@@ -125,17 +126,17 @@ export default function SupportPage() {
                       placeholder="Describe your issue or question in detail..."
                       variant="bordered"
                       minRows={5}
-                      classNames={{ label: "text-base" }}
+                      classNames={{ label: "text-base text-primary" }}
                     />
                   </div>
                   <div className="text-center pt-2">
                     <NextUIButton
                       type="submit"
-                      color="primary"
+                      color="warning" // Use warning for accent color
                       size="lg"
                       isDisabled
                       radius="md"
-                      className="shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out"
+                      className="shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out text-primary" // Ensure button text has contrast
                     >
                       Send Message (Form Inactive)
                     </NextUIButton>

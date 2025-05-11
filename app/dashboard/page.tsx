@@ -47,14 +47,14 @@ export default function DashboardPage() {
     <div className="space-y-8">
       <div className="flex justify-between items-center">
         <div className="flex flex-col space-y-1">
-          <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+          <h1 className="text-3xl font-bold tracking-tight text-primary">Dashboard</h1>
           <p className="text-foreground-500">Manage your addresses and API keys.</p>
         </div>
         <NextUIButton 
           as={Link} 
           href="/dashboard/submit-address" 
           color="warning" 
-          className="text-white shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out"
+          className="text-primary shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out" // text-primary for button text on warning
           startContent={<PlusCircle className="h-4 w-4" />}
         >
           Submit New Address
@@ -63,9 +63,9 @@ export default function DashboardPage() {
 
       {(isLoading || authLoading) && ( 
         <div className="space-y-4 mt-8">
-          <NextUISkeleton className="h-12 w-1/3 rounded-lg" />
-          <NextUISkeleton className="h-32 w-full rounded-lg" />
-          <NextUISkeleton className="h-32 w-full rounded-lg" />
+          <NextUISkeleton className="h-12 w-1/3 rounded-lg bg-default-200" />
+          <NextUISkeleton className="h-32 w-full rounded-lg bg-default-200" />
+          <NextUISkeleton className="h-32 w-full rounded-lg bg-default-200" />
         </div>
       )}
 

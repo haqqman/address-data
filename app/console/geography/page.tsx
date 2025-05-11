@@ -270,13 +270,13 @@ export default function GeographyManagementPage() {
     }
   };
   
-  const renderLoading = () => <div className="flex justify-center items-center p-8"><Spinner /></div>;
+  const renderLoading = () => <div className="flex justify-center items-center p-8"><Spinner color="secondary"/></div>;
 
   return (
     <div className="space-y-8">
       <div className="flex justify-between items-center">
         <div className="flex flex-col space-y-1">
-          <h1 className="text-3xl font-bold tracking-tight">Geography Management</h1>
+          <h1 className="text-3xl font-bold tracking-tight text-primary">Geography Management</h1>
           <p className="text-foreground-500">
             Manage states, Local Government Areas (LGAs), and cities.
           </p>
@@ -284,19 +284,19 @@ export default function GeographyManagementPage() {
         <NextUIButton 
             color="warning" 
             onPress={onAddModalOpen}
-            className="text-white shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out" 
+            className="text-primary shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out" 
             startContent={<PlusCircle className="h-4 w-4" />}
         >
              Add Geography Data
         </NextUIButton>
       </div>
 
-      <Tabs aria-label="Geography Management Tabs" color="primary" variant="bordered">
-        <Tab key="states" title={<span className="flex items-center"><Map className="mr-2 h-5 w-5" />States</span>}>
-          <NextUICard className="shadow-xl rounded-xl">
+      <Tabs aria-label="Geography Management Tabs" color="secondary" variant="bordered">
+        <Tab key="states" title={<span className="flex items-center"><Map className="mr-2 h-5 w-5 text-secondary" />States</span>}>
+          <NextUICard className="shadow-xl rounded-xl bg-background">
             <NextUICardHeader className="px-6 pt-6 pb-2 flex justify-between items-center">
               <div className="flex flex-col space-y-0.5">
-                <h2 className="text-xl font-semibold">Manage States</h2>
+                <h2 className="text-xl font-semibold text-primary">Manage States</h2>
                 <p className="text-sm text-foreground-500">Add, edit, or remove states.</p>
               </div>
             </NextUICardHeader>
@@ -307,11 +307,11 @@ export default function GeographyManagementPage() {
                   {states.map(state => (
                     <li key={state.id} className="p-3 border rounded-lg flex justify-between items-center hover:bg-default-100">
                       <div>
-                          <p className="font-medium">{state.name} (Capital: {state.capital})</p>
+                          <p className="font-medium text-primary">{state.name} (Capital: {state.capital})</p>
                           <p className="text-xs text-foreground-400">ID: {state.id}</p>
                       </div>
                       <div className="space-x-1">
-                          <NextUIButton isIconOnly size="sm" variant="light" color="primary" aria-label="Edit State" onPress={() => openEditModal(state, "State")}><Edit3 className="h-4 w-4"/></NextUIButton>
+                          <NextUIButton isIconOnly size="sm" variant="light" color="secondary" aria-label="Edit State" onPress={() => openEditModal(state, "State")}><Edit3 className="h-4 w-4"/></NextUIButton>
                           <NextUIButton isIconOnly size="sm" variant="light" color="danger" aria-label="Delete State" onPress={() => openDeleteModal(state, "State")}><Trash2 className="h-4 w-4"/></NextUIButton>
                       </div>
                     </li>
@@ -322,12 +322,12 @@ export default function GeographyManagementPage() {
           </NextUICard>
         </Tab>
 
-        <Tab key="lgas" title={<span className="flex items-center"><Building className="mr-2 h-5 w-5" />LGAs</span>}>
-          <NextUICard className="shadow-xl rounded-xl">
+        <Tab key="lgas" title={<span className="flex items-center"><Building className="mr-2 h-5 w-5 text-secondary" />LGAs</span>}>
+          <NextUICard className="shadow-xl rounded-xl bg-background">
             <NextUICardHeader className="px-6 pt-6 pb-2">
               <div className="flex justify-between items-center w-full mb-4">
                 <div className="flex flex-col space-y-0.5">
-                  <h2 className="text-xl font-semibold">Manage LGAs</h2>
+                  <h2 className="text-xl font-semibold text-primary">Manage LGAs</h2>
                   <p className="text-sm text-foreground-500">Select a state to view and manage its LGAs.</p>
                 </div>
                 <NextUISelect
@@ -337,9 +337,10 @@ export default function GeographyManagementPage() {
                   onSelectionChange={(keys) => setSelectedStateIdForLgas(Array.from(keys)[0] as string)}
                   className="max-w-xs"
                   variant="bordered"
+                  color="secondary"
                 >
                   {states.map((state) => (
-                    <NextUISelectItem key={state.id} value={state.id}>
+                    <NextUISelectItem key={state.id} value={state.id} textValue={state.name}>
                       {state.name}
                     </NextUISelectItem>
                   ))}
@@ -353,11 +354,11 @@ export default function GeographyManagementPage() {
                   {lgas.map(lga => (
                     <li key={lga.id} className="p-3 border rounded-lg flex justify-between items-center hover:bg-default-100">
                       <div>
-                          <p className="font-medium">{lga.name}</p>
+                          <p className="font-medium text-primary">{lga.name}</p>
                           <p className="text-xs text-foreground-400">ID: {lga.id}</p>
                       </div>
                       <div className="space-x-1">
-                          <NextUIButton isIconOnly size="sm" variant="light" color="primary" aria-label="Edit LGA" onPress={() => openEditModal(lga, "LGA")}><Edit3 className="h-4 w-4"/></NextUIButton>
+                          <NextUIButton isIconOnly size="sm" variant="light" color="secondary" aria-label="Edit LGA" onPress={() => openEditModal(lga, "LGA")}><Edit3 className="h-4 w-4"/></NextUIButton>
                           <NextUIButton isIconOnly size="sm" variant="light" color="danger" aria-label="Delete LGA" onPress={() => openDeleteModal(lga, "LGA")}><Trash2 className="h-4 w-4"/></NextUIButton>
                       </div>
                     </li>
@@ -368,12 +369,12 @@ export default function GeographyManagementPage() {
           </NextUICard>
         </Tab>
 
-        <Tab key="cities" title={<span className="flex items-center"><MapPin className="mr-2 h-5 w-5" />Cities/Towns</span>}>
-          <NextUICard className="shadow-xl rounded-xl">
+        <Tab key="cities" title={<span className="flex items-center"><MapPin className="mr-2 h-5 w-5 text-secondary" />Cities/Towns</span>}>
+          <NextUICard className="shadow-xl rounded-xl bg-background">
             <NextUICardHeader className="px-6 pt-6 pb-2">
-              <div className="flex justify-between items-start w-full mb-4">
+              <div className="flex justify-between items-start w-full mb-4"> {/* Changed items-center to items-start */}
                 <div className="flex flex-col space-y-0.5">
-                  <h2 className="text-xl font-semibold">Manage Cities/Towns</h2>
+                  <h2 className="text-xl font-semibold text-primary">Manage Cities/Towns</h2>
                   <p className="text-sm text-foreground-500">Select a state and LGA to manage cities/towns.</p>
                 </div>
                 <div className="flex gap-4">
@@ -389,9 +390,10 @@ export default function GeographyManagementPage() {
                     }}
                     className="max-w-xs"
                     variant="bordered"
+                    color="secondary"
                   >
                     {states.map((state) => (
-                      <NextUISelectItem key={state.id} value={state.id}>
+                      <NextUISelectItem key={state.id} value={state.id} textValue={state.name}>
                         {state.name}
                       </NextUISelectItem>
                     ))}
@@ -404,11 +406,12 @@ export default function GeographyManagementPage() {
                     className="max-w-xs"
                     isDisabled={!selectedStateIdForCities || lgas.length === 0}
                     variant="bordered"
+                    color="secondary"
                   >
                     {lgas
                       .filter(lga => lga.stateId === selectedStateIdForCities) 
                       .map((lga) => (
-                        <NextUISelectItem key={lga.id} value={lga.id}>
+                        <NextUISelectItem key={lga.id} value={lga.id} textValue={lga.name}>
                           {lga.name}
                         </NextUISelectItem>
                     ))}
@@ -423,11 +426,11 @@ export default function GeographyManagementPage() {
                   {cities.map(city => (
                     <li key={city.id} className="p-3 border rounded-lg flex justify-between items-center hover:bg-default-100">
                        <div>
-                          <p className="font-medium">{city.name}</p>
+                          <p className="font-medium text-primary">{city.name}</p>
                            <p className="text-xs text-foreground-400">ID: {city.id}</p>
                       </div>
                       <div className="space-x-1">
-                          <NextUIButton isIconOnly size="sm" variant="light" color="primary" aria-label="Edit City" onPress={() => openEditModal(city, "City")}><Edit3 className="h-4 w-4"/></NextUIButton>
+                          <NextUIButton isIconOnly size="sm" variant="light" color="secondary" aria-label="Edit City" onPress={() => openEditModal(city, "City")}><Edit3 className="h-4 w-4"/></NextUIButton>
                           <NextUIButton isIconOnly size="sm" variant="light" color="danger" aria-label="Delete City" onPress={() => openDeleteModal(city, "City")}><Trash2 className="h-4 w-4"/></NextUIButton>
                       </div>
                     </li>
@@ -439,18 +442,18 @@ export default function GeographyManagementPage() {
         </Tab>
       </Tabs>
       
-      {/* Add/Edit/Delete Modals */}
       <Modal isOpen={isAddModalOpen} onOpenChange={onAddModalOpenChange} backdrop="blur">
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader className="flex flex-col gap-1">Add Geography Data</ModalHeader>
+              <ModalHeader className="flex flex-col gap-1 text-primary">Add Geography Data</ModalHeader>
               <ModalBody>
                 <NextUISelect
                   label="Select Entity Type"
                   selectedKeys={[entityTypeToAdd]}
                   onSelectionChange={(keys) => setEntityTypeToAdd(Array.from(keys)[0] as GeoEntityType)}
                   variant="bordered"
+                  color="secondary"
                 >
                   <NextUISelectItem key="State" value="State">State</NextUISelectItem>
                   <NextUISelectItem key="LGA" value="LGA">LGA</NextUISelectItem>
@@ -471,8 +474,9 @@ export default function GeographyManagementPage() {
                         selectedKeys={selectedStateForNewLga ? [selectedStateForNewLga] : []}
                         onSelectionChange={(keys) => setSelectedStateForNewLga(Array.from(keys)[0] as string)}
                         variant="bordered"
+                        color="secondary"
                     >
-                        {states.map(s => <NextUISelectItem key={s.id} value={s.id}>{s.name}</NextUISelectItem>)}
+                        {states.map(s => <NextUISelectItem key={s.id} value={s.id} textValue={s.name}>{s.name}</NextUISelectItem>)}
                     </NextUISelect>
                     <NextUIInput label="LGA Name" placeholder="Enter LGA name" value={newLgaName} onValueChange={setNewLgaName} variant="bordered" />
                   </>
@@ -486,11 +490,12 @@ export default function GeographyManagementPage() {
                         onSelectionChange={(keys) => {
                             const stateId = Array.from(keys)[0] as string;
                             setSelectedStateForNewCity(stateId);
-                            setSelectedLgaForNewCity(""); // Reset LGA when state changes
+                            setSelectedLgaForNewCity(""); 
                         }}
                         variant="bordered"
+                        color="secondary"
                     >
-                        {states.map(s => <NextUISelectItem key={s.id} value={s.id}>{s.name}</NextUISelectItem>)}
+                        {states.map(s => <NextUISelectItem key={s.id} value={s.id} textValue={s.name}>{s.name}</NextUISelectItem>)}
                     </NextUISelect>
                     <NextUISelect
                         label="Parent LGA"
@@ -499,8 +504,9 @@ export default function GeographyManagementPage() {
                         onSelectionChange={(keys) => setSelectedLgaForNewCity(Array.from(keys)[0] as string)}
                         isDisabled={!selectedStateForNewCity || lgasForCityDropdown.length === 0}
                         variant="bordered"
+                        color="secondary"
                     >
-                        {lgasForCityDropdown.map(lga => <NextUISelectItem key={lga.id} value={lga.id}>{lga.name}</NextUISelectItem>)}
+                        {lgasForCityDropdown.map(lga => <NextUISelectItem key={lga.id} value={lga.id} textValue={lga.name}>{lga.name}</NextUISelectItem>)}
                     </NextUISelect>
                     <NextUIInput label="City/Town Name" placeholder="Enter city/town name" value={newCityName} onValueChange={setNewCityName} variant="bordered" />
                   </>
@@ -508,7 +514,7 @@ export default function GeographyManagementPage() {
               </ModalBody>
               <ModalFooter>
                 <NextUIButton variant="light" onPress={onClose} disabled={isSubmitting}>Cancel</NextUIButton>
-                <NextUIButton color="warning" onPress={handleAddEntity} isLoading={isSubmitting} disabled={isSubmitting} className="text-white">
+                <NextUIButton color="warning" onPress={handleAddEntity} isLoading={isSubmitting} disabled={isSubmitting} className="text-primary">
                   Add {entityTypeToAdd}
                 </NextUIButton>
               </ModalFooter>
@@ -521,7 +527,7 @@ export default function GeographyManagementPage() {
         <ModalContent>
             {(onClose) => (
                 <>
-                    <ModalHeader className="flex flex-col gap-1">Edit {editingEntity?.type}</ModalHeader>
+                    <ModalHeader className="flex flex-col gap-1 text-primary">Edit {editingEntity?.type}</ModalHeader>
                     <ModalBody>
                         <NextUIInput 
                             label="Name" 
@@ -540,7 +546,7 @@ export default function GeographyManagementPage() {
                     </ModalBody>
                     <ModalFooter>
                         <NextUIButton variant="light" onPress={onClose} disabled={isSubmitting}>Cancel</NextUIButton>
-                        <NextUIButton color="warning" onPress={handleEditEntity} isLoading={isSubmitting} disabled={isSubmitting} className="text-white">
+                        <NextUIButton color="warning" onPress={handleEditEntity} isLoading={isSubmitting} disabled={isSubmitting} className="text-primary">
                             Save Changes
                         </NextUIButton>
                     </ModalFooter>
@@ -553,7 +559,7 @@ export default function GeographyManagementPage() {
         <ModalContent>
             {(onClose) => (
                 <>
-                    <ModalHeader className="flex flex-col gap-1">Delete {deletingEntity?.type}?</ModalHeader>
+                    <ModalHeader className="flex flex-col gap-1 text-primary">Delete {deletingEntity?.type}?</ModalHeader>
                     <ModalBody>
                         <p>Are you sure you want to delete <span className="font-semibold">{deletingEntity?.name}</span>?</p>
                         <p className="text-sm text-danger">This action cannot be undone. If this {deletingEntity?.type} has child elements (e.g., a State has LGAs), they might also be affected or prevent deletion.</p>
@@ -572,4 +578,3 @@ export default function GeographyManagementPage() {
     </div>
   );
 }
-

@@ -79,17 +79,17 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
       <PublicHeader />
       <main className="flex-grow container mx-auto px-4 py-12">
         <div className="max-w-4xl mx-auto">
-          <NextUICard className="shadow-xl rounded-xl p-2 md:p-4">
+          <NextUICard className="shadow-xl rounded-xl p-2 md:p-4 bg-background">
             <NextUICardHeader className="flex flex-col items-center text-center pt-6 pb-4">
-              <div className="inline-flex items-center justify-center rounded-full bg-primary/10 p-3 mb-4">
-                <BookOpen className="h-10 w-10 text-primary" />
+              <div className="inline-flex items-center justify-center rounded-full bg-secondary/10 p-3 mb-4">
+                <BookOpen className="h-10 w-10 text-secondary" />
               </div>
-              <h1 className="text-3xl md:text-4xl font-bold">API Documentation</h1>
+              <h1 className="text-3xl md:text-4xl font-bold text-primary">API Documentation</h1>
               <p className="text-lg text-muted-foreground mt-1">
                 Integrate Address Data into your applications seamlessly.
               </p>
             </NextUICardHeader>
-            <NextUICardBody className="space-y-10 text-lg pt-0">
+            <NextUICardBody className="space-y-10 text-lg pt-0 text-foreground/90">
                <div className="flex justify-center my-6">
                 <Image
                   src="https://res.cloudinary.com/seapane-cloud/seapane-bucket/address-data/meta/address-illustration-cuate.svg"
@@ -101,8 +101,8 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
               </div>
               
               <section id="introduction">
-                <h2 className="text-2xl font-semibold mb-3 flex items-center">
-                  <Zap className="mr-2 h-6 w-6 text-primary" /> Introduction
+                <h2 className="text-2xl font-semibold mb-3 flex items-center text-primary">
+                  <Zap className="mr-2 h-6 w-6 text-secondary" /> Introduction
                 </h2>
                 <p>
                   Welcome to the Address Data API. Our RESTful API provides robust endpoints for Nigerian address validation,
@@ -117,8 +117,8 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
               <NextUIDivider />
 
               <section id="authentication">
-                <h2 className="text-2xl font-semibold mb-3 flex items-center">
-                  <ShieldCheck className="mr-2 h-6 w-6 text-primary" /> Authentication
+                <h2 className="text-2xl font-semibold mb-3 flex items-center text-primary">
+                  <ShieldCheck className="mr-2 h-6 w-6 text-secondary" /> Authentication
                 </h2>
                 <p>
                   To authenticate your API requests, include your Public Key in the <code className="bg-muted px-1.5 py-0.5 rounded-md text-sm font-mono">X-Public-Key</code> header
@@ -131,7 +131,7 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
                   className="text-sm max-w-full" 
                   symbol="" 
                   variant="bordered"
-                  tooltipProps={{color:"primary"}}
+                  tooltipProps={{color:"secondary"}} // Use secondary for tooltip
                   copyButtonProps={{variant:"light"}}
                 >
                   {authExample}
@@ -141,11 +141,11 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
               <NextUIDivider />
 
               <section id="rate-limiting-pricing">
-                <h2 className="text-2xl font-semibold mb-3 flex items-center">
-                  <Tag className="mr-2 h-6 w-6 text-primary" /> Rate Limits &amp; Pricing
+                <h2 className="text-2xl font-semibold mb-3 flex items-center text-primary">
+                  <Tag className="mr-2 h-6 w-6 text-secondary" /> Rate Limits &amp; Pricing
                 </h2>
                 <p>
-                  Get started with <strong className="text-primary">500 free address lookups per day</strong>. This daily limit applies to endpoints like 
+                  Get started with <strong className="text-secondary">500 free address lookups per day</strong>. This daily limit applies to endpoints like 
                   <code className="bg-muted px-1.5 py-0.5 rounded-md text-sm font-mono">/autocomplete</code> and 
                   <code className="bg-muted px-1.5 py-0.5 rounded-md text-sm font-mono">/lookup-by-code</code>.
                 </p>
@@ -153,10 +153,10 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
                   Our standard pricing plan is designed to be simple and scalable:
                 </p>
                 <ul className="list-disc list-inside mt-2 space-y-1">
-                    <li><strong className="text-primary">₦20 per verified lookup</strong> after your free daily limit.</li>
+                    <li><strong className="text-secondary">₦20 per verified lookup</strong> after your free daily limit.</li>
                     <li>Access to geographical data endpoints (<code className="bg-muted px-1.5 py-0.5 rounded-md text-sm font-mono">/states</code>, etc.) is generally not counted towards lookup limits but may be subject to fair use policies.</li>
                 </ul>
-                <p className="mt-3 p-3 bg-warning/10 text-warning-800 rounded-lg text-base">
+                <p className="mt-3 p-3 bg-warning/10 text-warning-foreground rounded-lg text-base"> {/* Use warning color from theme */}
                   <strong>Note:</strong> Detailed standard pricing plans and billing information will be available soon.
                 </p>
               </section>
@@ -164,15 +164,15 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
               <NextUIDivider />
               
               <section id="base-url">
-                <h2 className="text-2xl font-semibold mb-3 flex items-center">
-                  <Layers className="mr-2 h-6 w-6 text-primary" /> API Base URL
+                <h2 className="text-2xl font-semibold mb-3 flex items-center text-primary">
+                  <Layers className="mr-2 h-6 w-6 text-secondary" /> API Base URL
                 </h2>
                 <p>All API endpoints are relative to the following base URL:</p>
                 <Snippet 
                   className="mt-2 text-base max-w-full" 
                   symbol="" 
                   variant="flat"
-                  color="primary"
+                  color="secondary" // Use secondary for snippet bg
                   copyButtonProps={{variant:"light"}}
                 >
                   {API_BASE_URL}
@@ -182,15 +182,15 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
               <NextUIDivider />
 
               <section id="endpoints">
-                <h2 className="text-2xl font-semibold mb-6 flex items-center">
-                  <MapPinned className="mr-2 h-6 w-6 text-primary" /> Endpoints
+                <h2 className="text-2xl font-semibold mb-6 flex items-center text-primary">
+                  <MapPinned className="mr-2 h-6 w-6 text-secondary" /> Endpoints
                 </h2>
                 <div className="space-y-8">
                   
                   {/* Autocomplete Endpoint */}
                   <div>
-                    <h3 className="text-xl font-medium mb-1">
-                      <code className="bg-primary/10 text-primary px-2 py-1 rounded-md text-lg font-mono">GET /autocomplete</code>
+                    <h3 className="text-xl font-medium mb-1 text-primary">
+                      <code className="bg-secondary/10 text-secondary px-2 py-1 rounded-md text-lg font-mono">GET /autocomplete</code>
                     </h3>
                     <p className="text-muted-foreground text-base mb-2">
                       Suggests verified Nigerian addresses based on partial user input. Ideal for checkout forms and registrations.
@@ -200,19 +200,19 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
                       <li><code className="bg-muted px-1.5 py-0.5 rounded-md text-sm font-mono">query</code> (string, required): The partial address string to search for.</li>
                     </ul>
                     <p className="text-base mb-1"><strong>Example Request:</strong></p>
-                    <Snippet lang="bash" className="text-sm max-w-full" variant="bordered">
+                    <Snippet lang="bash" className="text-sm max-w-full" variant="bordered" tooltipProps={{color:"secondary"}}>
                       {autocompleteRequest}
                     </Snippet>
                     <p className="text-base mt-2 mb-1"><strong>Example Success Response (200 OK):</strong></p>
-                    <Snippet lang="json" className="text-sm max-w-full" variant="bordered">
+                    <Snippet lang="json" className="text-sm max-w-full" variant="bordered" tooltipProps={{color:"secondary"}}>
                       {autocompleteResponse}
                     </Snippet>
                   </div>
 
                   {/* Lookup by Code Endpoint */}
                   <div>
-                    <h3 className="text-xl font-medium mb-1">
-                      <code className="bg-primary/10 text-primary px-2 py-1 rounded-md text-lg font-mono">GET /lookup-by-code/{'{adc}'}</code>
+                    <h3 className="text-xl font-medium mb-1 text-primary">
+                      <code className="bg-secondary/10 text-secondary px-2 py-1 rounded-md text-lg font-mono">GET /lookup-by-code/{'{adc}'}</code>
                     </h3>
                     <p className="text-muted-foreground text-base mb-2">
                       Fetches a full, verified address using its unique Address Data Code (ADC).
@@ -222,37 +222,37 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
                       <li><code className="bg-muted px-1.5 py-0.5 rounded-md text-sm font-mono">adc</code> (string, required): The Address Data Code.</li>
                     </ul>
                     <p className="text-base mb-1"><strong>Example Request:</strong></p>
-                    <Snippet lang="bash" className="text-sm max-w-full" variant="bordered">
+                    <Snippet lang="bash" className="text-sm max-w-full" variant="bordered" tooltipProps={{color:"secondary"}}>
                       {lookupByCodeRequest}
                     </Snippet>
                     <p className="text-base mt-2 mb-1"><strong>Example Success Response (200 OK):</strong></p>
-                    <Snippet lang="json" className="text-sm max-w-full" variant="bordered">
+                    <Snippet lang="json" className="text-sm max-w-full" variant="bordered" tooltipProps={{color:"secondary"}}>
                       {addressObjectStructure}
                     </Snippet>
                   </div>
 
                   {/* Get States Endpoint */}
                   <div>
-                    <h3 className="text-xl font-medium mb-1">
-                      <code className="bg-primary/10 text-primary px-2 py-1 rounded-md text-lg font-mono">GET /states</code>
+                    <h3 className="text-xl font-medium mb-1 text-primary">
+                      <code className="bg-secondary/10 text-secondary px-2 py-1 rounded-md text-lg font-mono">GET /states</code>
                     </h3>
                     <p className="text-muted-foreground text-base mb-2">
                       Lists all Nigerian states.
                     </p>
                     <p className="text-base mb-1"><strong>Example Request:</strong></p>
-                    <Snippet lang="bash" className="text-sm max-w-full" variant="bordered">
+                    <Snippet lang="bash" className="text-sm max-w-full" variant="bordered" tooltipProps={{color:"secondary"}}>
                       {statesRequest}
                     </Snippet>
                     <p className="text-base mt-2 mb-1"><strong>Example Success Response (200 OK):</strong></p>
-                    <Snippet lang="json" className="text-sm max-w-full" variant="bordered">
+                    <Snippet lang="json" className="text-sm max-w-full" variant="bordered" tooltipProps={{color:"secondary"}}>
                       {statesResponse}
                     </Snippet>
                   </div>
                   
                   {/* Get LGAs by State Endpoint */}
                   <div>
-                    <h3 className="text-xl font-medium mb-1">
-                      <code className="bg-primary/10 text-primary px-2 py-1 rounded-md text-lg font-mono">GET /states/{'{stateName}'}/lgas</code>
+                    <h3 className="text-xl font-medium mb-1 text-primary">
+                      <code className="bg-secondary/10 text-secondary px-2 py-1 rounded-md text-lg font-mono">GET /states/{'{stateName}'}/lgas</code>
                     </h3>
                     <p className="text-muted-foreground text-base mb-2">
                       Lists all Local Government Areas (LGAs) for a specified Nigerian state.
@@ -262,19 +262,19 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
                         <li><code className="bg-muted px-1.5 py-0.5 rounded-md text-sm font-mono">stateName</code> (string, required): The name of the state (e.g., "Lagos"). Case-insensitive.</li>
                     </ul>
                     <p className="text-base mb-1"><strong>Example Request:</strong></p>
-                    <Snippet lang="bash" className="text-sm max-w-full" variant="bordered">
+                    <Snippet lang="bash" className="text-sm max-w-full" variant="bordered" tooltipProps={{color:"secondary"}}>
                       {lgasRequest}
                     </Snippet>
                     <p className="text-base mt-2 mb-1"><strong>Example Success Response (200 OK):</strong></p>
-                    <Snippet lang="json" className="text-sm max-w-full" variant="bordered">
+                    <Snippet lang="json" className="text-sm max-w-full" variant="bordered" tooltipProps={{color:"secondary"}}>
                       {lgasResponse}
                     </Snippet>
                   </div>
 
                   {/* Get Cities by LGA Endpoint */}
                   <div>
-                    <h3 className="text-xl font-medium mb-1">
-                      <code className="bg-primary/10 text-primary px-2 py-1 rounded-md text-lg font-mono">GET /states/{'{stateName}'}/lga/{'{lgaName}'}/cities</code>
+                    <h3 className="text-xl font-medium mb-1 text-primary">
+                      <code className="bg-secondary/10 text-secondary px-2 py-1 rounded-md text-lg font-mono">GET /states/{'{stateName}'}/lga/{'{lgaName}'}/cities</code>
                     </h3>
                     <p className="text-muted-foreground text-base mb-2">
                       Lists prominent cities/towns within a specified LGA of a state. (Note: City data granularity may vary).
@@ -285,11 +285,11 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
                         <li><code className="bg-muted px-1.5 py-0.5 rounded-md text-sm font-mono">lgaName</code> (string, required): The name of the LGA.</li>
                     </ul>
                     <p className="text-base mb-1"><strong>Example Request:</strong></p>
-                    <Snippet lang="bash" className="text-sm max-w-full" variant="bordered">
+                    <Snippet lang="bash" className="text-sm max-w-full" variant="bordered" tooltipProps={{color:"secondary"}}>
                       {citiesRequest}
                     </Snippet>
                      <p className="text-base mt-2 mb-1"><strong>Example Success Response (200 OK):</strong></p>
-                    <Snippet lang="json" className="text-sm max-w-full" variant="bordered">
+                    <Snippet lang="json" className="text-sm max-w-full" variant="bordered" tooltipProps={{color:"secondary"}}>
                       {citiesResponse}
                     </Snippet>
                   </div>
@@ -300,14 +300,14 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
               <NextUIDivider />
 
               <section id="address-object">
-                <h2 className="text-2xl font-semibold mb-3 flex items-center">
-                  <Code2 className="mr-2 h-6 w-6 text-primary" /> Address Object Structure
+                <h2 className="text-2xl font-semibold mb-3 flex items-center text-primary">
+                  <Code2 className="mr-2 h-6 w-6 text-secondary" /> Address Object Structure
                 </h2>
                 <p>
                   Our API returns address data in a structured JSON format. Developers are encouraged to replicate this
                   structure for maximum compatibility.
                 </p>
-                <Snippet lang="json" className="mt-4 text-sm max-w-full" variant="bordered">
+                <Snippet lang="json" className="mt-4 text-sm max-w-full" variant="bordered" tooltipProps={{color:"secondary"}}>
                   {addressObjectStructure}
                 </Snippet>
               </section>
@@ -315,8 +315,8 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
               <NextUIDivider />
 
               <section id="error-codes">
-                <h2 className="text-2xl font-semibold mb-3 flex items-center">
-                  <AlertTriangle className="mr-2 h-6 w-6 text-primary" /> Error Handling
+                <h2 className="text-2xl font-semibold mb-3 flex items-center text-primary">
+                  <AlertTriangle className="mr-2 h-6 w-6 text-secondary" /> Error Handling
                 </h2>
                 <p>
                   The API uses standard HTTP status codes to indicate the success or failure of a request.
@@ -338,13 +338,13 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
               <NextUIDivider />
 
               <section id="support" className="text-center">
-                 <h2 className="text-2xl font-semibold mb-4 flex items-center justify-center">
-                  <HelpCircle className="mr-2 h-6 w-6 text-primary" /> Need Help?
+                 <h2 className="text-2xl font-semibold mb-4 flex items-center justify-center text-primary">
+                  <HelpCircle className="mr-2 h-6 w-6 text-secondary" /> Need Help?
                 </h2>
                 <p>
                   If you have any questions, encounter issues, or need assistance with integration, please visit our support page.
                 </p>
-                <NextUILink href="/support" isBlock showAnchorIcon color="primary" className="text-lg mt-3 inline-block">
+                <NextUILink href="/support" isBlock showAnchorIcon color="secondary" className="text-lg mt-3 inline-block">
                   Go to Support
                 </NextUILink>
               </section>

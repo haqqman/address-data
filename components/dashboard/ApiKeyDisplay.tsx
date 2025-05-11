@@ -3,7 +3,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { Button as NextUIButton, Input as NextUIInput, Card as NextUICard, CardHeader as NextUICardHeader, CardBody as NextUICardBody, Popover, PopoverTrigger, PopoverContent, Spinner, Listbox, ListboxItem, Chip as NextUIChip } from "@nextui-org/react";
-import { Copy, Eye, EyeOff, RefreshCw, AlertTriangle, KeyRound, PlusCircle, Trash2 } from "lucide-react";
+import { Copy, Eye, EyeOff, AlertTriangle, KeyRound, PlusCircle, Trash2 } from "lucide-react"; // Removed RefreshCw as it's not used
 import { useAuth } from "@/contexts/auth-context";
 import { createApiKey, getUserApiKeys, revokeApiKey } from "@/app/actions/apiKeyActions";
 import type { APIKey } from "@/types";
@@ -57,8 +57,8 @@ export function ApiKeyDisplay() {
     try {
       const result = await createApiKey({ 
         userId: user.id, 
-        userName: user.name, 
-        userEmail: user.email,
+        userName: user.name || undefined, 
+        userEmail: user.email || undefined,
         keyName: keyNameToCreate || undefined 
       });
       if (result.success && result.apiKey && result.apiKey.privateKey) {
@@ -99,10 +99,10 @@ export function ApiKeyDisplay() {
 
   return (
     <>
-      <NextUICard className="shadow-lg rounded-xl mb-8">
+      <NextUICard className="shadow-lg rounded-xl mb-8 bg-background">
         <NextUICardHeader className="px-6 pt-6 pb-2">
           <div className="flex flex-col space-y-0.5">
-            <h2 className="text-xl font-semibold">Generate New API Key</h2>
+            <h2 className="text-xl font-semibold text-primary">Generate New API Key</h2>
             <p className="text-sm text-foreground-500">
               Create a new pair of API keys to access Address Data services.
             </p>
@@ -170,8 +170,8 @@ export function ApiKeyDisplay() {
             <Popover placement="top">
                 <PopoverTrigger>
                     <NextUIButton 
-                    color="warning"
-                    className="text-white w-full sm:w-auto shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out"
+                    color="warning" // Main CTA uses accent color
+                    className="text-primary w-full sm:w-auto shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out"
                     isLoading={isGenerating} 
                     disabled={isGenerating || !user}
                     startContent={!isGenerating ? <PlusCircle className="h-4 w-4" /> : null}
@@ -181,12 +181,12 @@ export function ApiKeyDisplay() {
                 </PopoverTrigger>
                 <PopoverContent>
                     <div className="px-1 py-2">
-                    <div className="text-small font-bold">Confirm Generation</div>
+                    <div className="text-small font-bold text-primary">Confirm Generation</div>
                     <div className="text-tiny">This will create a new set of API keys.</div>
                     <NextUIButton 
                         size="sm" 
                         color="warning" 
-                        className="mt-2 text-white w-full shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out" 
+                        className="mt-2 text-primary w-full shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out" 
                         onPress={handleGenerateNewKey}
                     >
                         Confirm &amp; Generate
@@ -199,10 +199,10 @@ export function ApiKeyDisplay() {
         </NextUICardBody>
       </NextUICard>
 
-      <NextUICard className="shadow-lg rounded-xl">
+      <NextUICard className="shadow-lg rounded-xl bg-background">
         <NextUICardHeader className="px-6 pt-6 pb-2">
           <div className="flex flex-col space-y-0.5">
-            <h2 className="text-xl font-semibold">Your Existing API Keys</h2>
+            <h2 className="text-xl font-semibold text-primary">Your Existing API Keys</h2>
             <p className="text-sm text-foreground-500">
               Manage your existing API keys.
             </p>
@@ -229,9 +229,9 @@ export function ApiKeyDisplay() {
                   <div className="flex justify-between items-center w-full">
                     <div className="flex-grow">
                       <div className="flex items-center">
-                        <KeyRound className="h-5 w-5 mr-3 text-primary" />
+                        <KeyRound className="h-5 w-5 mr-3 text-secondary" />
                         <div>
-                          <p className="font-semibold">{key.name || "Untitled Key"}</p>
+                          <p className="font-semibold text-primary">{key.name || "Untitled Key"}</p>
                           <p className="text-xs text-foreground-500">Public Key: <span className="font-mono">{key.publicKey.substring(0,15)}...</span></p>
                         </div>
                       </div>

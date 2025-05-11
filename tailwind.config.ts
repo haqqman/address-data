@@ -11,8 +11,8 @@ export default {
   ],
   theme: {
   	extend: {
-      // Removed ShadCN specific theme extensions for colors, borderRadius, keyframes, and animation
-      // NextUI handles this through its plugin and theme configuration below
+      // ShadCN specific theme extensions were previously removed.
+      // NextUI handles this through its plugin and theme configuration below.
     }
   },
   plugins: [
@@ -20,55 +20,52 @@ export default {
       themes: {
         light: {
           colors: {
-            background: "#FFFFFF", // or DEFAULT
-            foreground: "#11181C", // or DEFAULT
+            background: "#FFFFFF", 
+            foreground: "#1F2937", // Darker gray for general text
             primary: {
-              DEFAULT: "#388E3C", // Green
-              foreground: "#FFFFFF",
+              DEFAULT: "#0C213A", // New Primary: Dark Blue
+              foreground: "#FFFFFF", // White text on dark blue
             },
             secondary: {
-              DEFAULT: "#E0E0E0", // Light Gray
-              foreground: "#11181C", // Dark text for readability on light gray
+              DEFAULT: "#79C142", // New Secondary: Green
+              foreground: "#FFFFFF", // White text on green
             },
-            danger: { // NextUI uses danger for destructive actions
-              DEFAULT: "#FF0000", // Example, adjust if needed
+            danger: { 
+              DEFAULT: "#FF0000", 
               foreground: "#FFFFFF",
             },
-            // Accent is often mapped to 'warning' or a custom color in NextUI
-            // Using warning for orange as NextUI has predefined slots
-            warning: {
-              DEFAULT: "#FF5722", // Orange
-              foreground: "#FFFFFF",
+            warning: { // Used for buttons/accent
+              DEFAULT: "#FFCC33", // New Button/Accent: Yellow/Gold
+              foreground: "#0C213A", // Dark blue text on yellow/gold for contrast
             }
           },
            layout: {
             radius: {
-              small: "0.25rem", // 4px
-              medium: "0.5rem", // 8px
-              large: "0.75rem", // 12px
+              small: "0.25rem", 
+              medium: "0.5rem", 
+              large: "0.75rem", 
             },
-            // other layout properties
           },
         },
-        dark: {
+        dark: { // It's good practice to define dark mode, even if not primary focus yet
           colors: {
-            background: "#000000", // or DEFAULT
-            foreground: "#ECEDEE", // or DEFAULT
+            background: "#111827", // Dark gray background
+            foreground: "#E5E7EB", // Light gray text
             primary: {
-              DEFAULT: "#388E3C",
+              DEFAULT: "#0C213A", // Dark Blue
               foreground: "#FFFFFF",
             },
             secondary: {
-              DEFAULT: "#333333", // Darker Gray for dark mode
-              foreground: "#ECEDEE",
+              DEFAULT: "#79C142", // Green
+              foreground: "#FFFFFF", 
             },
             danger: {
-              DEFAULT: "#FF0000",
+              DEFAULT: "#EF4444", // Slightly softer red for dark mode
               foreground: "#FFFFFF",
             },
-            warning: {
-              DEFAULT: "#FF5722",
-              foreground: "#FFFFFF",
+            warning: { // Accent/Button
+              DEFAULT: "#FFCC33", // Yellow/Gold
+              foreground: "#0C213A", // Dark blue text
             },
           },
            layout: {
@@ -81,6 +78,5 @@ export default {
         },
       },
     }),
-    // require("tailwindcss-animate") // Removed
   ],
 } satisfies Config;

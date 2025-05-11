@@ -125,7 +125,7 @@ export default function ConsoleApiKeysPage() {
     <div className="space-y-8">
       <div className="flex justify-between items-center">
         <div className="flex flex-col space-y-1">
-            <h1 className="text-3xl font-bold tracking-tight">Manage Developer API Keys</h1>
+            <h1 className="text-3xl font-bold tracking-tight text-primary">Manage Developer API Keys</h1>
             <p className="text-foreground-500">
             Oversee, create, and revoke API keys for developers using the platform.
             </p>
@@ -133,17 +133,17 @@ export default function ConsoleApiKeysPage() {
         <NextUIButton 
             onPress={onOpen} 
             color="warning" 
-            className="text-white shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out" 
+            className="text-primary shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out" 
             startContent={<PlusCircle className="h-4 w-4" />}
         >
              Create New API Key
         </NextUIButton>
       </div>
 
-      <NextUICard className="shadow-xl rounded-xl">
+      <NextUICard className="shadow-xl rounded-xl bg-background">
         <NextUICardHeader className="px-6 pt-6 pb-2">
           <div className="flex flex-col space-y-0.5">
-            <h2 className="text-xl font-semibold">All Developer API Keys</h2>
+            <h2 className="text-xl font-semibold text-primary">All Developer API Keys</h2>
             <p className="text-sm text-foreground-500">
               A list of all API keys issued to developers. Manage their status and usage.
             </p>
@@ -152,9 +152,9 @@ export default function ConsoleApiKeysPage() {
         <NextUICardBody className="p-2 md:p-4">
           {isLoading && (
             <div className="space-y-4">
-              <NextUISkeleton className="h-10 w-full rounded-lg" />
-              <NextUISkeleton className="h-10 w-full rounded-lg" />
-              <NextUISkeleton className="h-10 w-full rounded-lg" />
+              <NextUISkeleton className="h-10 w-full rounded-lg bg-default-200" />
+              <NextUISkeleton className="h-10 w-full rounded-lg bg-default-200" />
+              <NextUISkeleton className="h-10 w-full rounded-lg bg-default-200" />
             </div>
           )}
 
@@ -183,7 +183,7 @@ export default function ConsoleApiKeysPage() {
         <ModalContent>
           {(modalOnClose) => (
             <>
-              <ModalHeader className="flex flex-col gap-1">Create New API Key</ModalHeader>
+              <ModalHeader className="flex flex-col gap-1 text-primary">Create New API Key</ModalHeader>
               <ModalBody>
                 <p>Assign a new API key to a user. The private key will be shown once upon creation.</p>
                 <Autocomplete
@@ -198,7 +198,7 @@ export default function ConsoleApiKeysPage() {
                   {(userItem) => (
                     <AutocompleteItem key={userItem.id} textValue={userItem.name || userItem.email || userItem.id}>
                       <div className="flex flex-col">
-                        <span>{userItem.name || "Unnamed User"}</span>
+                        <span className="text-primary">{userItem.name || "Unnamed User"}</span>
                         <span className="text-xs text-default-500">{userItem.email || userItem.id}</span>
                       </div>
                     </AutocompleteItem>
@@ -222,7 +222,7 @@ export default function ConsoleApiKeysPage() {
                     onPress={handleCreateNewKey} 
                     isLoading={isCreating} 
                     disabled={isCreating || !selectedUserId}
-                    className="text-white shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out"
+                    className="text-primary shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out"
                 >
                   {isCreating ? "Creating..." : "Create API Key"}
                 </NextUIButton>
