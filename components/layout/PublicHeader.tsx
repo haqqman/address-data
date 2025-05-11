@@ -2,7 +2,7 @@
 "use client";
 
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { Button as NextUIButton } from "@nextui-org/react"; // Changed import
 import { Building2 } from "lucide-react";
 
 export function PublicHeader() {
@@ -14,18 +14,18 @@ export function PublicHeader() {
           <span className="font-bold text-lg">Address Data</span>
         </Link>
         <nav className="ml-auto flex items-center space-x-1 md:space-x-2">
-          <Button variant="ghost" asChild>
-            <Link href="/about">About</Link>
-          </Button>
-          <Button variant="ghost" asChild>
-            <Link href="/docs">Documentation</Link>
-          </Button>
-          <Button variant="ghost" asChild>
-            <Link href="/support">Get Help</Link>
-          </Button>
-          <Button asChild className="bg-accent hover:bg-accent/90 text-accent-foreground">
-            <Link href="/login">Portal</Link>
-          </Button>
+          <NextUIButton variant="light" as={Link} href="/about" className="text-foreground">
+            About
+          </NextUIButton>
+          <NextUIButton variant="light" as={Link} href="/docs" className="text-foreground">
+            Documentation
+          </NextUIButton>
+          <NextUIButton variant="light" as={Link} href="/support" className="text-foreground">
+            Get Help
+          </NextUIButton>
+          <NextUIButton color="warning" as={Link} href="/login" radius="md">
+            Portal
+          </NextUIButton>
         </nav>
       </div>
     </header>

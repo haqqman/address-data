@@ -1,8 +1,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button as NextUIButton, Card as NextUICard, CardHeader as NextUICardHeader, CardBody as NextUICardBody } from "@nextui-org/react";
 import { CheckCircle, DatabaseZap, SearchCheck, KeyRound, MapPin, ShieldCheck, Building2, Gauge } from "lucide-react";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 
@@ -63,12 +62,12 @@ export default function HomePage() {
               Address Data provides developers, businesses, and admins with tools to validate, store, and retrieve Nigerian address data efficiently and accurately.
             </p>
             <div className="mt-10 flex justify-center space-x-4">
-              <Button size="lg" asChild className="bg-primary hover:bg-primary/90 text-primary-foreground">
-                <Link href="/login">Get Started</Link>
-              </Button>
-              <Button size="lg" variant="outline" asChild className="border-primary text-primary hover:bg-primary/10">
-                <Link href="#features">Learn More</Link>
-              </Button>
+              <NextUIButton size="lg" color="primary" as={Link} href="/login" radius="md">
+                Get Started
+              </NextUIButton>
+              <NextUIButton size="lg" variant="bordered" color="primary" as={Link} href="#features" radius="md">
+                Learn More
+              </NextUIButton>
             </div>
           </div>
         </section>
@@ -84,17 +83,17 @@ export default function HomePage() {
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {features.map((feature, index) => (
-                <Card key={index} className="shadow-lg hover:shadow-xl transition-shadow duration-300 rounded-xl">
-                  <CardHeader>
-                    <div className="flex items-center justify-center w-16 h-16 bg-primary/10 rounded-full mb-4 mx-auto">
+                <NextUICard key={index} isHoverable shadow="md" radius="xl" className="transition-shadow">
+                  <NextUICardHeader className="flex flex-col items-center pt-6 pb-2">
+                    <div className="flex items-center justify-center w-16 h-16 bg-primary/10 rounded-full mb-4">
                        {feature.icon}
                     </div>
-                    <CardTitle className="text-center text-xl">{feature.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <CardDescription className="text-center">{feature.description}</CardDescription>
-                  </CardContent>
-                </Card>
+                    <h4 className="font-bold text-xl text-center text-foreground">{feature.title}</h4>
+                  </NextUICardHeader>
+                  <NextUICardBody className="pt-0 pb-6 text-center">
+                    <p className="text-sm text-muted-foreground">{feature.description}</p>
+                  </NextUICardBody>
+                </NextUICard>
               ))}
             </div>
           </div>
@@ -123,9 +122,9 @@ export default function HomePage() {
                     </li>
                   ))}
                 </ul>
-                <Button size="lg" asChild className="bg-primary hover:bg-primary/90 text-primary-foreground">
-                  <Link href="/docs">View API Documentation</Link>
-                </Button>
+                <NextUIButton size="lg" color="primary" as={Link} href="/docs" radius="md">
+                  View API Documentation
+                </NextUIButton>
               </div>
               <div className="lg:w-1/2">
                 <Image 
@@ -154,9 +153,15 @@ export default function HomePage() {
             <p className="text-lg md:text-xl mb-10 max-w-2xl mx-auto text-primary-foreground/90">
               Join Address Data today and experience the difference accurate, structured address data can make.
             </p>
-            <Button size="lg" variant="secondary" className="bg-white text-primary hover:bg-white/90" asChild>
-              <Link href="/login">Access Portal</Link>
-            </Button>
+            <NextUIButton 
+              size="lg" 
+              as={Link} 
+              href="/login" 
+              radius="md"
+              className="bg-white text-primary hover:bg-white/90 shadow-md"
+            >
+              Access Portal
+            </NextUIButton>
           </div>
         </section>
       </main>
