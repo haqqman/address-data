@@ -21,18 +21,12 @@ import Link from "next/link";
 import Image from "next/image";
 import type { User as UserType } from "@/types";
 
-const consoleUserUpdateSchema = z.object({
-  userIdToUpdate: z.enum(["abdulhaqq", "joshua"], { required_error: "Please select a user to update."}),
-  firstName: z.string().min(1, "First name is required."),
-  lastName: z.string().min(1, "Last name is required."),
+// Updated schema to reflect new form fields
+const consoleUserUpdateSchemaClient = z.object({
+  uid: z.string().min(1, "UID is required."),
   phoneNumber: z.string().min(1, "Phone number is required."),
   role: z.enum(["cto", "administrator", "manager"], { required_error: "Role is required."}),
 });
-
-const usersToUpdate = [
-  { label: "Abdulhaqq Sule (CTO)", value: "abdulhaqq" },
-  { label: "Joshua Ajorgbor (Manager)", value: "joshua" },
-];
 
 const roleOptions: { label: string; value: UserType['role'] }[] = [
   { label: "CTO", value: "cto" },
@@ -49,20 +43,19 @@ export default function ConsoleUserUpdatePage() {
     handleSubmit,
     formState: { errors },
     reset,
-  } = useForm<ConsoleUserUpdateFormValues>({
-    resolver: zodResolver(consoleUserUpdateSchema),
+  } = useForm<ConsoleUserUpdateFormValues>({ // Still using ConsoleUserUpdateFormValues from action for consistency
+    resolver: zodResolver(consoleUserUpdateSchemaClient), // Use client-side schema for form validation
     defaultValues: {
-      userIdToUpdate: undefined,
-      firstName: "",
-      lastName: "",
+      uid: "",
       phoneNumber: "",
       role: undefined,
     },
   });
 
-  async function onSubmit(values: ConsoleUserUpdateFormValues) {
+  async function onSubmit(values: z.infer<typeof consoleUserUpdateSchemaClient>) {
     setIsLoading(true);
     setFormMessage(null);
+    // The server action now expects `uid` directly.
     const result = await updateConsoleUserDetails(values);
     setFormMessage(result);
     setIsLoading(false);
@@ -91,7 +84,7 @@ export default function ConsoleUserUpdatePage() {
           <h1 className="text-2xl font-bold text-primary">Update Console User Details</h1>
           <p className="text-muted-foreground mt-1 text-warning-600">
             <ShieldAlert className="inline h-4 w-4 mr-1" />
-            This is a temporary page for administrative purposes. Ensure UIDs in `userActions.ts` are correct.
+            This is a temporary page for administrative purposes. Enter the Firestore UID of the user.
           </p>
         </NextUICardHeader>
         <NextUICardBody className="pt-2">
@@ -116,59 +109,20 @@ export default function ConsoleUserUpdatePage() {
             )}
 
             <Controller
-              name="userIdToUpdate"
+              name="uid"
               control={control}
               render={({ field }) => (
-                <NextUISelect
+                <NextUIInput
                   {...field}
-                  label="Select User to Update"
-                  placeholder="Choose a user"
+                  label="User UID (From Firestore)"
+                  placeholder="Enter user's Firestore UID"
                   variant="bordered"
-                  isInvalid={!!errors.userIdToUpdate}
-                  errorMessage={errors.userIdToUpdate?.message}
-                  selectedKeys={field.value ? [field.value] : []}
-                  onSelectionChange={(keys) => field.onChange(Array.from(keys)[0])}
-                >
-                  {usersToUpdate.map((user) => (
-                    <NextUISelectItem key={user.value} value={user.value}>
-                      {user.label}
-                    </NextUISelectItem>
-                  ))}
-                </NextUISelect>
+                  isInvalid={!!errors.uid}
+                  errorMessage={errors.uid?.message}
+                />
               )}
             />
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Controller
-                name="firstName"
-                control={control}
-                render={({ field }) => (
-                  <NextUIInput
-                    {...field}
-                    label="First Name"
-                    placeholder="Enter first name"
-                    variant="bordered"
-                    isInvalid={!!errors.firstName}
-                    errorMessage={errors.firstName?.message}
-                  />
-                )}
-              />
-              <Controller
-                name="lastName"
-                control={control}
-                render={({ field }) => (
-                  <NextUIInput
-                    {...field}
-                    label="Last Name"
-                    placeholder="Enter last name"
-                    variant="bordered"
-                    isInvalid={!!errors.lastName}
-                    errorMessage={errors.lastName?.message}
-                  />
-                )}
-              />
-            </div>
-
             <Controller
               name="phoneNumber"
               control={control}
@@ -221,4 +175,3 @@ export default function ConsoleUserUpdatePage() {
     </div>
   );
 }
-

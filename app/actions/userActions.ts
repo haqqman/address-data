@@ -2,20 +2,19 @@
 "use server";
 
 import { db } from "@/lib/firebase/config";
-import { doc, updateDoc, getDoc, setDoc } from "firebase/firestore";
+import { doc, updateDoc, getDoc, setDoc } from "firebase/firestore"; // setDoc is kept for now, but logic changed
 import { z } from "zod";
 import type { User } from "@/types";
 
-// UIDs for the console users - REPLACE THESE WITH ACTUAL UIDs from Firebase Authentication
-const CONSOLE_USER_UIDS = {
-  abdulhaqq: "CONSOLE_USER_UID_ABDULHAQQ", // Replace with Abdulhaqq's actual UID
-  joshua: "CONSOLE_USER_UID_JOSHUA",     // Replace with Joshua's actual UID
-};
+// Placeholder UIDs for checking against direct modification of critical, hardcoded UIDs
+const PROTECTED_UIDS = [
+  "CONSOLE_USER_UID_ABDULHAQQ", // Example, actual UIDs should be used if protection is desired
+  "CONSOLE_USER_UID_JOSHUA",   // Example
+];
 
+// Updated schema to accept UID directly and remove firstName/lastName
 const consoleUserUpdateSchema = z.object({
-  userIdToUpdate: z.enum(["abdulhaqq", "joshua"]),
-  firstName: z.string().min(1, "First name is required."),
-  lastName: z.string().min(1, "Last name is required."),
+  uid: z.string().min(1, "UID is required."),
   phoneNumber: z.string().min(1, "Phone number is required."),
   role: z.enum(["cto", "administrator", "manager"], { required_error: "Role is required."}),
 });
@@ -26,40 +25,43 @@ export async function updateConsoleUserDetails(
   values: ConsoleUserUpdateFormValues
 ): Promise<{ success: boolean; message: string }> {
   try {
-    const { userIdToUpdate, firstName, lastName, phoneNumber, role } = values;
-    const uid = CONSOLE_USER_UIDS[userIdToUpdate];
+    const validation = consoleUserUpdateSchema.safeParse(values);
+    if (!validation.success) {
+      return { success: false, message: "Invalid data provided. " + validation.error.flatten().fieldErrors };
+    }
 
-    if (!uid || uid.startsWith("CONSOLE_USER_UID_")) {
-        return { success: false, message: `Placeholder UID for ${userIdToUpdate}. Please update the UID in userActions.ts.` };
+    const { uid, phoneNumber, role } = validation.data;
+
+    // Optional: Prevent updating if the UID is one of the critical placeholder UIDs still in constants.
+    // This check might be less relevant if UIDs are always actual Firestore UIDs.
+    if (PROTECTED_UIDS.includes(uid) && (uid.startsWith("CONSOLE_USER_UID_"))) {
+        return { success: false, message: `Cannot update user with placeholder UID: ${uid}. Please use actual Firestore UID.` };
     }
 
     const userRef = doc(db, "users", uid);
     const userDoc = await getDoc(userRef);
 
-    const fullName = `${firstName} ${lastName}`;
-
-    const dataToUpdate: Partial<User> = {
-      name: fullName,
+    if (!userDoc.exists()) {
+      // For an "update" page, if the user document doesn't exist with the provided UID,
+      // it's an error. Creating a new user here would require more information (like email).
+      // The old logic had setDoc if userDoc.exists() was false, but it relied on hardcoded emails.
+      return { success: false, message: `User with UID ${uid} not found. Cannot update.` };
+    }
+    
+    // Only update phoneNumber and role. 'name' is not updated by this form anymore.
+    // 'email' and 'createdAt' are also not touched here.
+    const dataToUpdate: Partial<Pick<User, 'phoneNumber' | 'role'>> = {
       phoneNumber: phoneNumber,
       role: role,
     };
 
-    if (!userDoc.exists()) {
-      // If user document doesn't exist, create it with the essential fields.
-      // This scenario should be less common if users are created during auth.
-      // For console users, their email is fixed.
-      const email = userIdToUpdate === "abdulhaqq" ? "webmanager@haqqman.com" : "joshua+sandbox@haqqman.com";
-      await setDoc(userRef, {
-        ...dataToUpdate,
-        email: email, // Add email if creating new
-        createdAt: new Date(), // Add createdAt if creating new
-        authProvider: "password", // Assuming password auth
-      });
-      return { success: true, message: `Successfully created and updated details for ${fullName}.` };
-    } else {
-      await updateDoc(userRef, dataToUpdate);
-      return { success: true, message: `Successfully updated details for ${fullName}.` };
-    }
+    await updateDoc(userRef, dataToUpdate);
+    
+    // Fetch the updated user's name for the success message if possible, or use UID.
+    const updatedUserDoc = await getDoc(userRef);
+    const updatedName = updatedUserDoc.data()?.name || `User UID: ${uid}`;
+
+    return { success: true, message: `Successfully updated details for ${updatedName}.` };
 
   } catch (error) {
     console.error("Error updating console user details:", error);
@@ -67,4 +69,3 @@ export async function updateConsoleUserDetails(
     return { success: false, message: `Failed to update user details: ${errorMessage}` };
   }
 }
-
