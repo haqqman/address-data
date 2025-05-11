@@ -22,9 +22,9 @@ export default function ConsoleLoginPage() {
         <CardContent>
           <ConsoleSignInForm />
            <p className="mt-6 text-center text-sm text-muted-foreground">
-            Not an admin?{" "}
+            Not a Console User?{" "}
             <Link href="/login" className="font-medium text-primary hover:underline">
-              User Log In
+              Go to Portal
             </Link>
           </p>
         </CardContent>
