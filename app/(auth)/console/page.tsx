@@ -1,4 +1,6 @@
 
+"use client"; // Added "use client" directive
+
 import Link from "next/link";
 import { Card as NextUICard, CardHeader as NextUICardHeader, CardBody as NextUICardBody } from "@nextui-org/react";
 import { ConsoleSignInForm } from "@/components/forms/ConsoleSignInForm";
@@ -10,7 +12,7 @@ export default function ConsoleLoginPage() {
     <div className="min-h-screen flex flex-col items-center justify-center bg-secondary/30 p-4">
       <Link href="/" className="flex items-center space-x-2 mb-8">
           <Image 
-            src="https://res.cloudinary.com/seapane-cloud/seapane-bucket/address-data/meta/address-data-logomark-light.svg" 
+            src="https://res.cloudinary.com/seapane-cloud/seapane-bucket/address-data/meta/address-data-logomark.svg" 
             alt="Address Data Logomark" 
             width={32} 
             height={32}

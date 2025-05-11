@@ -33,7 +33,7 @@ export function AppHeader() {
       <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex h-16 items-center">
         <Link href="/dashboard" className="flex items-center space-x-2 mr-6">
           <Image 
-            src="https://res.cloudinary.com/seapane-cloud/seapane-bucket/address-data/meta/address-data-logomark-light.svg" 
+            src="https://res.cloudinary.com/seapane-cloud/seapane-bucket/address-data/meta/address-data-logomark.svg" 
             alt="Address Data Logomark" 
             width={24} 
             height={24}

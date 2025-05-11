@@ -56,7 +56,7 @@ export default function HomePage() {
           <div className="container mx-auto px-4 text-center">
             <div className="flex justify-center mb-6">
               <Image 
-                src="https://res.cloudinary.com/seapane-cloud/seapane-bucket/address-data/meta/address-data-logomark-light.svg" 
+                src="https://res.cloudinary.com/seapane-cloud/seapane-bucket/address-data/meta/address-data-logomark.svg" 
                 alt="Address Data Logomark" 
                 width={64} 
                 height={64}
@@ -78,30 +78,20 @@ export default function HomePage() {
                 Learn More
               </NextUIButton>
             </div>
-            <div className="mt-16 md:mt-24">
-              <Image
-                src="https://res.cloudinary.com/seapane-cloud/seapane-bucket/address-data/meta/address-illustration-bro.svg"
-                alt="Hero Illustration"
-                width={500}
-                height={400}
-                className="mx-auto"
-                data-ai-hint="address management"
-              />
-            </div>
           </div>
         </section>
 
         {/* Features Section */}
-        <section id="features" className="py-16 md:py-24 bg-background">
+        <section id="features" className="py-8 bg-background">
           <div className="container mx-auto px-4">
             <div className="flex flex-col lg:flex-row items-center gap-12">
               <div className="lg:w-1/2">
                 <Image 
-                  src="https://res.cloudinary.com/seapane-cloud/seapane-bucket/address-data/meta/address-illustration-amiko.svg" 
+                  src="https://res.cloudinary.com/seapane-cloud/seapane-bucket/address-data/meta/address-illustration-amico.svg" 
                   alt="Features Illustration" 
                   width={500} 
                   height={450} 
-                  className="rounded-lg shadow-xl mx-auto"
+                  className="mx-auto"
                   data-ai-hint="data features" 
                 />
               </div>
@@ -144,7 +134,7 @@ export default function HomePage() {
         </section>
         
         {/* API Section */}
-        <section id="api" className="py-16 md:py-24 bg-secondary/30">
+        <section id="api" className="py-8 bg-secondary/30">
           <div className="container mx-auto px-4">
             <div className="flex flex-col lg:flex-row items-center gap-12">
               <div className="lg:w-1/2">

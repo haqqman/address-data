@@ -56,7 +56,7 @@ export default function AboutPage() {
               </ul>
               <div className="flex justify-center pt-6">
                 <Image 
-                  src="https://res.cloudinary.com/seapane-cloud/seapane-bucket/address-data/meta/address-data-logomark-light.svg" 
+                  src="https://res.cloudinary.com/seapane-cloud/seapane-bucket/address-data/meta/address-data-logomark.svg" 
                   alt="Address Data Logomark" 
                   width={48} 
                   height={48}
