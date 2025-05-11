@@ -4,7 +4,16 @@
 import { db } from "@/lib/firebase/config";
 import { collection, doc, writeBatch } from "firebase/firestore";
 import { stateOptions, addressData } from "@/lib/geography-data";
-import type { StateOption, StateData, Lga, City } from "@/lib/geography-data";
+import type { StateOption, StateData } from "@/lib/geography-data";
+
+// If running this script directly (e.g., via tsx from package.json),
+// ensure Firebase config environment variables are loaded.
+// If this action is only ever called from within the Next.js app context,
+// this might not be strictly necessary here as Next.js handles .env.local.
+// However, for a standalone script, it's good practice.
+// import { config as dotenvConfig } from 'dotenv';
+// dotenvConfig({ path: '.env.local' });
+
 
 export async function seedGeographyData(): Promise<{ success: boolean; message: string; operationsCount?: number }> {
   try {
@@ -64,3 +73,4 @@ export async function seedGeographyData(): Promise<{ success: boolean; message: 
     return { success: false, message: `Failed to seed geography data: ${errorMessage}` };
   }
 }
+
