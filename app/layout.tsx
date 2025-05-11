@@ -1,11 +1,14 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { Lato } from 'next/font/google'; // Changed from Inter to Lato
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
-import { AuthProvider } from '@/contexts/auth-context';
+import { AuthProvider } from '@/contexts/auth-context'; // Corrected import path
 import { Providers } from './providers'; 
 
-const inter = Inter({ subsets: ['latin'] });
+const lato = Lato({ 
+  subsets: ['latin'],
+  weight: ['400', '700'] // Added common weights
+}); // Changed from Inter to Lato
 
 export const metadata: Metadata = {
   title: 'Address Data',
@@ -19,7 +22,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
+      <body className={lato.className}> {/* Changed from inter.className to lato.className */}
         <Providers>
           <AuthProvider>
             {children}
