@@ -19,9 +19,9 @@ export default function LoginPage() {
         <CardContent>
           <SignInButtons />
           <p className="mt-6 text-center text-sm text-muted-foreground">
-            Admin?{" "}
-            <Link href="/console" className="font-medium text-primary hover:underline">
-              Console Log In
+            Not ready to Log In?{" "}
+            <Link href="/" className="font-medium text-primary hover:underline">
+              Get Started
             </Link>
           </p>
         </CardContent>
