@@ -45,7 +45,7 @@ export default function ConsoleLayout({
   return (
     <div className="flex flex-col min-h-screen">
       <ConsoleHeader />
-      <main className="flex-grow container mx-auto px-4 py-8">
+      <main className="flex-grow container mx-auto px-4 py-8 max-w-6xl"> {/* Changed max-w-7xl to max-w-6xl */}
         {children}
       </main>
       <footer className="py-8 border-t bg-background">
@@ -69,3 +69,4 @@ export default function ConsoleLayout({
     </div>
   );
 }
+
