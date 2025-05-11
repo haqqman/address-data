@@ -132,7 +132,7 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
 
               <section id="rate-limiting-pricing">
                 <h2 className="text-2xl font-semibold mb-3 flex items-center">
-                  <Tag className="mr-2 h-6 w-6 text-primary" /> Rate Limits & Pricing
+                  <Tag className="mr-2 h-6 w-6 text-primary" /> Rate Limits &amp; Pricing
                 </h2>
                 <p>
                   Get started with <strong className="text-primary">500 free address lookups per day</strong>. This daily limit applies to endpoints like 

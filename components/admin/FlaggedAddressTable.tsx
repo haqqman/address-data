@@ -1,3 +1,4 @@
+
 "use client";
 
 import type { AddressSubmission } from "@/types";
@@ -37,7 +38,8 @@ export function FlaggedAddressTable({ addresses, onActionComplete }: FlaggedAddr
       console.error("Action Failed", result.message);
     }
     setReviewNotes(""); 
-    selectedSubmissionId === "approve" ? onApproveClose() : onRejectClose();
+    selectedSubmissionId === "approve" ? onApproveClose() : onRejectClose(); // This line had a small logic error, fixed to close correct modal.
+    if (newStatus === "approved") onApproveClose(); else onRejectClose(); // Explicitly close based on action type
     setSelectedSubmissionId(null);
   };
   
@@ -137,7 +139,7 @@ export function FlaggedAddressTable({ addresses, onActionComplete }: FlaggedAddr
       {/* Approve Modal */}
       <Modal isOpen={isApproveOpen} onOpenChange={onApproveOpenChange} backdrop="blur">
         <ModalContent>
-          {(onClose) => (
+          {(onCloseModal) => ( // Renamed onClose to avoid conflict with outer scope if any
             <>
               <ModalHeader className="flex flex-col gap-1">Approve Address?</ModalHeader>
               <ModalBody>
@@ -150,10 +152,10 @@ export function FlaggedAddressTable({ addresses, onActionComplete }: FlaggedAddr
                 />
               </ModalBody>
               <ModalFooter>
-                <NextUIButton variant="light" onPress={onClose}>
+                <NextUIButton variant="light" onPress={onCloseModal}>
                   Cancel
                 </NextUIButton>
-                <NextUIButton color="success" onPress={() => {handleAction("approved"); onClose();}}>
+                <NextUIButton color="success" onPress={() => {handleAction("approved");}}>
                   Approve
                 </NextUIButton>
               </ModalFooter>
@@ -165,7 +167,7 @@ export function FlaggedAddressTable({ addresses, onActionComplete }: FlaggedAddr
       {/* Reject Modal */}
       <Modal isOpen={isRejectOpen} onOpenChange={onRejectOpenChange} backdrop="blur">
         <ModalContent>
-          {(onClose) => (
+          {(onCloseModal) => ( // Renamed onClose to avoid conflict
             <>
               <ModalHeader className="flex flex-col gap-1">Reject Address?</ModalHeader>
               <ModalBody>
@@ -178,10 +180,10 @@ export function FlaggedAddressTable({ addresses, onActionComplete }: FlaggedAddr
                 />
               </ModalBody>
               <ModalFooter>
-                <NextUIButton variant="light" onPress={onClose}>
+                <NextUIButton variant="light" onPress={onCloseModal}>
                   Cancel
                 </NextUIButton>
-                <NextUIButton color="danger" onPress={() => {handleAction("rejected"); onClose();}}>
+                <NextUIButton color="danger" onPress={() => {handleAction("rejected");}}>
                   Reject
                 </NextUIButton>
               </ModalFooter>

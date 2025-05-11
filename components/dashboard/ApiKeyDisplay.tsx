@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -113,7 +114,7 @@ export function ApiKeyDisplay() {
               <div className="text-small font-bold">Confirm Generation</div>
               <div className="text-tiny">This will invalidate your current keys.</div>
               <NextUIButton size="sm" color="warning" className="mt-2 text-white" onPress={handleGenerateKeys}>
-                Confirm & Generate
+                Confirm &amp; Generate
               </NextUIButton>
             </div>
           </PopoverContent>

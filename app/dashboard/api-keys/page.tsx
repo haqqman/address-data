@@ -1,4 +1,6 @@
 
+"use client";
+
 import { ApiKeyDisplay } from "@/components/dashboard/ApiKeyDisplay";
 
 export default function ApiKeysPage() {
@@ -13,3 +15,4 @@ export default function ApiKeysPage() {
     </div>
   );
 }
+

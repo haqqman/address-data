@@ -17,7 +17,7 @@ export default function SupportPage() {
               <div className="inline-flex items-center justify-center rounded-full bg-primary/10 p-3 mb-4">
                 <LifeBuoy className="h-10 w-10 text-primary" />
               </div>
-              <h1 className="text-3xl font-bold">Get Help & Support</h1>
+              <h1 className="text-3xl font-bold">Get Help &amp; Support</h1>
               <p className="text-lg text-muted-foreground mt-1">
                 We&apos;re here to assist you with any questions or issues.
               </p>
@@ -150,3 +150,4 @@ export default function SupportPage() {
     </div>
   );
 }
+
