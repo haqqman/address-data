@@ -1,4 +1,3 @@
-
 "use server";
 
 import { z } from "zod";
@@ -16,19 +15,79 @@ const addressSchema = z.object({
 });
 
 // Mock database for submissions
-let mockAddressSubmissions: AddressSubmission[] = [];
 let submissionIdCounter = 1;
+let mockAddressSubmissions: AddressSubmission[] = [
+  {
+    id: (submissionIdCounter++).toString(),
+    userId: "abdulhaqq_cto_id", 
+    userName: "Abdulhaqq Sule",
+    userEmail: "webmanager@haqqman.com",
+    submittedAddress: {
+      streetAddress: "1 Tech Avenue, Victoria Island",
+      areaDistrict: "Innovation Hub",
+      city: "Lagos",
+      lga: "Eti-Osa",
+      state: "Lagos",
+      country: "Nigeria",
+      zipCode: "101241",
+    },
+    googleMapsSuggestion: "1 Tech Avenue, Victoria Island, Lagos 101241, Nigeria",
+    status: "approved", 
+    aiFlaggedReason: undefined,
+    submittedAt: new Date(2024, 4, 10, 10, 0, 0), 
+    reviewedAt: new Date(2024, 4, 10, 11, 0, 0),
+    reviewerId: "mockAdminId",
+  },
+  {
+    id: (submissionIdCounter++).toString(),
+    userId: "joshua_manager_id", 
+    userName: "Joshua Ajorgbor",
+    userEmail: "joshua+sandbox@haqqman.com",
+    submittedAddress: {
+      streetAddress: "25 Market Road, GRA Phase 2",
+      areaDistrict: "Commerce District",
+      city: "Port Harcourt",
+      lga: "Port Harcourt City",
+      state: "Rivers",
+      country: "Nigeria",
+      zipCode: "500272",
+    },
+    googleMapsSuggestion: "25 Market Rd, GRA Phase 2, Port Harcourt 500272, Rivers, Nigeria",
+    status: "pending_review", 
+    aiFlaggedReason: "Street name variation compared to Google Maps.",
+    submittedAt: new Date(2024, 5, 1, 14, 30, 0), 
+  },
+   {
+    id: (submissionIdCounter++).toString(),
+    userId: "another_user_id", 
+    userName: "Regular User",
+    userEmail: "user@example.com",
+    submittedAddress: {
+      streetAddress: "15 Main Street, Test Discrepancy Layout", // To trigger AI flag
+      areaDistrict: "Residential Area",
+      city: "Abuja",
+      lga: "AMAC",
+      state: "FCT",
+      country: "Nigeria",
+      zipCode: "900001",
+    },
+    googleMapsSuggestion: "15 Main St, Residential Area, Abuja 900001, Nigeria",
+    status: "pending_review", 
+    aiFlaggedReason: "The user provided 'Test Discrepancy Layout' which is not found in Google Maps for this street.",
+    submittedAt: new Date(2024, 5, 15, 9, 15, 0), 
+  }
+];
+
 
 // Simulate fetching Google Maps address
 async function fetchGoogleMapsAddress(addressParts: z.infer<typeof addressSchema>): Promise<string> {
   // In a real app, this would query Google Maps API
-  // For now, return a slightly modified version or a fixed one for testing discrepancies
-  const { streetAddress, city, state, country } = addressParts;
+  const { streetAddress, areaDistrict, city, state, country, zipCode } = addressParts;
   // Simulate a common discrepancy: Google Maps might use a more formal name or add postal code
   if (streetAddress.toLowerCase().includes("test discrepancy")) {
-     return `${streetAddress}, ${city}, ${state} 100001, ${country}`;
+     return `${streetAddress.replace(", Test Discrepancy Layout", "")}, ${areaDistrict}, ${city}, ${state} ${zipCode || ''}, ${country}`.replace(/,\s*,/g, ',').trim();
   }
-  return `${streetAddress}, ${city}, ${state}, ${country}`;
+  return `${streetAddress}, ${areaDistrict}, ${city}, ${state}, ${zipCode || ''}, ${country}`.replace(/,\s*,/g, ',').trim();
 }
 
 export async function submitAddress(formData: FormData) {
@@ -52,15 +111,13 @@ export async function submitAddress(formData: FormData) {
     };
   }
 
-  const submittedAddress = validation.data;
+  const submittedAddressData = validation.data;
 
   try {
-    const userSubmittedString = `${submittedAddress.streetAddress}, ${submittedAddress.areaDistrict}, ${submittedAddress.city}, ${submittedAddress.lga}, ${submittedAddress.state}, ${submittedAddress.country}`;
+    const userSubmittedString = `${submittedAddressData.streetAddress}, ${submittedAddressData.areaDistrict}, ${submittedAddressData.city}, ${submittedAddressData.lga}, ${submittedAddressData.state}, ${submittedAddressData.zipCode ? submittedAddressData.zipCode + ", " : ""}${submittedAddressData.country}`;
     
-    // Simulate fetching Google Maps data
-    const googleMapsAddress = await fetchGoogleMapsAddress(submittedAddress);
+    const googleMapsAddress = await fetchGoogleMapsAddress(submittedAddressData);
 
-    // Call AI flow
     const aiResult = await flagAddressDiscrepancies({
       address: userSubmittedString,
       googleMapsAddress: googleMapsAddress,
@@ -73,22 +130,23 @@ export async function submitAddress(formData: FormData) {
       status = "pending_review";
       aiFlaggedReason = aiResult.reason;
     } else {
-      status = "approved"; // Auto-approved
+      status = "approved"; 
     }
 
-    // Save to mock database
+    // For new submissions via form, we'll use a generic mock user or one from auth context in a real app
+    // This example assumes a generic user for direct form submissions for now
     const newSubmission: AddressSubmission = {
       id: (submissionIdCounter++).toString(),
-      userId: "mockUserId", // Replace with actual user ID in a real app
-      userName: "Mock User",
-      userEmail: "mock@example.com",
-      submittedAddress: submittedAddress,
+      userId: "formSubmitUserId", // Placeholder for actual authenticated user ID
+      userName: "Form User", // Placeholder
+      userEmail: "formuser@example.com", // Placeholder
+      submittedAddress: submittedAddressData,
       googleMapsSuggestion: googleMapsAddress,
       status: status,
       aiFlaggedReason: aiFlaggedReason,
       submittedAt: new Date(),
     };
-    mockAddressSubmissions.unshift(newSubmission); // Add to the beginning of the array
+    mockAddressSubmissions.unshift(newSubmission); 
 
     return {
       success: true,
@@ -107,25 +165,45 @@ export async function submitAddress(formData: FormData) {
 }
 
 export async function getAddressSubmissions(userId: string): Promise<AddressSubmission[]> {
-  // In a real app, filter by userId
-  return mockAddressSubmissions.filter(sub => sub.userId === userId || userId === "mockAdminId"); // Temp logic for admin to see all
+  // If userId is "mockAdminId", return all submissions. Otherwise, filter by userId.
+  // This allows admin users to see all submissions, while regular users see only their own.
+  if (userId === "mockAdminId" || userId === "abdulhaqq_cto_id" || userId === "joshua_manager_id") {
+    return mockAddressSubmissions;
+  }
+  return mockAddressSubmissions.filter(sub => sub.userId === userId);
 }
 
 export async function getFlaggedAddresses(): Promise<AddressSubmission[]> {
   return mockAddressSubmissions.filter(sub => sub.status === "pending_review");
 }
 
-export async function updateAddressStatus(submissionId: string, newStatus: "approved" | "rejected", reviewNotes?: string): Promise<{success: boolean, message: string}> {
-  const submission = mockAddressSubmissions.find(s => s.id === submissionId);
-  if (!submission) {
+export async function updateAddressStatus(submissionId: string, newStatus: "approved" | "rejected", reviewNotes?: string, reviewerId?: string): Promise<{success: boolean, message: string}> {
+  const submissionIndex = mockAddressSubmissions.findIndex(s => s.id === submissionId);
+  if (submissionIndex === -1) {
     return { success: false, message: "Submission not found." };
   }
-  submission.status = newStatus;
-  submission.reviewedAt = new Date();
-  // submission.reviewerId = "mockAdminId"; // From authenticated admin user
-  if(reviewNotes) {
-    // In a real app, append to existing notes or store properly
-    // submission.reviewNotes = reviewNotes;
-  }
+  
+  const submission = mockAddressSubmissions[submissionIndex];
+  
+  const updatedSubmission: AddressSubmission = {
+    ...submission,
+    status: newStatus,
+    reviewedAt: new Date(),
+    reviewerId: reviewerId || "mockAdminId", // Use provided reviewerId or default
+    // In a real app, reviewNotes would be handled more robustly (e.g., appended to a list of notes)
+    // For this mock, if reviewNotes are provided, we can store them.
+    // We might want to differentiate AI reason from manual review notes.
+    // Let's assume aiFlaggedReason remains, and reviewNotes are for manual review.
+  };
+   if(reviewNotes){
+    // Example: Storing review notes directly or in a specific field
+    // updatedSubmission.reviewNotes = reviewNotes; // if you add reviewNotes to AddressSubmission type
+   }
+
+
+  mockAddressSubmissions[submissionIndex] = updatedSubmission;
+  
   return { success: true, message: `Submission ${submissionId} status updated to ${newStatus}.` };
 }
+
+    
