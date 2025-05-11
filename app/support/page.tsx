@@ -31,10 +31,10 @@ export default function SupportPage() {
                   <p>
                     For general inquiries, technical support, or API integration help, please email us. We aim to respond within 24-48 business hours.
                   </p>
-                  <NextUIButton 
-                    as={Link} 
-                    href="mailto:support@addressdata.ng" 
-                    color="primary" 
+                  <NextUIButton
+                    as={Link}
+                    href="mailto:support@addressdata.ng"
+                    color="primary"
                     className="w-full md:w-auto"
                     radius="md"
                   >
@@ -48,12 +48,12 @@ export default function SupportPage() {
                   <p>
                     Join our community forum to ask questions, share solutions, and connect with other developers and users of Address Data.
                   </p>
-                  <NextUIButton 
-                    as={Link} 
-                    href="#" 
-                    variant="bordered" 
-                    className="w-full md:w-auto" 
-                    isDisabled 
+                  <NextUIButton
+                    as={Link}
+                    href="#"
+                    variant="bordered"
+                    className="w-full md:w-auto"
+                    isDisabled
                     radius="md"
                   >
                     Visit Forum (Coming Soon)
@@ -66,30 +66,37 @@ export default function SupportPage() {
               <section>
                 <h2 className="text-2xl font-semibold mb-6 text-center">Contact Us Directly</h2>
                 <form className="space-y-6">
-                  <div>
-                    <NextUIInput 
-                      id="name" 
-                      label="Full Name" 
-                      placeholder="Your Name" 
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <NextUIInput
+                      id="firstName"
+                      label="First Name"
+                      placeholder="Your First Name"
+                      variant="bordered"
+                      classNames={{ label: "text-base" }}
+                    />
+                    <NextUIInput
+                      id="lastName"
+                      label="Last Name"
+                      placeholder="Your Last Name"
                       variant="bordered"
                       classNames={{ label: "text-base" }}
                     />
                   </div>
                   <div>
-                    <NextUIInput 
-                      id="email" 
-                      type="email" 
-                      label="Email Address" 
-                      placeholder="your.email@example.com" 
+                    <NextUIInput
+                      id="email"
+                      type="email"
+                      label="Email Address"
+                      placeholder="your.email@example.com"
                       variant="bordered"
                       classNames={{ label: "text-base" }}
                     />
                   </div>
                   <div>
-                    <NextUIInput 
-                      id="subject" 
-                      label="Subject" 
-                      placeholder="e.g., API Key Issue" 
+                    <NextUIInput
+                      id="subject"
+                      label="Subject"
+                      placeholder="e.g., API Key Issue"
                       variant="bordered"
                       classNames={{ label: "text-base" }}
                     />
@@ -105,11 +112,11 @@ export default function SupportPage() {
                     />
                   </div>
                   <div className="text-center pt-2">
-                    <NextUIButton 
-                      type="submit" 
-                      color="primary" 
-                      size="lg" 
-                      isDisabled 
+                    <NextUIButton
+                      type="submit"
+                      color="primary"
+                      size="lg"
+                      isDisabled
                       radius="md"
                     >
                       Send Message (Form Inactive)
