@@ -7,7 +7,7 @@ import { useAuth } from "@/contexts/auth-context";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-export function SignInButtons() {
+export function LogInButtons() {
   const { signInWithGoogle, signInWithGitHub } = useAuth();
   const router = useRouter();
   const [isLoadingGoogle, setIsLoadingGoogle] = useState(false);
@@ -15,28 +15,27 @@ export function SignInButtons() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
 
-  const handleSignIn = async (provider: "google" | "github") => {
-    let signInFunction;
+  const handleLogIn = async (provider: "google" | "github") => {
+    let logInFunction;
     let setLoadingState: React.Dispatch<React.SetStateAction<boolean>>;
 
     setErrorMessage(null);
 
     if (provider === "google") {
-      signInFunction = signInWithGoogle;
+      logInFunction = signInWithGoogle;
       setLoadingState = setIsLoadingGoogle;
     } else {
-      signInFunction = signInWithGitHub;
+      logInFunction = signInWithGitHub;
       setLoadingState = setIsLoadingGitHub;
     }
     
     setLoadingState(true);
 
     try {
-      await signInFunction();
-      // Successful sign-in will trigger onAuthStateChanged,
-      // which updates user state and AuthProvider redirects based on role.
-      // The auth context already handles redirecting to /dashboard for non-admin users.
-      // The auth context already handles redirecting to /dashboard for non-admin users.
+      const user = await logInFunction();
+      if (user) {
+        router.push('/dashboard');
+      }
     } catch (error: any) {
       console.error(`Log In Failed with ${provider}:`, error.message);
       setErrorMessage(error.message || `Failed to log in with ${provider}. Please try again.`);
@@ -55,7 +54,7 @@ export function SignInButtons() {
       <NextUIButton
         variant="bordered" 
         fullWidth
-        onClick={() => handleSignIn("google")}
+        onClick={() => handleLogIn("google")}
         disabled={isLoadingGoogle || isLoadingGitHub}
         isLoading={isLoadingGoogle}
         startContent={!isLoadingGoogle ? <Chrome className="h-5 w-5" /> : null}
@@ -65,7 +64,7 @@ export function SignInButtons() {
       <NextUIButton
         variant="bordered" 
         fullWidth
-        onClick={() => handleSignIn("github")}
+        onClick={() => handleLogIn("github")}
         disabled={isLoadingGoogle || isLoadingGitHub}
         isLoading={isLoadingGitHub}
         startContent={!isLoadingGitHub ? <Github className="h-5 w-5" /> : null}

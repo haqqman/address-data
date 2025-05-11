@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -8,7 +9,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
 import { useState } from "react";
 
-const consoleSignInSchema = z.object({
+const consoleLogInSchema = z.object({
   email: z.string()
     .transform(val => val.toLowerCase().replace(/\s+/g, ''))
     .email({ message: "Invalid email address." })
@@ -19,28 +20,27 @@ const consoleSignInSchema = z.object({
   password: z.string().min(6, { message: "Password must be at least 6 characters." }),
 });
 
-type ConsoleSignInFormValues = z.infer<typeof consoleSignInSchema>;
+type ConsoleLogInFormValues = z.infer<typeof consoleLogInSchema>;
 
-export function ConsoleSignInForm() {
+export function ConsoleLogInForm() {
   const router = useRouter();
   const { signInWithEmail } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
 
-  const { control, handleSubmit, formState: { errors } } = useForm<ConsoleSignInFormValues>({
-    resolver: zodResolver(consoleSignInSchema),
+  const { control, handleSubmit, formState: { errors } } = useForm<ConsoleLogInFormValues>({
+    resolver: zodResolver(consoleLogInSchema),
     defaultValues: {
       email: "",
       password: "",
     },
   });
 
-  async function onSubmit(values: ConsoleSignInFormValues) {
+  async function onSubmit(values: ConsoleLogInFormValues) {
     setIsLoading(true);
     setErrorMessage(null);
     try {
-      // The email value passed to signInWithEmail will already be transformed by Zod
       const user = await signInWithEmail(values.email, values.password, true); 
       if (user) { 
         router.push('/console/dashboard');

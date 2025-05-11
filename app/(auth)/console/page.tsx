@@ -1,9 +1,9 @@
 
-"use client"; // Added "use client" directive
+"use client"; 
 
 import Link from "next/link";
 import { Card as NextUICard, CardHeader as NextUICardHeader, CardBody as NextUICardBody } from "@nextui-org/react";
-import { ConsoleSignInForm } from "@/components/forms/ConsoleSignInForm";
+import { ConsoleLogInForm } from "@/components/forms/ConsoleLogInForm"; // Updated import
 import { ShieldAlert } from "lucide-react";
 import Image from "next/image";
 
@@ -23,13 +23,13 @@ export default function ConsoleLoginPage() {
       <NextUICard className="w-full max-w-md shadow-xl p-2 md:p-4 rounded-xl">
         <NextUICardHeader className="flex flex-col items-center text-center pt-6 pb-2">
           <div className="flex justify-center mb-2">
-            <ShieldAlert className="h-10 w-10 text-danger" /> {/* Mapped destructive to danger for NextUI */}
+            <ShieldAlert className="h-10 w-10 text-danger" /> 
           </div>
           <h1 className="text-2xl font-bold">Console Access</h1>
           <p className="text-muted-foreground mt-1">Access restricted to authorized personnel. Please use your Haqqman Workmail.</p>
         </NextUICardHeader>
         <NextUICardBody className="pt-2">
-          <ConsoleSignInForm />
+          <ConsoleLogInForm /> 
            <p className="mt-6 text-center text-sm text-muted-foreground">
             Not a Console User?{" "}
             <Link href="/login" className="font-medium text-primary hover:underline">
@@ -41,5 +41,3 @@ export default function ConsoleLoginPage() {
     </div>
   );
 }
-
-    
