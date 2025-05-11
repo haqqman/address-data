@@ -2,29 +2,27 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { UserSubmissionsTable } from "@/components/admin/UserSubmissionsTable";
-import { getAddressSubmissions } from "@/app/actions/addressActions"; // Using existing action, might need specific admin version
+import { FlaggedAddressTable } from "@/components/admin/FlaggedAddressTable";
+import { getFlaggedAddresses } from "@/app/actions/addressActions";
 import type { AddressSubmission } from "@/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Terminal } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
-export default function AdminUserSubmissionsPage() {
-  const [allSubmissions, setAllSubmissions] = useState<AddressSubmission[]>([]);
+export default function ConsoleDashboardPage() { // Renamed from AdminDashboardPage
+  const [flaggedSubmissions, setFlaggedSubmissions] = useState<AddressSubmission[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchAllSubmissions = useCallback(async () => {
+  const fetchFlaggedSubmissions = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
-      // Pass a special ID or parameter to fetch all submissions
-      // For mock, "mockAdminId" will fetch all as per current mock logic
-      const data = await getAddressSubmissions("mockAdminId"); 
-      setAllSubmissions(data);
+      const data = await getFlaggedAddresses();
+      setFlaggedSubmissions(data);
     } catch (err) {
-      setError("Failed to load user submissions.");
+      setError("Failed to load flagged address submissions.");
       console.error(err);
     } finally {
       setIsLoading(false);
@@ -32,23 +30,23 @@ export default function AdminUserSubmissionsPage() {
   }, []);
 
   useEffect(() => {
-    fetchAllSubmissions();
-  }, [fetchAllSubmissions]);
+    fetchFlaggedSubmissions();
+  }, [fetchFlaggedSubmissions]);
 
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">User Submissions</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Address Review Queue</h1>
         <p className="text-muted-foreground">
-          View and manage all address submissions from users.
+          Review addresses flagged by the AI or requiring manual verification.
         </p>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>All Submissions</CardTitle>
+          <CardTitle>Pending Reviews</CardTitle>
           <CardDescription>
-            A comprehensive list of all addresses submitted by users and their current status.
+            The following addresses require manual review. Approve or reject them based on verification.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -69,7 +67,10 @@ export default function AdminUserSubmissionsPage() {
           )}
 
           {!isLoading && !error && (
-            <UserSubmissionsTable submissions={allSubmissions} />
+            <FlaggedAddressTable 
+              addresses={flaggedSubmissions} 
+              onActionComplete={fetchFlaggedSubmissions} 
+            />
           )}
         </CardContent>
       </Card>

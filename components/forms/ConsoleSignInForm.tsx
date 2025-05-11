@@ -16,11 +16,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/contexts/auth-context";
+import { useAuth } from "contexts/auth-context";
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
 
-const adminSignInSchema = z.object({
+const consoleSignInSchema = z.object({
   email: z.string().email({ message: "Invalid email address." }).refine(
     (email) => email.endsWith("@haqqman.com"),
     { message: "Access restricted to @haqqman.com emails." }
@@ -28,39 +28,39 @@ const adminSignInSchema = z.object({
   password: z.string().min(6, { message: "Password must be at least 6 characters." }),
 });
 
-type AdminSignInFormValues = z.infer<typeof adminSignInSchema>;
+type ConsoleSignInFormValues = z.infer<typeof consoleSignInSchema>;
 
-export function AdminSignInForm() {
+export function ConsoleSignInForm() {
   const { toast } = useToast();
   const router = useRouter();
   const { signInWithEmail } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
 
-  const form = useForm<AdminSignInFormValues>({
-    resolver: zodResolver(adminSignInSchema),
+  const form = useForm<ConsoleSignInFormValues>({
+    resolver: zodResolver(consoleSignInSchema),
     defaultValues: {
       email: "",
       password: "",
     },
   });
 
-  async function onSubmit(values: AdminSignInFormValues) {
+  async function onSubmit(values: ConsoleSignInFormValues) {
     setIsLoading(true);
     toast({
-      title: "Attempting admin log-in...",
+      title: "Attempting console log-in...",
       description: "Please wait.",
     });
     try {
       await signInWithEmail(values.email, values.password, true); // true for isAdmin
       toast({
-        title: "Admin Log In Successful",
-        description: "Redirecting to admin dashboard...",
+        title: "Console Log In Successful",
+        description: "Redirecting to console dashboard...",
       });
-      router.push('/admin/dashboard');
+      router.push('/console/dashboard');
     } catch (error: any) {
-      const errorMessage = error.message || "Invalid admin credentials or unauthorized email domain.";
+      const errorMessage = error.message || "Invalid console credentials or unauthorized email domain.";
        toast({
-          title: "Admin Log In Failed",
+          title: "Console Log In Failed",
           description: errorMessage,
           variant: "destructive",
         });

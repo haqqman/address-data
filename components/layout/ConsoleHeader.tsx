@@ -14,16 +14,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useAuth } from "contexts/auth-context"; // Adjusted import path
+import { useAuth } from "contexts/auth-context";
 
 
 const navItems = [
-  { href: "/admin/dashboard", label: "Review Queue", icon: <LayoutGrid className="mr-2 h-4 w-4" /> },
-  { href: "/admin/users", label: "User Submissions", icon: <Users className="mr-2 h-4 w-4" /> },
-  { href: "/admin/api-keys", label: "Manage API Keys", icon: <KeyRound className="mr-2 h-4 w-4" /> },
+  { href: "/console/dashboard", label: "Review Queue", icon: <LayoutGrid className="mr-2 h-4 w-4" /> },
+  { href: "/console/users", label: "User Submissions", icon: <Users className="mr-2 h-4 w-4" /> },
+  { href: "/console/api-keys", label: "Manage API Keys", icon: <KeyRound className="mr-2 h-4 w-4" /> },
 ];
 
-export function AdminHeader() {
+export function ConsoleHeader() {
   const pathname = usePathname();
   const { user, signOut } = useAuth();
   const router = useRouter();
@@ -31,7 +31,7 @@ export function AdminHeader() {
   const handleSignOut = async () => {
     try {
       await signOut();
-      router.push('/admin/login'); // Adjusted redirect to admin login
+      router.push('/console'); 
     } catch (error) {
       console.error("Failed to sign out", error);
       // Handle error (e.g., show a toast message)
@@ -41,9 +41,9 @@ export function AdminHeader() {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex h-16 items-center">
-        <Link href="/admin/dashboard" className="flex items-center space-x-2 mr-6">
+        <Link href="/console/dashboard" className="flex items-center space-x-2 mr-6">
           <ShieldCheck className="h-6 w-6 text-primary" />
-          <span className="font-bold text-lg">Admin Console</span>
+          <span className="font-bold text-lg">Console</span>
         </Link>
         <nav className="flex items-center space-x-1">
           {navItems.map((item) => (

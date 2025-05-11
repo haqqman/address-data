@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { SignInButtons } from "@/components/forms/SignInButtons";
 import { Building2 } from "lucide-react";
 
-export default function SignInPage() {
+export default function LoginPage() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-secondary/30 p-4">
        <Link href="/" className="flex items-center space-x-2 mb-8">
@@ -20,8 +20,8 @@ export default function SignInPage() {
           <SignInButtons />
           <p className="mt-6 text-center text-sm text-muted-foreground">
             Admin?{" "}
-            <Link href="/admin/signin" className="font-medium text-primary hover:underline">
-              Admin Log In
+            <Link href="/console" className="font-medium text-primary hover:underline">
+              Console Log In
             </Link>
           </p>
         </CardContent>
@@ -29,3 +29,4 @@ export default function SignInPage() {
     </div>
   );
 }
+

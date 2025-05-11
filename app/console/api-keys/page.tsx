@@ -1,5 +1,5 @@
 
-"use client"; // Required for useState, useEffect
+"use client"; 
 
 import { useState, useEffect, useCallback } from "react";
 import { ApiKeyManagementTable } from "@/components/admin/ApiKeyManagementTable";
@@ -35,7 +35,7 @@ async function listAllApiKeys(): Promise<(APIKey & { userName?: string, userEmai
 }
 
 
-export default function AdminApiKeysPage() {
+export default function ConsoleApiKeysPage() { // Renamed from AdminApiKeysPage
   const [apiKeys, setApiKeys] = useState<(APIKey & { userName?: string, userEmail?: string })[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

@@ -1,10 +1,10 @@
 
 import type { ReactNode } from 'react';
-import { AdminHeader } from "@/components/layout/AdminHeader";
+import { ConsoleHeader } from "@/components/layout/ConsoleHeader"; // Updated import
 import { checkAdmin } from '@/lib/auth/utils';
 import { redirect } from 'next/navigation';
 
-export default async function AdminLayout({
+export default async function ConsoleLayout({ // Renamed from AdminLayout
   children,
 }: {
   children: ReactNode;
@@ -12,13 +12,13 @@ export default async function AdminLayout({
   const isAdmin = await checkAdmin();
 
   if (!isAdmin) {
-    // Redirect to admin login if not an admin, which is different from user login
-    redirect('/admin/login'); 
+    // Redirect to console login if not an admin
+    redirect('/console'); 
   }
 
   return (
     <div className="flex flex-col min-h-screen">
-      <AdminHeader />
+      <ConsoleHeader /> {/* Use ConsoleHeader */}
       <main className="flex-grow container mx-auto px-4 py-8">
         {children}
       </main>
