@@ -11,8 +11,7 @@ import {
   deleteDoc,
   query,
   orderBy,
-  runTransaction,
-  writeBatch
+  runTransaction
 } from "firebase/firestore";
 
 const GEOGRAPHY_COLLECTION = "nigerianGeography";
@@ -186,21 +185,4 @@ export async function deleteCity(stateId: string, lgaId: string, cityId: string)
     console.error("Error deleting City:", error);
     throw new Error("Failed to delete City.");
   }
-}
-
-// Helper for seeding, if used directly by a script.
-export async function seedBatchGeography(geographyBatch: any[]) {
-    const batch = writeBatch(db);
-    geographyBatch.forEach(item => {
-        let itemRef;
-        if (item.type === 'state') {
-            itemRef = doc(db, GEOGRAPHY_COLLECTION, item.id);
-        } else if (item.type === 'lga') {
-            itemRef = doc(db, GEOGRAPHY_COLLECTION, item.stateId, LGAS_SUBCOLLECTION, item.id);
-        } else { // city
-            itemRef = doc(db, GEOGRAPHY_COLLECTION, item.stateId, LGAS_SUBCOLLECTION, item.lgaId, CITIES_SUBCOLLECTION, item.id);
-        }
-        batch.set(itemRef, item.data);
-    });
-    await batch.commit();
 }
