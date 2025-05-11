@@ -5,28 +5,38 @@ import { ApiKeyManagementTable } from "@/components/admin/ApiKeyManagementTable"
 import type { APIKey } from "@/types";
 import { Skeleton as NextUISkeleton, Card as NextUICard, CardHeader as NextUICardHeader, CardBody as NextUICardBody, Button as NextUIButton } from "@nextui-org/react";
 import { AlertTriangle, PlusCircle } from "lucide-react";
+import { db } from "@/lib/firebase/config";
+import { collection, getDocs, Timestamp, query, orderBy } from "firebase/firestore";
 
-// Mock data and function
-const mockApiKeys: (APIKey & { userName?: string, userEmail?: string })[] = [
-  {
-    id: "key_1", userId: "user_A", userName: "Alice Wonderland", userEmail: "alice@example.com",
-    publicKey: "pk_live_alicekeypublic123", privateKeyHash: "hashed_private_key",
-    createdAt: new Date(2023, 10, 1), lastUsedAt: new Date(2024, 0, 15), isActive: true, name: "Alice's Main Key"
-  },
-  {
-    id: "key_2", userId: "user_B", userName: "Bob The Builder", userEmail: "bob@example.com",
-    publicKey: "pk_live_bobkeypublic456", privateKeyHash: "hashed_private_key_2",
-    createdAt: new Date(2023, 11, 5), isActive: false, name: "Bob's Old Key"
-  },
-    {
-    id: "key_3", userId: "user_C", userName: "Charlie Brown", userEmail: "charlie@example.com",
-    publicKey: "pk_live_charliekey789", privateKeyHash: "hashed_private_key_3",
-    createdAt: new Date(2024, 0, 20), isActive: true, name: "Charlie's App Key"
-  },
-];
+// Helper function to convert Firestore Timestamps to Date objects for APIKey
+const convertApiKeyTimestamps = (docData: any): any => {
+  const data = { ...docData };
+  for (const key in data) {
+    if (data[key] instanceof Timestamp) {
+      data[key] = data[key].toDate();
+    }
+  }
+  return data;
+};
 
 async function listAllApiKeys(): Promise<(APIKey & { userName?: string, userEmail?: string })[]> {
-  return new Promise(resolve => setTimeout(() => resolve(mockApiKeys), 1000));
+  // In a real app, userName and userEmail might be populated by joining with a users collection
+  // For this seeding, we'll assume they are part of the apiKey document or leave them as optional
+  try {
+    const apiKeysCol = collection(db, "apiKeys"); // Collection name as per blueprint "developerApiKeys" or simplify to "apiKeys"
+    // Consider ordering if needed, e.g., by createdAt
+    const q = query(apiKeysCol, orderBy("createdAt", "desc"));
+    const querySnapshot = await getDocs(q);
+    const keys: (APIKey & { userName?: string, userEmail?: string })[] = [];
+    querySnapshot.forEach((doc) => {
+      // Assuming userName and userEmail might be directly on the document for simplicity of seeding
+      keys.push({ id: doc.id, ...convertApiKeyTimestamps(doc.data()) } as (APIKey & { userName?: string, userEmail?: string }));
+    });
+    return keys;
+  } catch (error) {
+    console.error("Error fetching API keys from Firestore:", error);
+    return [];
+  }
 }
 
 export default function ConsoleApiKeysPage() {
@@ -53,8 +63,16 @@ export default function ConsoleApiKeysPage() {
   }, [fetchApiKeys]);
 
   const handleCreateNewGlobalKey = () => {
-    alert("Placeholder: Open modal to create a new API key for a selected user.");
+    // This would involve writing to Firestore, potentially in a server action or a modal form
+    alert("Placeholder: Open modal to create a new API key for a selected user and save to Firestore.");
+     // For now, just re-fetch to simulate an update if you manually add a key to Firestore
+    // onActionComplete(); 
   };
+  
+  const handleActionComplete = () => {
+    fetchApiKeys(); // Re-fetch API keys after an action (e.g., revoke - if implemented via Firestore update)
+  };
+
 
   return (
     <div className="space-y-8">
@@ -101,10 +119,11 @@ export default function ConsoleApiKeysPage() {
           )}
 
           {!isLoading && !error && (
-            <ApiKeyManagementTable apiKeys={apiKeys} onActionComplete={fetchApiKeys} />
+            <ApiKeyManagementTable apiKeys={apiKeys} onActionComplete={handleActionComplete} />
           )}
         </NextUICardBody>
       </NextUICard>
     </div>
   );
 }
+

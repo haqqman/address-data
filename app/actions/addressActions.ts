@@ -3,6 +3,20 @@
 import { z } from "zod";
 import { flagAddressDiscrepancies } from "@/ai/flows/flag-address-discrepancies";
 import type { AddressSubmission } from "@/types";
+import { db } from "@/lib/firebase/config";
+import { 
+  collection, 
+  addDoc, 
+  getDocs, 
+  query, 
+  where, 
+  doc, 
+  updateDoc, 
+  serverTimestamp, 
+  Timestamp,
+  orderBy,
+  getDoc
+} from "firebase/firestore";
 
 const addressSchema = z.object({
   streetAddress: z.string().min(1, "Street address is required"),
@@ -14,76 +28,24 @@ const addressSchema = z.object({
   country: z.string().min(1, "Country is required"),
 });
 
-// Mock database for submissions
-let submissionIdCounter = 1;
-let mockAddressSubmissions: AddressSubmission[] = [
-  {
-    id: (submissionIdCounter++).toString(),
-    userId: "abdulhaqq_cto_id", 
-    userName: "Abdulhaqq Sule",
-    userEmail: "webmanager@haqqman.com",
-    submittedAddress: {
-      streetAddress: "1 Tech Avenue, Victoria Island",
-      areaDistrict: "Innovation Hub",
-      city: "Lagos",
-      lga: "Eti-Osa",
-      state: "Lagos",
-      country: "Nigeria",
-      zipCode: "101241",
-    },
-    googleMapsSuggestion: "1 Tech Avenue, Victoria Island, Lagos 101241, Nigeria",
-    status: "approved", 
-    aiFlaggedReason: undefined,
-    submittedAt: new Date(2024, 4, 10, 10, 0, 0), 
-    reviewedAt: new Date(2024, 4, 10, 11, 0, 0),
-    reviewerId: "mockAdminId",
-  },
-  {
-    id: (submissionIdCounter++).toString(),
-    userId: "joshua_manager_id", 
-    userName: "Joshua Ajorgbor",
-    userEmail: "joshua+sandbox@haqqman.com",
-    submittedAddress: {
-      streetAddress: "25 Market Road, GRA Phase 2",
-      areaDistrict: "Commerce District",
-      city: "Port Harcourt",
-      lga: "Port Harcourt City",
-      state: "Rivers",
-      country: "Nigeria",
-      zipCode: "500272",
-    },
-    googleMapsSuggestion: "25 Market Rd, GRA Phase 2, Port Harcourt 500272, Rivers, Nigeria",
-    status: "pending_review", 
-    aiFlaggedReason: "Street name variation compared to Google Maps.",
-    submittedAt: new Date(2024, 5, 1, 14, 30, 0), 
-  },
-   {
-    id: (submissionIdCounter++).toString(),
-    userId: "another_user_id", 
-    userName: "Regular User",
-    userEmail: "user@example.com",
-    submittedAddress: {
-      streetAddress: "15 Main Street, Test Discrepancy Layout", // To trigger AI flag
-      areaDistrict: "Residential Area",
-      city: "Abuja",
-      lga: "AMAC",
-      state: "FCT",
-      country: "Nigeria",
-      zipCode: "900001",
-    },
-    googleMapsSuggestion: "15 Main St, Residential Area, Abuja 900001, Nigeria",
-    status: "pending_review", 
-    aiFlaggedReason: "The user provided 'Test Discrepancy Layout' which is not found in Google Maps for this street.",
-    submittedAt: new Date(2024, 5, 15, 9, 15, 0), 
+// Helper function to convert Firestore Timestamps to Date objects
+const convertTimestamps = (docData: any): any => {
+  const data = { ...docData };
+  for (const key in data) {
+    if (data[key] instanceof Timestamp) {
+      data[key] = data[key].toDate();
+    } else if (typeof data[key] === 'object' && data[key] !== null) {
+      // Recursively convert for nested objects if any (e.g. submittedAddress)
+      // Though for AddressSubmission, top-level dates are submittedAt, reviewedAt
+    }
   }
-];
+  return data;
+};
 
 
-// Simulate fetching Google Maps address
+// Simulate fetching Google Maps address - This remains a mock as it's external
 async function fetchGoogleMapsAddress(addressParts: z.infer<typeof addressSchema>): Promise<string> {
-  // In a real app, this would query Google Maps API
   const { streetAddress, areaDistrict, city, state, country, zipCode } = addressParts;
-  // Simulate a common discrepancy: Google Maps might use a more formal name or add postal code
   if (streetAddress.toLowerCase().includes("test discrepancy")) {
      return `${streetAddress.replace(", Test Discrepancy Layout", "")}, ${areaDistrict}, ${city}, ${state} ${zipCode || ''}, ${country}`.replace(/,\s*,/g, ',').trim();
   }
@@ -132,11 +94,8 @@ export async function submitAddress(formData: FormData) {
     } else {
       status = "approved"; 
     }
-
-    // For new submissions via form, we'll use a generic mock user or one from auth context in a real app
-    // This example assumes a generic user for direct form submissions for now
-    const newSubmission: AddressSubmission = {
-      id: (submissionIdCounter++).toString(),
+    
+    const newSubmissionData = {
       userId: "formSubmitUserId", // Placeholder for actual authenticated user ID
       userName: "Form User", // Placeholder
       userEmail: "formuser@example.com", // Placeholder
@@ -144,18 +103,21 @@ export async function submitAddress(formData: FormData) {
       googleMapsSuggestion: googleMapsAddress,
       status: status,
       aiFlaggedReason: aiFlaggedReason,
-      submittedAt: new Date(),
+      submittedAt: serverTimestamp(), // Use Firestore server timestamp
+      reviewedAt: null,
+      reviewerId: null,
     };
-    mockAddressSubmissions.unshift(newSubmission); 
+
+    const docRef = await addDoc(collection(db, "addressSubmissions"), newSubmissionData);
 
     return {
       success: true,
       message: `Address submitted. Status: ${status}.${aiFlaggedReason ? ` Reason: ${aiFlaggedReason}` : ''}`,
-      submission: newSubmission,
+      submission: { id: docRef.id, ...newSubmissionData, submittedAt: new Date() }, // Return with current date for immediate display
     };
 
   } catch (error) {
-    console.error("Error submitting address:", error);
+    console.error("Error submitting address to Firestore:", error);
     return {
       success: false,
       message: "An error occurred while submitting the address.",
@@ -165,45 +127,72 @@ export async function submitAddress(formData: FormData) {
 }
 
 export async function getAddressSubmissions(userId: string): Promise<AddressSubmission[]> {
-  // If userId is "mockAdminId", return all submissions. Otherwise, filter by userId.
-  // This allows admin users to see all submissions, while regular users see only their own.
-  if (userId === "mockAdminId" || userId === "abdulhaqq_cto_id" || userId === "joshua_manager_id") {
-    return mockAddressSubmissions;
+  try {
+    const submissionsCol = collection(db, "addressSubmissions");
+    let q;
+
+    if (userId === "mockAdminId" || userId === "abdulhaqq_cto_id" || userId === "joshua_manager_id") {
+      // Admins see all submissions
+      q = query(submissionsCol, orderBy("submittedAt", "desc"));
+    } else {
+      // Regular users see only their own submissions
+      q = query(submissionsCol, where("userId", "==", userId), orderBy("submittedAt", "desc"));
+    }
+
+    const querySnapshot = await getDocs(q);
+    const submissions: AddressSubmission[] = [];
+    querySnapshot.forEach((doc) => {
+      submissions.push({ id: doc.id, ...convertTimestamps(doc.data()) } as AddressSubmission);
+    });
+    return submissions;
+  } catch (error) {
+    console.error("Error fetching address submissions from Firestore:", error);
+    return []; // Return empty array on error
   }
-  return mockAddressSubmissions.filter(sub => sub.userId === userId);
 }
 
 export async function getFlaggedAddresses(): Promise<AddressSubmission[]> {
-  return mockAddressSubmissions.filter(sub => sub.status === "pending_review");
+  try {
+    const submissionsCol = collection(db, "addressSubmissions");
+    const q = query(submissionsCol, where("status", "==", "pending_review"), orderBy("submittedAt", "desc"));
+    
+    const querySnapshot = await getDocs(q);
+    const submissions: AddressSubmission[] = [];
+    querySnapshot.forEach((doc) => {
+      submissions.push({ id: doc.id, ...convertTimestamps(doc.data()) } as AddressSubmission);
+    });
+    return submissions;
+  } catch (error) {
+    console.error("Error fetching flagged addresses from Firestore:", error);
+    return [];
+  }
 }
 
 export async function updateAddressStatus(submissionId: string, newStatus: "approved" | "rejected", reviewNotes?: string, reviewerId?: string): Promise<{success: boolean, message: string}> {
-  const submissionIndex = mockAddressSubmissions.findIndex(s => s.id === submissionId);
-  if (submissionIndex === -1) {
-    return { success: false, message: "Submission not found." };
-  }
-  
-  const submission = mockAddressSubmissions[submissionIndex];
-  
-  const updatedSubmission: AddressSubmission = {
-    ...submission,
-    status: newStatus,
-    reviewedAt: new Date(),
-    reviewerId: reviewerId || "mockAdminId", // Use provided reviewerId or default
-    // In a real app, reviewNotes would be handled more robustly (e.g., appended to a list of notes)
-    // For this mock, if reviewNotes are provided, we can store them.
-    // We might want to differentiate AI reason from manual review notes.
-    // Let's assume aiFlaggedReason remains, and reviewNotes are for manual review.
-  };
-   if(reviewNotes){
-    // Example: Storing review notes directly or in a specific field
-    // updatedSubmission.reviewNotes = reviewNotes; // if you add reviewNotes to AddressSubmission type
-   }
-
-
-  mockAddressSubmissions[submissionIndex] = updatedSubmission;
-  
-  return { success: true, message: `Submission ${submissionId} status updated to ${newStatus}.` };
-}
-
+  try {
+    const submissionRef = doc(db, "addressSubmissions", submissionId);
     
+    // Check if document exists before updating (optional, updateDoc will fail if not found)
+    const docSnap = await getDoc(submissionRef);
+    if (!docSnap.exists()) {
+      return { success: false, message: "Submission not found." };
+    }
+
+    const updateData: any = {
+      status: newStatus,
+      reviewedAt: serverTimestamp(),
+      reviewerId: reviewerId || "mockAdminId", // Use provided reviewerId or default
+    };
+
+    // In a real app, reviewNotes might be handled more robustly.
+    // For now, if we add a reviewNotes field to AddressSubmission type and Firestore:
+    // if (reviewNotes) updateData.reviewNotes = reviewNotes;
+
+    await updateDoc(submissionRef, updateData);
+    
+    return { success: true, message: `Submission ${submissionId} status updated to ${newStatus}.` };
+  } catch (error) {
+    console.error("Error updating address status in Firestore:", error);
+    return { success: false, message: "Failed to update submission status." };
+  }
+}
