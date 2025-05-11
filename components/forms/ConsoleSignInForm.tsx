@@ -16,7 +16,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
-import { useAuth } from "contexts/auth-context";
+import { useAuth } from "@/contexts/auth-context"; // Corrected import path
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
 
