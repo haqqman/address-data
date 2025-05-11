@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckCircle, DatabaseZap, SearchCheck, KeyRound, MapPin, Users, ShieldCheck } from "lucide-react";
+import { CheckCircle, DatabaseZap, SearchCheck, KeyRound, MapPin, ShieldCheck } from "lucide-react";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 
 export default function HomePage() {
@@ -37,12 +37,6 @@ export default function HomePage() {
       title: "Structured Storage",
       description: "Addresses stored in a standardized format for maximum compatibility.",
       dataAiHint: "database structure"
-    },
-    {
-      icon: <Users className="h-8 w-8 text-primary" />,
-      title: "Admin Console",
-      description: "Manage submissions, review flagged addresses, and control API keys.",
-      dataAiHint: "admin panel"
     },
   ];
 
