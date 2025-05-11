@@ -371,47 +371,49 @@ export default function GeographyManagementPage() {
         <Tab key="cities" title={<span className="flex items-center"><MapPin className="mr-2 h-5 w-5" />Cities/Towns</span>}>
           <NextUICard className="shadow-xl rounded-xl">
             <NextUICardHeader className="px-6 pt-6 pb-2">
-              <div className="flex flex-col space-y-0.5 mb-4">
-                <h2 className="text-xl font-semibold">Manage Cities/Towns</h2>
-                <p className="text-sm text-foreground-500">Select a state and LGA to manage cities/towns.</p>
-              </div>
-              <div className="flex gap-4 mb-4">
-                <NextUISelect
-                  label="Select State"
-                  placeholder="Choose a state"
-                  selectedKeys={selectedStateIdForCities ? [selectedStateIdForCities] : []}
-                  onSelectionChange={(keys) => {
-                    const stateId = Array.from(keys)[0] as string;
-                    setSelectedStateIdForCities(stateId);
-                    setSelectedLgaIdForCities(null); // Reset LGA selection
-                    fetchLgas(stateId); // Fetch LGAs for the new state
-                  }}
-                  className="max-w-xs"
-                  variant="bordered"
-                >
-                  {states.map((state) => (
-                    <NextUISelectItem key={state.id} value={state.id}>
-                      {state.name}
-                    </NextUISelectItem>
-                  ))}
-                </NextUISelect>
-                <NextUISelect
-                  label="Select LGA"
-                  placeholder="Choose an LGA"
-                  selectedKeys={selectedLgaIdForCities ? [selectedLgaIdForCities] : []}
-                  onSelectionChange={(keys) => setSelectedLgaIdForCities(Array.from(keys)[0] as string)}
-                  className="max-w-xs"
-                  isDisabled={!selectedStateIdForCities || lgas.length === 0}
-                  variant="bordered"
-                >
-                  {lgas
-                    .filter(lga => lga.stateId === selectedStateIdForCities) // Ensure LGAs are for the selected state
-                    .map((lga) => (
-                      <NextUISelectItem key={lga.id} value={lga.id}>
-                        {lga.name}
+              <div className="flex justify-between items-start w-full mb-4">
+                <div className="flex flex-col space-y-0.5">
+                  <h2 className="text-xl font-semibold">Manage Cities/Towns</h2>
+                  <p className="text-sm text-foreground-500">Select a state and LGA to manage cities/towns.</p>
+                </div>
+                <div className="flex gap-4">
+                  <NextUISelect
+                    label="Select State"
+                    placeholder="Choose a state"
+                    selectedKeys={selectedStateIdForCities ? [selectedStateIdForCities] : []}
+                    onSelectionChange={(keys) => {
+                      const stateId = Array.from(keys)[0] as string;
+                      setSelectedStateIdForCities(stateId);
+                      setSelectedLgaIdForCities(null); 
+                      fetchLgas(stateId); 
+                    }}
+                    className="max-w-xs"
+                    variant="bordered"
+                  >
+                    {states.map((state) => (
+                      <NextUISelectItem key={state.id} value={state.id}>
+                        {state.name}
                       </NextUISelectItem>
-                  ))}
-                </NextUISelect>
+                    ))}
+                  </NextUISelect>
+                  <NextUISelect
+                    label="Select LGA"
+                    placeholder="Choose an LGA"
+                    selectedKeys={selectedLgaIdForCities ? [selectedLgaIdForCities] : []}
+                    onSelectionChange={(keys) => setSelectedLgaIdForCities(Array.from(keys)[0] as string)}
+                    className="max-w-xs"
+                    isDisabled={!selectedStateIdForCities || lgas.length === 0}
+                    variant="bordered"
+                  >
+                    {lgas
+                      .filter(lga => lga.stateId === selectedStateIdForCities) 
+                      .map((lga) => (
+                        <NextUISelectItem key={lga.id} value={lga.id}>
+                          {lga.name}
+                        </NextUISelectItem>
+                    ))}
+                  </NextUISelect>
+                </div>
               </div>
             </NextUICardHeader>
             <NextUICardBody className="p-2 md:p-4">
