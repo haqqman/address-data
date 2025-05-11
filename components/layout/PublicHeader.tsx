@@ -11,20 +11,20 @@ export function PublicHeader() {
       <div className="container flex h-14 items-center">
         <Link href="/" className="flex items-center space-x-2">
           <Building2 className="h-6 w-6 text-primary" />
-          <span className="font-bold text-lg">Address Data Sandbox</span>
+          <span className="font-bold text-lg">Address Data</span>
         </Link>
-        <nav className="ml-auto flex items-center space-x-4">
+        <nav className="ml-auto flex items-center space-x-1 md:space-x-2">
           <Button variant="ghost" asChild>
-            <Link href="/#features">Features</Link>
+            <Link href="/about">About</Link>
           </Button>
           <Button variant="ghost" asChild>
-            <Link href="/#api">API</Link>
+            <Link href="/docs">Documentation</Link>
           </Button>
-          <Button asChild>
-            <Link href="/signin">Sign In</Link>
+          <Button variant="ghost" asChild>
+            <Link href="/support">Get Help</Link>
           </Button>
-           <Button variant="outline" asChild>
-            <Link href="/admin/signin">Admin Sign In</Link>
+          <Button asChild className="bg-accent hover:bg-accent/90 text-accent-foreground">
+            <Link href="/signin">Portal</Link>
           </Button>
         </nav>
       </div>

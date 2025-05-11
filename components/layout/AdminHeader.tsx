@@ -3,8 +3,8 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Building2, ShieldCheck, Users, KeyRound, LogOut, UserCircle, LayoutGrid } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { ShieldCheck, Users, KeyRound, LogOut, UserCircle, LayoutGrid } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import {
   DropdownMenu,
@@ -14,6 +14,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useAuth } from "@/contexts/auth-context";
+
 
 const navItems = [
   { href: "/admin/dashboard", label: "Review Queue", icon: <LayoutGrid className="mr-2 h-4 w-4" /> },
@@ -23,17 +25,17 @@ const navItems = [
 
 export function AdminHeader() {
   const pathname = usePathname();
+  const { user, signOut } = useAuth();
+  const router = useRouter();
 
-  // Mock admin user data
-  const adminUser = {
-    name: "Admin User",
-    email: "admin@haqqman.com",
-  };
-
-  const handleSignOut = () => {
-    // Placeholder for sign out logic
-    console.log("Admin signing out...");
-    // router.push('/admin/signin');
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      router.push('/admin/signin');
+    } catch (error) {
+      console.error("Failed to sign out", error);
+      // Handle error (e.g., show a toast message)
+    }
   };
 
   return (
@@ -62,28 +64,30 @@ export function AdminHeader() {
           ))}
         </nav>
         <div className="ml-auto flex items-center space-x-4">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                <UserCircle className="h-7 w-7" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56" align="end" forceMount>
-              <DropdownMenuLabel className="font-normal">
-                <div className="flex flex-col space-y-1">
-                  <p className="text-sm font-medium leading-none">{adminUser.name}</p>
-                  <p className="text-xs leading-none text-muted-foreground">
-                    {adminUser.email}
-                  </p>
-                </div>
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleSignOut}>
-                <LogOut className="mr-2 h-4 w-4" />
-                <span>Log out</span>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          {user && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                  <UserCircle className="h-7 w-7" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56" align="end" forceMount>
+                <DropdownMenuLabel className="font-normal">
+                  <div className="flex flex-col space-y-1">
+                    <p className="text-sm font-medium leading-none">{user.displayName || "Admin User"}</p>
+                    <p className="text-xs leading-none text-muted-foreground">
+                      {user.email}
+                    </p>
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleSignOut}>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Log out</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
         </div>
       </div>
     </header>

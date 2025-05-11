@@ -1,11 +1,17 @@
-
+import type { ReactNode } from 'react';
 import { AppHeader } from "@/components/layout/AppHeader";
+import { redirect } from 'next/navigation';
+import { getCurrentUser } from '@/lib/auth/utils';
 
-export default function DashboardLayout({
+export default async function DashboardLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
+  const user = await getCurrentUser();
+  if (!user) {
+    redirect('/signin');
+  }
   return (
     <div className="flex flex-col min-h-screen">
       <AppHeader />
@@ -13,7 +19,7 @@ export default function DashboardLayout({
         {children}
       </main>
        <footer className="py-6 border-t bg-background text-center text-muted-foreground text-sm">
-        Address Data Sandbox &copy; {new Date().getFullYear()}
+        Address Data &copy; {new Date().getFullYear()}
       </footer>
     </div>
   );

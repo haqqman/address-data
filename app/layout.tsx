@@ -1,14 +1,14 @@
 import type { Metadata } from 'next';
-import { GeistSans } from 'geist/font/sans';
-// import { GeistMono } from 'geist/font/mono'; // Removed as it's causing an error
+import { Inter } from 'next/font/google';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
+import { AuthProvider } from '@/contexts/auth-context';
+import { Providers } from './providers'; // Corrected import if it was wrong, or to ensure it's used
 
-// const geistSans = GeistSans; // No need to reassign if using directly
-// const geistMono = GeistMono; // Removed as it's causing an error
+const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Address Data Sandbox',
+  title: 'Address Data',
   description: 'Address intelligence platform for Nigeria.',
 };
 
@@ -18,10 +18,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${GeistSans.variable}`}> {/* Use GeistSans.variable directly */}
-      <body className="antialiased font-sans">
-        {children}
-        <Toaster />
+    <html lang="en" suppressHydrationWarning>
+      <body className={inter.className}>
+        <Providers>
+          <AuthProvider>
+            {children}
+            <Toaster />
+          </AuthProvider>
+        </Providers>
       </body>
     </html>
   );

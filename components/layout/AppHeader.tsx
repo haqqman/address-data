@@ -4,7 +4,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Building2, LayoutDashboard, KeyRound, LogOut, UserCircle } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import {
   DropdownMenu,
@@ -14,6 +14,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useAuth } from "@/contexts/auth-context";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: <LayoutDashboard className="mr-2 h-4 w-4" /> },
@@ -22,17 +23,17 @@ const navItems = [
 
 export function AppHeader() {
   const pathname = usePathname();
+  const { user, signOut } = useAuth();
+  const router = useRouter();
 
-  // Mock user data
-  const user = {
-    name: "John Doe",
-    email: "john.doe@example.com",
-  };
-
-  const handleSignOut = () => {
-    // Placeholder for sign out logic
-    console.log("Signing out...");
-    // router.push('/');
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      router.push('/'); // Redirect to homepage after sign out
+    } catch (error) {
+      console.error("Failed to sign out", error);
+      // Handle error (e.g., show a toast message)
+    }
   };
 
   return (
@@ -40,7 +41,7 @@ export function AppHeader() {
       <div className="container flex h-16 items-center">
         <Link href="/dashboard" className="flex items-center space-x-2 mr-6">
           <Building2 className="h-6 w-6 text-primary" />
-          <span className="font-bold text-lg">Address Data Sandbox</span>
+          <span className="font-bold text-lg">Address Data</span>
         </Link>
         <nav className="flex items-center space-x-1">
           {navItems.map((item) => (
@@ -61,28 +62,30 @@ export function AppHeader() {
           ))}
         </nav>
         <div className="ml-auto flex items-center space-x-4">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                <UserCircle className="h-7 w-7" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56" align="end" forceMount>
-              <DropdownMenuLabel className="font-normal">
-                <div className="flex flex-col space-y-1">
-                  <p className="text-sm font-medium leading-none">{user.name}</p>
-                  <p className="text-xs leading-none text-muted-foreground">
-                    {user.email}
-                  </p>
-                </div>
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleSignOut}>
-                <LogOut className="mr-2 h-4 w-4" />
-                <span>Log out</span>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          {user && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                  <UserCircle className="h-7 w-7" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56" align="end" forceMount>
+                <DropdownMenuLabel className="font-normal">
+                  <div className="flex flex-col space-y-1">
+                    <p className="text-sm font-medium leading-none">{user.displayName || user.email}</p>
+                    {user.displayName && <p className="text-xs leading-none text-muted-foreground">
+                      {user.email}
+                    </p>}
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleSignOut}>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Log out</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
         </div>
       </div>
     </header>

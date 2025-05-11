@@ -15,7 +15,10 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-// import { useRouter } from "next/navigation"; // Uncomment when navigation is needed
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/auth-context";
+import { Loader2 } from "lucide-react";
+import { useState } from "react";
 
 const adminSignInSchema = z.object({
   email: z.string().email({ message: "Invalid email address." }).refine(
@@ -27,24 +30,11 @@ const adminSignInSchema = z.object({
 
 type AdminSignInFormValues = z.infer<typeof adminSignInSchema>;
 
-// Placeholder for actual admin sign-in logic
-async function adminSignIn(values: AdminSignInFormValues) {
-  // In a real app, this would call an auth API
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      if (values.email.endsWith("@haqqman.com") && values.password === "password") { // Example password
-        resolve({ success: true, message: "Admin sign-in successful!" });
-      } else {
-        resolve({ success: false, message: "Invalid admin credentials or unauthorized email domain." });
-      }
-    }, 1000);
-  });
-}
-
-
 export function AdminSignInForm() {
   const { toast } = useToast();
-  // const router = useRouter(); // Uncomment when navigation is needed
+  const router = useRouter();
+  const { signInWithEmail } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<AdminSignInFormValues>({
     resolver: zodResolver(adminSignInSchema),
@@ -55,31 +45,27 @@ export function AdminSignInForm() {
   });
 
   async function onSubmit(values: AdminSignInFormValues) {
+    setIsLoading(true);
     toast({
-      title: "Attempting admin sign-in...",
+      title: "Attempting admin log-in...",
       description: "Please wait.",
     });
     try {
-      const result: any = await adminSignIn(values);
-      if (result.success) {
-        toast({
-          title: "Admin Sign In Successful",
-          description: result.message,
-        });
-        // router.push('/admin/dashboard'); // Redirect to admin dashboard
-      } else {
-        toast({
-          title: "Admin Sign In Failed",
-          description: result.message,
-          variant: "destructive",
-        });
-      }
-    } catch (error) {
+      await signInWithEmail(values.email, values.password, true); // true for isAdmin
+      toast({
+        title: "Admin Log In Successful",
+        description: "Redirecting to admin dashboard...",
+      });
+      router.push('/admin/dashboard');
+    } catch (error: any) {
+      const errorMessage = error.message || "Invalid admin credentials or unauthorized email domain.";
        toast({
-          title: "Admin Sign In Error",
-          description: "An unexpected error occurred.",
+          title: "Admin Log In Failed",
+          description: errorMessage,
           variant: "destructive",
         });
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -112,8 +98,9 @@ export function AdminSignInForm() {
             </FormItem>
           )}
         />
-        <Button type="submit" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground">
-          Sign In
+        <Button type="submit" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground" disabled={isLoading}>
+          {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          Log In
         </Button>
       </form>
     </Form>

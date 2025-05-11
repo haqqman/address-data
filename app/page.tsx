@@ -57,7 +57,7 @@ export default function HomePage() {
               The Future of Nigerian Address Data
             </h1>
             <p className="mt-6 text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto">
-              Address Data Sandbox provides developers, businesses, and admins with tools to validate, store, and retrieve Nigerian address data efficiently and accurately.
+              Address Data provides developers, businesses, and admins with tools to validate, store, and retrieve Nigerian address data efficiently and accurately.
             </p>
             <div className="mt-10 flex justify-center space-x-4">
               <Button size="lg" asChild className="bg-accent hover:bg-accent/90 text-accent-foreground">
@@ -74,7 +74,7 @@ export default function HomePage() {
         <section id="features" className="py-16 md:py-24 bg-background">
           <div className="container mx-auto px-4">
             <h2 className="text-3xl md:text-4xl font-bold text-center text-foreground mb-4">
-              Why Address Data Sandbox?
+              Why Address Data?
             </h2>
             <p className="text-center text-muted-foreground mb-12 md:mb-16 max-w-2xl mx-auto">
               Our platform is purpose-built for Nigeria, offering unparalleled accuracy and developer-friendly tools.
@@ -145,10 +145,10 @@ export default function HomePage() {
               Ready to Elevate Your Address Handling?
             </h2>
             <p className="text-lg md:text-xl mb-10 max-w-2xl mx-auto text-primary-foreground/80">
-              Join Address Data Sandbox today and experience the difference accurate, structured address data can make.
+              Join Address Data today and experience the difference accurate, structured address data can make.
             </p>
             <Button size="lg" variant="secondary" className="bg-accent hover:bg-accent/90 text-accent-foreground" asChild>
-              <Link href="/signin">Sign Up Now</Link>
+              <Link href="/signin">Access Portal</Link>
             </Button>
           </div>
         </section>
@@ -157,7 +157,7 @@ export default function HomePage() {
       {/* Footer */}
       <footer className="py-8 border-t bg-background">
         <div className="container mx-auto px-4 text-center text-muted-foreground">
-          <p>&copy; {new Date().getFullYear()} Address Data Sandbox. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} Address Data. All rights reserved.</p>
           <p className="text-sm mt-1">Built for Nigeria, by developers for developers.</p>
         </div>
       </footer>
