@@ -61,7 +61,7 @@ export default function HomePage() {
             </p>
             <div className="mt-10 flex justify-center space-x-4">
               <Button size="lg" asChild className="bg-accent hover:bg-accent/90 text-accent-foreground">
-                <Link href="/signin">Get Started</Link>
+                <Link href="/login">Get Started</Link>
               </Button>
               <Button size="lg" variant="outline" asChild>
                 <Link href="/#features">Learn More</Link>
@@ -148,7 +148,7 @@ export default function HomePage() {
               Join Address Data today and experience the difference accurate, structured address data can make.
             </p>
             <Button size="lg" variant="secondary" className="bg-accent hover:bg-accent/90 text-accent-foreground" asChild>
-              <Link href="/signin">Access Portal</Link>
+              <Link href="/login">Access Portal</Link>
             </Button>
           </div>
         </section>
@@ -157,8 +157,17 @@ export default function HomePage() {
       {/* Footer */}
       <footer className="py-8 border-t bg-background">
         <div className="container mx-auto px-4 text-center text-muted-foreground">
-          <p>&copy; {new Date().getFullYear()} Address Data. All rights reserved.</p>
-          <p className="text-sm mt-1">Built for Nigeria, by developers for developers.</p>
+          <p>
+            Built for Nigeria, for developers. Powered by{' '}
+            <a
+              href="https://searpane.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:text-primary"
+            >
+              Seapane
+            </a>
+          </p>
         </div>
       </footer>
     </div>

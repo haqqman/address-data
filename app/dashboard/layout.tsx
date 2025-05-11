@@ -1,3 +1,4 @@
+
 import type { ReactNode } from 'react';
 import { AppHeader } from "@/components/layout/AppHeader";
 import { redirect } from 'next/navigation';
@@ -10,7 +11,7 @@ export default async function DashboardLayout({
 }) {
   const user = await getCurrentUser();
   if (!user) {
-    redirect('/signin');
+    redirect('/login');
   }
   return (
     <div className="flex flex-col min-h-screen">
@@ -19,7 +20,17 @@ export default async function DashboardLayout({
         {children}
       </main>
        <footer className="py-6 border-t bg-background text-center text-muted-foreground text-sm">
-        Address Data &copy; {new Date().getFullYear()}
+        <p>
+            Built for Nigeria, for developers. Powered by{' '}
+            <a
+              href="https://searpane.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:text-primary"
+            >
+              Seapane
+            </a>
+          </p>
       </footer>
     </div>
   );

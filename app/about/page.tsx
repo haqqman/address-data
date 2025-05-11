@@ -1,3 +1,4 @@
+
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Building2, Info } from "lucide-react";
@@ -50,7 +51,17 @@ export default function AboutPage() {
       </main>
       <footer className="py-8 border-t bg-background">
         <div className="container mx-auto px-4 text-center text-muted-foreground">
-          <p>&copy; {new Date().getFullYear()} Address Data. All rights reserved.</p>
+          <p>
+            Built for Nigeria, for developers. Powered by{' '}
+            <a
+              href="https://searpane.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:text-primary"
+            >
+              Seapane
+            </a>
+          </p>
         </div>
       </footer>
     </div>

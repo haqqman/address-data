@@ -1,3 +1,4 @@
+
 import type { ReactNode } from 'react';
 import { AdminHeader } from "@/components/layout/AdminHeader";
 import { checkAdmin } from '@/lib/auth/utils';
@@ -11,7 +12,7 @@ export default async function AdminLayout({
   const isAdmin = await checkAdmin();
 
   if (!isAdmin) {
-    redirect('/admin/signin');
+    redirect('/admin/login');
   }
 
   return (
@@ -21,7 +22,17 @@ export default async function AdminLayout({
         {children}
       </main>
       <footer className="py-6 border-t bg-background text-center text-muted-foreground text-sm">
-        Address Data - Admin Console &copy; {new Date().getFullYear()}
+        <p>
+            Built for Nigeria, for developers. Powered by{' '}
+            <a
+              href="https://searpane.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:text-primary"
+            >
+              Seapane
+            </a>
+          </p>
       </footer>
     </div>
   );
