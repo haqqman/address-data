@@ -11,9 +11,9 @@ import { useState } from "react";
 
 const consoleLogInSchema = z.object({
   email: z.string()
-    .transform(val => val.toLowerCase().replace(/\s+/g, ''))
-    .email({ message: "Invalid email address." })
-    .refine(
+    .email({ message: "Invalid email address." }) // Email validation first
+    .transform(val => val.toLowerCase().replace(/\s+/g, '')) // Then transform
+    .refine( // Then refine the transformed value
       (email) => email.endsWith("@haqqman.com"),
       { message: "Access restricted to @haqqman.com emails." }
     ),
@@ -45,6 +45,8 @@ export function ConsoleLogInForm() {
       if (user) { 
         router.push('/console/dashboard');
       } else {
+        // This path might not be reached if signInWithEmail throws or onAuthStateChanged handles redirection logic.
+        // Kept for robustness, but primarily errors are caught in the catch block.
         setErrorMessage("Login failed. Please check your credentials.");
       }
     } catch (error: any) {
@@ -73,13 +75,13 @@ export function ConsoleLogInForm() {
             label="Email Address"
             placeholder="example@haqqman.com"
             variant="bordered"
-            isInvalid={!!errors.email || !!errorMessage}
+            isInvalid={!!errors.email || !!errorMessage} // Show error state if Zod error or general login error
             errorMessage={errors.email?.message}
             fullWidth
-            onValueChange={(value) => {
-              const transformedValue = value.toLowerCase().replace(/\s+/g, '');
-              field.onChange(transformedValue);
-            }}
+            // The Zod transform handles converting to lowercase and removing spaces upon validation.
+            // For immediate visual feedback, onValueChange can be used, but Zod transform is for actual validation.
+            // If onValueChange is used, ensure it doesn't conflict with RHF's control.
+            // For simplicity, relying on Zod's transform during submit/validation.
           />
         )}
       />
@@ -93,7 +95,7 @@ export function ConsoleLogInForm() {
             type="password"
             placeholder="••••••••"
             variant="bordered"
-            isInvalid={!!errors.password || !!errorMessage}
+            isInvalid={!!errors.password || !!errorMessage} // Show error state if Zod error or general login error
             errorMessage={errors.password?.message}
             fullWidth
           />
