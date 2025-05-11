@@ -48,64 +48,76 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     let userFirstName = firebaseUser.displayName?.split(' ')[0] || firebaseUser.email?.split('@')[0] || 'User';
     let userLastName = firebaseUser.displayName?.split(' ').slice(1).join(' ') || '';
     
-    const userDataToSave: Partial<User> & { email: string | null, lastLogin?: any, createdAt?: any, authProvider?: string, name?: string } = {
-      email: firebaseUser.email,
-      firstName: userFirstName,
-      lastName: userLastName,
-      name: firebaseUser.displayName || `${userFirstName} ${userLastName}`.trim() || 'Anonymous User',
-      role: determinedRole,
-      lastLogin: serverTimestamp(),
-      authProvider: firebaseUser.providerData[0]?.providerId || 'password',
+    const baseDataFromAuth: Partial<User> = {
+        email: firebaseUser.email,
+        firstName: userFirstName,
+        lastName: userLastName,
+        name: firebaseUser.displayName || `${userFirstName} ${userLastName}`.trim() || 'Anonymous User',
+        role: determinedRole,
+        authProvider: firebaseUser.providerData[0]?.providerId || 'password',
+        phoneNumber: firebaseUser.phoneNumber || null, 
     };
 
     if (userDocSnap.exists()) {
-      const existingData = userDocSnap.data() as User;
-      // If a role exists and it's a console role, prefer it, unless the determined role is more specific
-      const consoleRoles: User['role'][] = ['cto', 'manager', 'administrator'];
-      if (consoleRoles.includes(existingData.role) && !consoleRoles.includes(determinedRole)) {
-        finalRole = existingData.role; 
-      } else if (determinedRole === 'cto' || (determinedRole === 'manager' && existingData.role !== 'cto')) {
-         finalRole = determinedRole; 
-      } else if (existingData.role) { // if existingData.role is defined
-        finalRole = existingData.role; 
-      }
-      // Ensure names are preserved or updated from Firestore if they exist and are more complete
-      userDataToSave.firstName = existingData.firstName || userFirstName;
-      userDataToSave.lastName = existingData.lastName || userLastName;
-      userDataToSave.name = existingData.name || `${userDataToSave.firstName} ${userDataToSave.lastName}`.trim();
-      userDataToSave.role = finalRole; 
-      userDataToSave.phoneNumber = existingData.phoneNumber || undefined;
+        const existingData = userDocSnap.data() as User;
+        
+        const consoleRoles: User['role'][] = ['cto', 'manager', 'administrator'];
+        if (existingData.role && consoleRoles.includes(existingData.role) && !consoleRoles.includes(determinedRole)) {
+            finalRole = existingData.role;
+        } else if (determinedRole === 'cto' || (determinedRole === 'manager' && existingData.role !== 'cto')) {
+            finalRole = determinedRole;
+        } else if (existingData.role) {
+            finalRole = existingData.role;
+        }
 
-      await setDoc(userDocRef, { // Explicitly list fields to merge to avoid overwriting createdAt
-        email: userDataToSave.email,
-        firstName: userDataToSave.firstName,
-        lastName: userDataToSave.lastName,
-        name: userDataToSave.name,
-        role: userDataToSave.role,
-        phoneNumber: userDataToSave.phoneNumber,
-        lastLogin: serverTimestamp(),
-        authProvider: userDataToSave.authProvider,
-      } , { merge: true });
-    } else {
-      userDataToSave.createdAt = serverTimestamp();
-      await setDoc(userDocRef, userDataToSave);
+        const finalFirstName = existingData.firstName || baseDataFromAuth.firstName;
+        const finalLastName = existingData.lastName || baseDataFromAuth.lastName;
+        
+        const dataToSet: Partial<User> & { lastLogin: any } = {
+            email: baseDataFromAuth.email,
+            firstName: finalFirstName,
+            lastName: finalLastName,
+            name: existingData.name || `${finalFirstName} ${finalLastName}`.trim(),
+            role: finalRole,
+            // Prefer existing phoneNumber, then auth provider's, then default to null
+            phoneNumber: existingData.phoneNumber !== undefined ? existingData.phoneNumber : baseDataFromAuth.phoneNumber, 
+            lastLogin: serverTimestamp(),
+            authProvider: baseDataFromAuth.authProvider,
+        };
+        
+        // Ensure phoneNumber is explicitly null if it ended up undefined
+        if (dataToSet.phoneNumber === undefined) {
+            dataToSet.phoneNumber = null;
+        }
+
+        await setDoc(userDocRef, dataToSet, { merge: true });
+
+        return {
+            id: firebaseUser.uid,
+            ...dataToSet,
+            createdAt: existingData.createdAt instanceof Timestamp ? existingData.createdAt.toDate() : (existingData.createdAt || undefined),
+            lastLogin: new Date(), 
+        } as User;
+
+    } else { 
+        const dataToSet: Partial<User> & { createdAt: any, lastLogin: any } = {
+            ...baseDataFromAuth,
+            role: finalRole, 
+            createdAt: serverTimestamp(),
+            lastLogin: serverTimestamp(),
+            // Ensure phoneNumber is null if not provided by auth and it's a new user
+            phoneNumber: baseDataFromAuth.phoneNumber === undefined ? null : baseDataFromAuth.phoneNumber,
+        };
+
+        await setDoc(userDocRef, dataToSet);
+        
+        return {
+            id: firebaseUser.uid,
+            ...dataToSet,
+            createdAt: new Date(), 
+            lastLogin: new Date(),
+        } as User;
     }
-    
-    // Construct the User object to return, ensuring all fields are correctly typed
-    const appUser: User = {
-      id: firebaseUser.uid,
-      email: userDataToSave.email,
-      firstName: userDataToSave.firstName,
-      lastName: userDataToSave.lastName,
-      name: userDataToSave.name,
-      role: finalRole,
-      phoneNumber: userDataToSave.phoneNumber,
-      // Convert Timestamps to Dates if necessary for client-side use, or handle them as Timestamps
-      createdAt: userDataToSave.createdAt instanceof Timestamp ? userDataToSave.createdAt.toDate() : undefined,
-      lastLogin: userDataToSave.lastLogin instanceof Timestamp ? userDataToSave.lastLogin.toDate() : new Date(), // Assume new Date() if lastLogin is serverTimestamp()
-      authProvider: userDataToSave.authProvider,
-    };
-    return appUser;
   };
 
 
@@ -123,7 +135,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
     return () => unsubscribe();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Added router to dependency array if it's used inside for redirects that depend on its state
+  }, []); 
 
   const handleSuccessfulLogin = async (firebaseUser: FirebaseUser, isConsole: boolean = false) => {
     setLoading(true);
@@ -176,14 +188,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signInWithEmail = async (email: string, pass: string, isConsole: boolean = false): Promise<FirebaseUser | null> => {
     setLoading(true);
     try {
-      // Role check for console login attempt
+      
       const determinedRole = determineUserRole(email);
       const consoleRoles: User['role'][] = ['cto', 'administrator', 'manager'];
       if (isConsole && !consoleRoles.includes(determinedRole)) {
          setLoading(false);
-         // It's better to throw a specific error that the form can catch and display
          const authError = new Error("Access restricted. This email is not authorized for console access.");
-         (authError as any).code = 'auth/unauthorized-console-access'; // Custom code
+         (authError as any).code = 'auth/unauthorized-console-access'; 
          throw authError;
       }
 
@@ -192,7 +203,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch (error) {
       console.error("Error signing in with email:", error);
       setLoading(false);
-      throw error; // Re-throw to be caught by the form
+      throw error; 
     }
   };
 
@@ -229,3 +240,4 @@ export function useAuth() {
   }
   return context;
 }
+
