@@ -17,7 +17,7 @@ export default function ConsoleLoginPage() {
             <ShieldAlert className="h-10 w-10 text-destructive" />
           </div>
           <CardTitle className="text-2xl">Console Access</CardTitle>
-          <CardDescription>Access restricted to authorized personnel. Please use your @haqqman.com email.</CardDescription>
+          <CardDescription>Access restricted to authorized personnel. Please use your Haqqman Workmail.</CardDescription>
         </CardHeader>
         <CardContent>
           <ConsoleSignInForm />

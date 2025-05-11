@@ -16,7 +16,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/contexts/auth-context"; // Corrected import path
+import { useAuth } from "@/contexts/auth-context";
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
 
@@ -77,9 +77,9 @@ export function ConsoleSignInForm() {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
+              <FormLabel>Email Address</FormLabel>
               <FormControl>
-                <Input placeholder="admin@haqqman.com" {...field} />
+                <Input placeholder="example@haqqman.com" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
