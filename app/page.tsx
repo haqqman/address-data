@@ -102,7 +102,7 @@ export default function HomePage() {
             <div className="flex flex-col lg:flex-row items-center gap-12">
               <div className="lg:w-1/2">
                 <Image 
-                  src="https://res.cloudinary.com/seapane-cloud/seapane-bucket/address-data/meta/address-illustration-amiko.svg" 
+                  src="https://res.cloudinary.com/seapane-cloud/seapane-bucket/address-data/meta/address-illustration-amico.svg" 
                   alt="Features Illustration" 
                   width={500} 
                   height={450} 

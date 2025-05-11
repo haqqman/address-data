@@ -72,6 +72,8 @@ export default function GeographyManagementPage() {
   
   const [deletingEntity, setDeletingEntity] = useState<EditableGeoEntity | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [activeGeoTab, setActiveGeoTab] = useState<string | number>("states");
+
 
   const fetchStates = useCallback(async () => {
     setIsLoadingStates(true);
@@ -278,7 +280,7 @@ export default function GeographyManagementPage() {
         <div className="flex flex-col space-y-1">
           <h1 className="text-3xl font-bold tracking-tight text-primary">Geography Management</h1>
           <p className="text-foreground-500">
-            Manage states, Local Government Areas (LGAs), and cities.
+            Manage States, Local Government Areas (LGAs), and Cities.
           </p>
         </div>
         <NextUIButton 
@@ -291,8 +293,22 @@ export default function GeographyManagementPage() {
         </NextUIButton>
       </div>
 
-      <Tabs aria-label="Geography Management Tabs" color="secondary" variant="bordered">
-        <Tab key="states" title={<span className="flex items-center"><Map className="mr-2 h-5 w-5 text-secondary" />States</span>}>
+      <Tabs 
+        aria-label="Geography Management Tabs" 
+        color="secondary" 
+        variant="bordered"
+        selectedKey={activeGeoTab}
+        onSelectionChange={setActiveGeoTab}
+      >
+        <Tab 
+          key="states" 
+          title={
+            <span className="flex items-center">
+              <Map className={`mr-2 h-5 w-5 ${activeGeoTab === 'states' ? 'text-warning' : 'text-secondary'}`} />
+              States
+            </span>
+          }
+        >
           <NextUICard className="shadow-xl rounded-xl bg-background">
             <NextUICardHeader className="px-6 pt-6 pb-2 flex justify-between items-center">
               <div className="flex flex-col space-y-0.5">
@@ -322,7 +338,15 @@ export default function GeographyManagementPage() {
           </NextUICard>
         </Tab>
 
-        <Tab key="lgas" title={<span className="flex items-center"><Building className="mr-2 h-5 w-5 text-secondary" />LGAs</span>}>
+        <Tab 
+          key="lgas" 
+          title={
+            <span className="flex items-center">
+              <Building className={`mr-2 h-5 w-5 ${activeGeoTab === 'lgas' ? 'text-warning' : 'text-secondary'}`} />
+              LGAs
+            </span>
+          }
+        >
           <NextUICard className="shadow-xl rounded-xl bg-background">
             <NextUICardHeader className="px-6 pt-6 pb-2">
               <div className="flex justify-between items-center w-full mb-4">
@@ -369,13 +393,21 @@ export default function GeographyManagementPage() {
           </NextUICard>
         </Tab>
 
-        <Tab key="cities" title={<span className="flex items-center"><MapPin className="mr-2 h-5 w-5 text-secondary" />Cities/Towns</span>}>
+        <Tab 
+          key="cities" 
+          title={
+            <span className="flex items-center">
+              <MapPin className={`mr-2 h-5 w-5 ${activeGeoTab === 'cities' ? 'text-warning' : 'text-secondary'}`} />
+              Cities
+            </span>
+          }
+        >
           <NextUICard className="shadow-xl rounded-xl bg-background">
             <NextUICardHeader className="px-6 pt-6 pb-2">
-              <div className="flex justify-between items-start w-full mb-4"> {/* Changed items-center to items-start */}
+              <div className="flex justify-between items-start w-full mb-4"> 
                 <div className="flex flex-col space-y-0.5">
-                  <h2 className="text-xl font-semibold text-primary">Manage Cities/Towns</h2>
-                  <p className="text-sm text-foreground-500">Select a state and LGA to manage cities/towns.</p>
+                  <h2 className="text-xl font-semibold text-primary">Manage Cities</h2>
+                  <p className="text-sm text-foreground-500">Select a state and LGA to manage cities.</p>
                 </div>
                 <div className="flex gap-4">
                   <NextUISelect
@@ -421,7 +453,7 @@ export default function GeographyManagementPage() {
             </NextUICardHeader>
             <NextUICardBody className="p-2 md:p-4">
               {isLoadingCities ? renderLoading() : !selectedLgaIdForCities ? <p className="text-foreground-500">Please select a state and LGA.</p> :
-                cities.length === 0 && selectedLgaIdForCities ? <p className="text-foreground-500">No cities/towns found for the selected LGA.</p> :
+                cities.length === 0 && selectedLgaIdForCities ? <p className="text-foreground-500">No cities found for the selected LGA.</p> :
                 <ul className="space-y-2">
                   {cities.map(city => (
                     <li key={city.id} className="p-3 border rounded-lg flex justify-between items-center hover:bg-default-100">
@@ -457,7 +489,7 @@ export default function GeographyManagementPage() {
                 >
                   <NextUISelectItem key="State" value="State">State</NextUISelectItem>
                   <NextUISelectItem key="LGA" value="LGA">LGA</NextUISelectItem>
-                  <NextUISelectItem key="City" value="City">City/Town</NextUISelectItem>
+                  <NextUISelectItem key="City" value="City">City</NextUISelectItem>
                 </NextUISelect>
 
                 {entityTypeToAdd === "State" && (
@@ -508,7 +540,7 @@ export default function GeographyManagementPage() {
                     >
                         {lgasForCityDropdown.map(lga => <NextUISelectItem key={lga.id} value={lga.id} textValue={lga.name}>{lga.name}</NextUISelectItem>)}
                     </NextUISelect>
-                    <NextUIInput label="City/Town Name" placeholder="Enter city/town name" value={newCityName} onValueChange={setNewCityName} variant="bordered" />
+                    <NextUIInput label="City Name" placeholder="Enter city name" value={newCityName} onValueChange={setNewCityName} variant="bordered" />
                   </>
                 )}
               </ModalBody>
@@ -578,3 +610,4 @@ export default function GeographyManagementPage() {
     </div>
   );
 }
+

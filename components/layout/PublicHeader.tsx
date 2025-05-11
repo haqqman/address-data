@@ -29,11 +29,11 @@ export function PublicHeader() {
             Get Help
           </NextUIButton>
           <NextUIButton 
-            color="warning" // Changed from primary to warning to use accent color
+            color="warning"
             as={Link} 
             href="/login" 
             radius="md"
-            className="text-primary-foreground shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out"
+            className="text-foreground shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out font-semibold"
           >
             Portal
           </NextUIButton>
