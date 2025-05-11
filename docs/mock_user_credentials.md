@@ -36,10 +36,10 @@ The application's `ConsoleSignInForm` uses Firebase's `signInWithEmailAndPasswor
 *   **Meaning:** This error indicates that the email/password combination provided during login is incorrect, the user does not exist in Firebase Authentication, or the account might be disabled.
 *   **Solution:**
     1.  **Verify User Existence:** Double-check that you have created the user (e.g., `webmanager@haqqman.com`) in your Firebase project's Authentication section.
-    2.  **Verify Password:** Ensure the password you set for this user in the Firebase console *exactly* matches `P@ssw0rd*AD!2025`. Passwords are case-sensitive.
+    2.  **Verify Password:** Ensure the password you set for this user in the Firebase console *exactly* matches `P@ssw0rd*AD!2025`. Passwords are case-sensitive. This is the most common cause.
     3.  **Check Email Spelling:** Ensure there are no typos in the email address entered on the login form.
     4.  **Check Account Status:** Make sure the user account is not disabled in the Firebase console.
     5.  **Re-create User (If unsure):** If you're uncertain, you can delete the user from the Firebase Authentication console and re-add them carefully following the "How to Set Up" steps above.
-    6.  **Firebase Project:** Ensure your application is connected to the correct Firebase project where these users were created (check your `.env.local` or environment configuration for Firebase).
+    6.  **Firebase Project:** Ensure your application is connected to the correct Firebase project where these users were created (check your `.env.local` or environment configuration for Firebase). The `.env.local` should be configured with the details for `addressdata-sandbox` project ID.
 
-The application code correctly calls Firebase for authentication. This error originates from Firebase due to a mismatch with its stored user data.
+The application code correctly calls Firebase for authentication. This error originates from Firebase due to a mismatch with its stored user data. If you have meticulously followed all steps above and the error persists, ensure your Firebase project (specifically `addressdata-sandbox`) has "Email/Password" enabled as a sign-in provider in the Firebase Authentication -> Sign-in method tab.
