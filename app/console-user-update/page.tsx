@@ -21,9 +21,12 @@ import Link from "next/link";
 import Image from "next/image";
 import type { User as UserType } from "@/types";
 
-// Updated schema to reflect new form fields
+// Updated schema to reflect new form fields including firstName and lastName
 const consoleUserUpdateSchemaClient = z.object({
   uid: z.string().min(1, "UID is required."),
+  firstName: z.string().min(1, "First name is required."),
+  lastName: z.string().min(1, "Last name is required."),
+  email: z.string().email("Invalid email address").min(1, "Email is required for new users."), // Assuming email can be updated or set if not present
   phoneNumber: z.string().min(1, "Phone number is required."),
   role: z.enum(["cto", "administrator", "manager"], { required_error: "Role is required."}),
 });
@@ -43,10 +46,13 @@ export default function ConsoleUserUpdatePage() {
     handleSubmit,
     formState: { errors },
     reset,
-  } = useForm<ConsoleUserUpdateFormValues>({ // Still using ConsoleUserUpdateFormValues from action for consistency
-    resolver: zodResolver(consoleUserUpdateSchemaClient), // Use client-side schema for form validation
+  } = useForm<ConsoleUserUpdateFormValues>({ 
+    resolver: zodResolver(consoleUserUpdateSchemaClient), 
     defaultValues: {
       uid: "",
+      firstName: "",
+      lastName: "",
+      email: "",
       phoneNumber: "",
       role: undefined,
     },
@@ -55,7 +61,7 @@ export default function ConsoleUserUpdatePage() {
   async function onSubmit(values: z.infer<typeof consoleUserUpdateSchemaClient>) {
     setIsLoading(true);
     setFormMessage(null);
-    // The server action now expects `uid` directly.
+    
     const result = await updateConsoleUserDetails(values);
     setFormMessage(result);
     setIsLoading(false);
@@ -122,7 +128,54 @@ export default function ConsoleUserUpdatePage() {
                 />
               )}
             />
-            
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <Controller
+                name="firstName"
+                control={control}
+                render={({ field }) => (
+                    <NextUIInput
+                    {...field}
+                    label="First Name"
+                    placeholder="Enter first name"
+                    variant="bordered"
+                    isInvalid={!!errors.firstName}
+                    errorMessage={errors.firstName?.message}
+                    />
+                )}
+                />
+                <Controller
+                name="lastName"
+                control={control}
+                render={({ field }) => (
+                    <NextUIInput
+                    {...field}
+                    label="Last Name"
+                    placeholder="Enter last name"
+                    variant="bordered"
+                    isInvalid={!!errors.lastName}
+                    errorMessage={errors.lastName?.message}
+                    />
+                )}
+                />
+            </div>
+            <Controller
+              name="email"
+              control={control}
+              render={({ field }) => (
+                <NextUIInput
+                  {...field}
+                  label="Email Address"
+                  placeholder="user@example.com"
+                  variant="bordered"
+                  isInvalid={!!errors.email}
+                  errorMessage={errors.email?.message}
+                  onValueChange={(value) => {
+                    const transformedValue = value.toLowerCase().replace(/\s+/g, '');
+                    field.onChange(transformedValue);
+                  }}
+                />
+              )}
+            />
             <Controller
               name="phoneNumber"
               control={control}
@@ -152,7 +205,7 @@ export default function ConsoleUserUpdatePage() {
                   onSelectionChange={(keys) => field.onChange(Array.from(keys)[0] as UserType['role'])}
                 >
                   {roleOptions.map((roleOpt) => (
-                    <NextUISelectItem key={roleOpt.value} value={roleOpt.value}>
+                    <NextUISelectItem key={roleOpt.value} value={roleOpt.value} textValue={roleOpt.label}>
                       {roleOpt.label}
                     </NextUISelectItem>
                   ))}

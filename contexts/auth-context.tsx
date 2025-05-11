@@ -14,7 +14,7 @@ import {
 import { auth, db } from '@/lib/firebase/config';
 import type { User } from '@/types';
 import { useRouter } from 'next/navigation';
-import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, getDoc, setDoc, serverTimestamp, Timestamp } from 'firebase/firestore';
 
 interface AuthContextType {
   user: User | null;
@@ -45,9 +45,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const userDocSnap = await getDoc(userDocRef);
 
     let finalRole = determinedRole;
-    let userDataToSave: Partial<User> & { email: string | null, lastLogin?: any, createdAt?: any, authProvider?: string } = {
+    let userFirstName = firebaseUser.displayName?.split(' ')[0] || firebaseUser.email?.split('@')[0] || 'User';
+    let userLastName = firebaseUser.displayName?.split(' ').slice(1).join(' ') || '';
+    
+    const userDataToSave: Partial<User> & { email: string | null, lastLogin?: any, createdAt?: any, authProvider?: string, name?: string } = {
       email: firebaseUser.email,
-      name: firebaseUser.displayName || firebaseUser.email?.split('@')[0] || 'Anonymous User',
+      firstName: userFirstName,
+      lastName: userLastName,
+      name: firebaseUser.displayName || `${userFirstName} ${userLastName}`.trim() || 'Anonymous User',
       role: determinedRole,
       lastLogin: serverTimestamp(),
       authProvider: firebaseUser.providerData[0]?.providerId || 'password',
@@ -55,28 +60,52 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     if (userDocSnap.exists()) {
       const existingData = userDocSnap.data() as User;
-      // If a role exists and it's a console role, prefer it, unless the determined role is more specific (e.g. cto > administrator)
+      // If a role exists and it's a console role, prefer it, unless the determined role is more specific
       const consoleRoles: User['role'][] = ['cto', 'manager', 'administrator'];
       if (consoleRoles.includes(existingData.role) && !consoleRoles.includes(determinedRole)) {
-        finalRole = existingData.role; // Keep existing console role if determined one is just 'user'
+        finalRole = existingData.role; 
       } else if (determinedRole === 'cto' || (determinedRole === 'manager' && existingData.role !== 'cto')) {
-         finalRole = determinedRole; // Upgrade if determined role is higher or more specific console role
-      } else {
-        finalRole = existingData.role; // Default to existing role
+         finalRole = determinedRole; 
+      } else if (existingData.role) { // if existingData.role is defined
+        finalRole = existingData.role; 
       }
-      userDataToSave.role = finalRole; // Ensure the role to save is the final one
-      await setDoc(userDocRef, userDataToSave, { merge: true });
+      // Ensure names are preserved or updated from Firestore if they exist and are more complete
+      userDataToSave.firstName = existingData.firstName || userFirstName;
+      userDataToSave.lastName = existingData.lastName || userLastName;
+      userDataToSave.name = existingData.name || `${userDataToSave.firstName} ${userDataToSave.lastName}`.trim();
+      userDataToSave.role = finalRole; 
+      userDataToSave.phoneNumber = existingData.phoneNumber || undefined;
+
+      await setDoc(userDocRef, { // Explicitly list fields to merge to avoid overwriting createdAt
+        email: userDataToSave.email,
+        firstName: userDataToSave.firstName,
+        lastName: userDataToSave.lastName,
+        name: userDataToSave.name,
+        role: userDataToSave.role,
+        phoneNumber: userDataToSave.phoneNumber,
+        lastLogin: serverTimestamp(),
+        authProvider: userDataToSave.authProvider,
+      } , { merge: true });
     } else {
       userDataToSave.createdAt = serverTimestamp();
       await setDoc(userDocRef, userDataToSave);
     }
     
-    return {
+    // Construct the User object to return, ensuring all fields are correctly typed
+    const appUser: User = {
       id: firebaseUser.uid,
-      email: firebaseUser.email,
+      email: userDataToSave.email,
+      firstName: userDataToSave.firstName,
+      lastName: userDataToSave.lastName,
       name: userDataToSave.name,
       role: finalRole,
+      phoneNumber: userDataToSave.phoneNumber,
+      // Convert Timestamps to Dates if necessary for client-side use, or handle them as Timestamps
+      createdAt: userDataToSave.createdAt instanceof Timestamp ? userDataToSave.createdAt.toDate() : undefined,
+      lastLogin: userDataToSave.lastLogin instanceof Timestamp ? userDataToSave.lastLogin.toDate() : new Date(), // Assume new Date() if lastLogin is serverTimestamp()
+      authProvider: userDataToSave.authProvider,
     };
+    return appUser;
   };
 
 
@@ -93,7 +122,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setLoading(false);
     });
     return () => unsubscribe();
-  }, []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Added router to dependency array if it's used inside for redirects that depend on its state
 
   const handleSuccessfulLogin = async (firebaseUser: FirebaseUser, isConsole: boolean = false) => {
     setLoading(true);
@@ -104,7 +134,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const consoleRoles: User['role'][] = ['cto', 'administrator', 'manager'];
     if (isConsole) {
-      if (consoleRoles.includes(appUser.role)) {
+      if (appUser.role && consoleRoles.includes(appUser.role)) {
         router.push('/console/dashboard');
       } else {
         await firebaseSignOut(auth);
@@ -146,16 +176,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signInWithEmail = async (email: string, pass: string, isConsole: boolean = false): Promise<FirebaseUser | null> => {
     setLoading(true);
     try {
-      if (isConsole && !determineUserRole(email).match(/cto|administrator|manager/)) {
+      // Role check for console login attempt
+      const determinedRole = determineUserRole(email);
+      const consoleRoles: User['role'][] = ['cto', 'administrator', 'manager'];
+      if (isConsole && !consoleRoles.includes(determinedRole)) {
          setLoading(false);
-         throw new Error("Console access restricted.");
+         // It's better to throw a specific error that the form can catch and display
+         const authError = new Error("Access restricted. This email is not authorized for console access.");
+         (authError as any).code = 'auth/unauthorized-console-access'; // Custom code
+         throw authError;
       }
+
       const userCredential = await signInWithEmailAndPassword(auth, email, pass);
       return await handleSuccessfulLogin(userCredential.user, isConsole);
     } catch (error) {
       console.error("Error signing in with email:", error);
       setLoading(false);
-      throw error;
+      throw error; // Re-throw to be caught by the form
     }
   };
 

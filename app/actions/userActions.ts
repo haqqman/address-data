@@ -6,16 +6,18 @@ import { z } from "zod";
 import type { User } from "@/types";
 
 const PROTECTED_UIDS = [
-  "CONSOLE_USER_UID_ABDULHAQQ", 
-  "CONSOLE_USER_UID_JOSHUA",   
+  // These were placeholder UIDs, actual UIDs from Firebase Auth should be used.
+  // "CONSOLE_USER_UID_ABDULHAQQ", 
+  // "CONSOLE_USER_UID_JOSHUA",   
 ];
 
 const consoleUserUpdateSchema = z.object({
   uid: z.string().min(1, "UID is required."),
+  firstName: z.string().min(1, "First name is required."),
+  lastName: z.string().min(1, "Last name is required."),
   phoneNumber: z.string().min(1, "Phone number is required."),
   role: z.enum(["cto", "administrator", "manager"], { required_error: "Role is required."}),
-  name: z.string().min(1, "Name is required").optional(), // Added name, make it optional if UID is primary for lookup
-  email: z.string().email("Invalid email").optional(), // Added email, make it optional
+  email: z.string().email("Invalid email").optional(), // Email is optional for update, but required for creation if not exists
 });
 
 export type ConsoleUserUpdateFormValues = z.infer<typeof consoleUserUpdateSchema>;
@@ -31,8 +33,9 @@ export async function updateConsoleUserDetails(
       return { success: false, message: `Invalid data provided: ${errorMessages}` };
     }
 
-    const { uid, phoneNumber, role, name, email } = validation.data;
+    const { uid, firstName, lastName, phoneNumber, role, email } = validation.data;
 
+    // Placeholder UID check might be less relevant if actual UIDs are always used
     if (PROTECTED_UIDS.includes(uid) && (uid.startsWith("CONSOLE_USER_UID_"))) {
         return { success: false, message: `Cannot update user with placeholder UID: ${uid}. Please use actual Firestore UID.` };
     }
@@ -40,34 +43,34 @@ export async function updateConsoleUserDetails(
     const userRef = doc(db, "users", uid);
     const userDoc = await getDoc(userRef);
 
-    const dataToUpdate: Partial<User> = {
+    const dataToUpdate: Partial<User> & { name?: string, lastLogin?: any, createdAt?: any, authProvider?: string } = {
+      firstName: firstName,
+      lastName: lastName,
+      name: `${firstName} ${lastName}`, // Combined name
       phoneNumber: phoneNumber,
       role: role,
-      lastLogin: serverTimestamp() // Update lastLogin on profile update too
+      lastLogin: serverTimestamp() 
     };
+    
+    if (email) dataToUpdate.email = email;
 
-    if (name) dataToUpdate.name = name;
-    // Email is typically fixed post-creation, but if allowed to change:
-    // if (email) dataToUpdate.email = email; 
-    // It's safer to not allow email change here as it's primary identifier for Firebase Auth
 
     if (!userDoc.exists()) {
       // If user doc doesn't exist, this means we are creating it from the temporary update page.
       // Ensure all necessary fields are present for creation.
-      if (!name || !email) {
-         return { success: false, message: `User with UID ${uid} not found. Name and email are required to create a new user profile.` };
+      if (!email) { // Email is crucial for a new user profile
+         return { success: false, message: `User with UID ${uid} not found. Email is required to create a new user profile.` };
       }
-      dataToUpdate.name = name;
-      dataToUpdate.email = email;
+      dataToUpdate.email = email; // Ensure email is set
       dataToUpdate.createdAt = serverTimestamp();
       dataToUpdate.authProvider = 'password'; // Assuming password for console users initially
       await setDoc(userRef, dataToUpdate);
-      return { success: true, message: `Successfully created and updated details for ${name || `User UID: ${uid}`}.` };
+      return { success: true, message: `Successfully created and updated details for ${dataToUpdate.name || `User UID: ${uid}`}.` };
     }
     
     await updateDoc(userRef, dataToUpdate);
     
-    const updatedUserDoc = await getDoc(userRef); // Fetch again to get latest name if it was updated
+    const updatedUserDoc = await getDoc(userRef); 
     const updatedName = updatedUserDoc.data()?.name || `User UID: ${uid}`;
 
     return { success: true, message: `Successfully updated details for ${updatedName}.` };
@@ -77,14 +80,4 @@ export async function updateConsoleUserDetails(
     const errorMessage = error instanceof Error ? error.message : "An unknown error occurred.";
     return { success: false, message: `Failed to update user details: ${errorMessage}` };
   }
-}
-
-// Seed function specifically for console users if needed by a script
-export async function seedConsoleUser(userData: User) {
-    const userRef = doc(db, "users", userData.id);
-    await setDoc(userRef, {
-        ...userData,
-        createdAt: userData.createdAt || serverTimestamp(),
-        lastLogin: serverTimestamp(),
-    }, { merge: true }); // Merge to avoid overwriting if exists, but update key fields
 }

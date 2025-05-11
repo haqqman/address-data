@@ -1,32 +1,35 @@
 export interface User {
   id: string;
   email?: string | null;
-  name?: string | null;
+  firstName?: string | null; // Added
+  lastName?: string | null;  // Added
+  name?: string | null; // Kept for backward compatibility or display name if preferred
   role: "user" | "cto" | "administrator" | "manager";
-  createdAt?: Date; // Optional: when user was first created in system
-  lastLogin?: Date; // Optional: last login timestamp
-  authProvider?: string; // e.g., 'google.com', 'github.com', 'password'
+  createdAt?: Date;
+  lastLogin?: Date;
+  authProvider?: string;
+  phoneNumber?: string | null; // Added from console-user-update page
 }
 
-export interface Address { // This type seems to be for verified addresses
-  id: string; // Unique Address Data Code (ADC)
-  physicalAddress?: string; // User-submitted physical address if different from verified
+export interface Address {
+  id: string; 
+  physicalAddress?: string; 
   streetAddress: string;
   areaDistrict: string;
   city: string;
   lga: string; 
   state: string;
   zipCode?: string;
-  country: string; // Default to Nigeria
+  country: string; 
   latitude?: number;
   longitude?: number;
-  status: "verified"; // This type should only contain verified addresses
-  userId?: string; // User who originally submitted this address (optional)
-  originalSubmissionId?: string; // Link to the submission
-  createdAt: Date; // When this verified record was created
-  updatedAt: Date; // When this verified record was last updated
+  status: "verified"; 
+  userId?: string; 
+  originalSubmissionId?: string; 
+  createdAt: Date; 
+  updatedAt: Date; 
   googleMapsAddress?: string; 
-  verificationNotes?: string; // Notes from admin during verification
+  verificationNotes?: string; 
 }
 
 export interface APIKey {
@@ -37,7 +40,7 @@ export interface APIKey {
   publicKey: string;
   privateKeyHash: string; 
   createdAt: Date;
-  lastUsedAt: Date | null; // Changed to Date | null
+  lastUsedAt: Date | null;
   isActive: boolean;
   name?: string; 
 }
@@ -58,14 +61,13 @@ export interface AddressSubmission {
   };
   googleMapsSuggestion?: string;
   status: "pending_review" | "approved" | "rejected";
-  aiFlaggedReason?: string;
+  aiFlaggedReason?: string | null; // Allow null
   submittedAt: Date;
   reviewedAt?: Date | null; 
   reviewerId?: string | null; 
-  reviewNotes?: string | null; // Changed to allow null, ensure it's optional
+  reviewNotes?: string | null;
 }
 
-// Types for Firestore Geography Data
 export interface FirestoreGeographyStateData {
   name: string;
   capital: string;
