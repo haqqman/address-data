@@ -1,3 +1,4 @@
+// app/support/page.tsx
 "use client";
 
 import { PublicHeader } from "@/components/layout/PublicHeader";
@@ -5,10 +6,10 @@ import { Card as NextUICard, CardHeader as NextUICardHeader, CardBody as NextUIC
 import { LifeBuoy, Mail, MessageSquare } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import { useState } from "react"; 
+import { useState } from "react"; // Added for form state if needed
 
 export default function SupportPage() {
-  const [formEmail, setFormEmail] = useState(""); 
+  const [formEmail, setFormEmail] = useState(""); // State for controlled email input
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -28,7 +29,7 @@ export default function SupportPage() {
             <NextUICardBody className="space-y-10 pt-0 text-foreground/90">
               <div className="flex justify-center my-6">
                 <Image
-                  src="https://res.cloudinary.com/seapane-cloud/seapane-bucket/address-data/meta/address-illustration-pana.svg" // Changed from bro to pana as per previous image use
+                  src="https://res.cloudinary.com/seapane-cloud/seapane-bucket/address-data/meta/address-illustration-pana.svg" 
                   alt="Support Illustration"
                   width={300}
                   height={250}
@@ -46,8 +47,8 @@ export default function SupportPage() {
                   <NextUIButton
                     as={Link}
                     href="mailto:support@addressdata.ng"
-                    color="warning" // Use warning for accent color
-                    className="w-full md:w-auto shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out text-primary" // Ensure button text has contrast
+                    color="warning" 
+                    className="w-full md:w-auto shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out text-primary" 
                     radius="md"
                   >
                     support@addressdata.ng
@@ -64,7 +65,7 @@ export default function SupportPage() {
                     as={Link}
                     href="#"
                     variant="bordered"
-                    color="secondary" // Bordered secondary button
+                    color="secondary" 
                     className="w-full md:w-auto shadow-sm hover:shadow-md hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out"
                     isDisabled
                     radius="md"
@@ -85,7 +86,7 @@ export default function SupportPage() {
                       label="First Name"
                       placeholder="Your First Name"
                       variant="bordered"
-                      classNames={{ label: "text-base text-primary" }} // Label color
+                      classNames={{ label: "text-base text-primary" }} 
                     />
                     <NextUIInput
                       id="lastName"
@@ -132,11 +133,11 @@ export default function SupportPage() {
                   <div className="text-center pt-2">
                     <NextUIButton
                       type="submit"
-                      color="warning" // Use warning for accent color
+                      color="warning" 
                       size="lg"
                       isDisabled
                       radius="md"
-                      className="shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out text-primary" // Ensure button text has contrast
+                      className="shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out text-primary" 
                     >
                       Send Message (Form Inactive)
                     </NextUIButton>

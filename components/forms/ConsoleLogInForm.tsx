@@ -1,3 +1,4 @@
+// components/forms/ConsoleLogInForm.tsx
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -10,9 +11,9 @@ import { useState } from "react";
 
 const consoleLogInSchema = z.object({
   email: z.string()
-    .email({ message: "Invalid email address." }) 
-    .transform(val => val.toLowerCase().replace(/\s+/g, '')) 
-    .refine( 
+    .transform(val => val.toLowerCase().replace(/\s+/g, ''))
+    .refine(val => z.string().email().safeParse(val).success, { message: "Invalid email address." })
+    .refine(
       (email) => email.endsWith("@haqqman.com"),
       { message: "Access restricted to @haqqman.com emails." }
     ),
@@ -44,6 +45,7 @@ export function ConsoleLogInForm() {
       if (user) { 
         router.push('/console/dashboard');
       } else {
+        // This case might not be reached if signInWithEmail throws an error or onAuthStateChanged handles it.
         setErrorMessage("Login failed. Please check your credentials.");
       }
     } catch (error: any) {
@@ -104,7 +106,7 @@ export function ConsoleLogInForm() {
         fullWidth 
         isLoading={isLoading}
         disabled={isLoading}
-        className="text-white shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out"
+        className="text-primary shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out"
       >
         {isLoading ? "Logging In..." : "Log In"}
       </NextUIButton>
