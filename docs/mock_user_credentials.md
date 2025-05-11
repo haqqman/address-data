@@ -29,7 +29,7 @@ Repeat these steps for both Abdulhaqq Sule and Joshua Ajorgbor.
 
 Once these users are created in Firebase Authentication, they will be able to log in to the Admin Console at `/console` using these credentials. The application's `ConsoleSignInForm` uses Firebase's `signInWithEmailAndPassword` method, which will verify against the credentials stored in Firebase Authentication.
 
-### Storing Additional Profile Data in Firestore (Optional)
+### Storing Additional Profile Data in Firestore (Optional but Recommended for Roles)
 
 If you need to store additional information about these admin users (like their roles explicitly, phone numbers, etc.) in Firestore, you would:
 1. Create the users in Firebase Authentication as described above.
@@ -61,7 +61,7 @@ If you need to store additional information about these admin users (like their 
      "authProvider": "password"
    }
    ```
-This Firestore data is for application-specific information and **is not used for the login process itself**. The application currently determines the "admin" role based on the `@haqqman.com` email domain in the `AuthContext`.
+This Firestore data is for application-specific information and **is not used for the login process itself**. The application currently determines the "admin" role based on the `@haqqman.com` email domain in the `AuthContext` and the Firestore user document role.
 
 ---
 
@@ -78,4 +78,16 @@ This Firestore data is for application-specific information and **is not used fo
     5.  **Firebase Project:** Ensure your application is connected to the correct Firebase project where these users were created (check your `.env.local` or environment configuration for Firebase). The `.env.local` should be configured with the details for `addressdata-sandbox` project ID.
     6.  **Sign-in Method Enabled:** Ensure "Email/Password" is enabled as a sign-in provider in your Firebase project: Firebase Console -> Authentication -> Sign-in method tab.
 
-The application code correctly calls Firebase for authentication. This error originates from Firebase due to a mismatch with its stored user data or configuration.
+**Error: `Firebase: Error (auth/unauthorized-domain)`**
+
+*   **Meaning:** This error indicates that the domain from which your application is trying to authenticate users (e.g., `localhost` during development, or your deployment domain) is not whitelisted in your Firebase project's authentication settings.
+*   **Solution:**
+    1.  Go to your Firebase Project Console (`addressdata-sandbox`).
+    2.  Navigate to "Authentication" (under "Build" in the sidebar).
+    3.  Go to the "Sign-in method" tab.
+    4.  Scroll down to the "Authorized domains" section.
+    5.  Click "Add domain".
+    6.  Enter the domain you are using. For local development, this is typically `localhost`. If you deploy your app, you'll need to add your production domain (e.g., `your-app-name.vercel.app` or `yourcustomdomain.com`) as well.
+    7.  Click "Add".
+
+The application code correctly calls Firebase for authentication. These errors usually originate from Firebase due to a mismatch with its stored user data or configuration.
