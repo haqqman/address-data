@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/lib/firebase/config";
-import type { APIKey } from "@/types"; // User type not directly needed here
+import type { APIKey } from "@/types"; 
 import { 
   collection, 
   addDoc, 
@@ -13,22 +13,18 @@ import {
   serverTimestamp, 
   Timestamp,
   orderBy,
-  // getDoc, // Not used directly here, but good to have if needed later
   deleteDoc
 } from "firebase/firestore";
 import { randomBytes } from "crypto"; 
 
-// Helper to convert Firestore Timestamps in APIKey objects
 const convertApiKeyTimestamps = (docData: any): APIKey => {
   const data = { ...docData };
-  // Ensure all Timestamp fields are converted
   if (data.createdAt instanceof Timestamp) {
     data.createdAt = data.createdAt.toDate();
   }
   if (data.lastUsedAt instanceof Timestamp) {
     data.lastUsedAt = data.lastUsedAt.toDate();
   }
-  // Handle cases where lastUsedAt might be null or undefined from Firestore
   if (data.lastUsedAt === undefined) data.lastUsedAt = null;
 
   return data as APIKey;
@@ -37,7 +33,6 @@ const convertApiKeyTimestamps = (docData: any): APIKey => {
 const generateKeyPair = (): { publicKey: string; privateKey: string; privateKeyHash: string } => {
   const publicKey = `pk_live_${randomBytes(12).toString('hex')}`;
   const privateKey = `sk_live_${randomBytes(24).toString('hex')}`;
-  // Placeholder for hashing. In a real app, use bcryptjs or similar.
   const privateKeyHash = `hashed_${privateKey.substring(0, 15)}...`; 
   return { publicKey, privateKey, privateKeyHash };
 };
@@ -67,7 +62,7 @@ export async function createApiKey({
       publicKey,
       privateKeyHash, 
       createdAt: serverTimestamp(),
-      lastUsedAt: null, // Initially null
+      lastUsedAt: null, 
       isActive: true,
       name: keyName || "Untitled Key",
     };
@@ -80,8 +75,8 @@ export async function createApiKey({
       apiKey: { 
         id: docRef.id, 
         ...apiKeyData, 
-        createdAt: new Date(), // Use client-side Date for immediate return
-        lastUsedAt: null,      // Keep as null
+        createdAt: new Date(), 
+        lastUsedAt: null,      
         privateKey 
       } 
     };
@@ -108,7 +103,7 @@ export async function getUserApiKeys(userId: string): Promise<APIKey[]> {
   }
 }
 
-export async function getAllApiKeys(): Promise<APIKey[]> { // For console use
+export async function getAllApiKeys(): Promise<APIKey[]> { 
   try {
     const apiKeysCol = collection(db, "apiKeys");
     const q = query(apiKeysCol, orderBy("createdAt", "desc"));
@@ -129,7 +124,7 @@ export async function revokeApiKey(apiKeyId: string): Promise<{ success: boolean
     const keyRef = doc(db, "apiKeys", apiKeyId);
     await updateDoc(keyRef, { 
       isActive: false, 
-      lastUsedAt: serverTimestamp() // Update lastUsedAt on revoke for auditing
+      lastUsedAt: serverTimestamp() 
     });
     return { success: true, message: `API Key ${apiKeyId} revoked successfully.` };
   } catch (error) {
@@ -141,7 +136,7 @@ export async function revokeApiKey(apiKeyId: string): Promise<{ success: boolean
 export async function reactivateApiKey(apiKeyId: string): Promise<{ success: boolean; message: string }> {
     try {
       const keyRef = doc(db, "apiKeys", apiKeyId);
-      await updateDoc(keyRef, { isActive: true }); // lastUsedAt is not reset here, it reflects last actual use or revoke
+      await updateDoc(keyRef, { isActive: true }); 
       return { success: true, message: `API Key ${apiKeyId} reactivated successfully.` };
     } catch (error) {
       console.error("Error reactivating API key in Firestore:", error);

@@ -34,7 +34,7 @@ export default function ConsoleUserSubmissionsPage() {
       // The layout already protects this route for admins.
       const data = await getAddressSubmissions("mockConsoleId"); 
       setAllSubmissions(data);
-    } catch (err)_ {
+    } catch (err) {
       setError("Failed to load user submissions.");
       console.error(err);
     } finally {

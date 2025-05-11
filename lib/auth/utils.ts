@@ -1,4 +1,3 @@
-// lib/auth/utils.ts
 import { auth, db } from '@/lib/firebase/config'; // Added db
 import type { User as FirebaseUser } from 'firebase/auth';
 import type { User } from '@/types';
@@ -25,9 +24,9 @@ export async function getCurrentUser(): Promise<User | null> {
           if (firebaseUser.email === "webmanager@haqqman.com") {
             role = 'cto';
           } else if (firebaseUser.email === "joshua+sandbox@haqqman.com") {
-            role = 'manager';
-          } else if (firebaseUser.email?.endsWith('@haqqman.com')) {
             role = 'administrator';
+          } else if (firebaseUser.email?.endsWith('@haqqman.com')) {
+            role = 'manager';
           }
         }
 

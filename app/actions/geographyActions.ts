@@ -5,13 +5,14 @@ import type { GeographyState, GeographyLGA, GeographyCity, FirestoreGeographySta
 import { 
   collection, 
   doc, 
-  setDoc, // Changed from addDoc/updateDoc for add operations
+  setDoc, 
   getDocs, 
   updateDoc, 
   deleteDoc,
   query,
-  where,
-  orderBy
+  orderBy,
+  runTransaction,
+  writeBatch
 } from "firebase/firestore";
 
 const GEOGRAPHY_COLLECTION = "nigerianGeography";
@@ -21,10 +22,9 @@ const CITIES_SUBCOLLECTION = "cities";
 // --- State Actions ---
 export async function addState(stateData: Omit<FirestoreGeographyStateData, 'id'>): Promise<GeographyState> {
   try {
-    const stateId = stateData.name.toLowerCase().replace(/\s+/g, "-");
+    const stateId = stateData.name.toLowerCase().replace(/\s+/g, "-").replace(/[^\w-]+/g, '');
     const stateRef = doc(db, GEOGRAPHY_COLLECTION, stateId);
     
-    // Use setDoc to create or overwrite the document with the predictable ID
     await setDoc(stateRef, stateData);
 
     return { id: stateId, ...stateData };
@@ -61,11 +61,16 @@ export async function updateState(stateId: string, dataToUpdate: Partial<Firesto
 
 export async function deleteState(stateId: string): Promise<void> {
   try {
-    const lgasSnapshot = await getDocs(collection(db, GEOGRAPHY_COLLECTION, stateId, LGAS_SUBCOLLECTION));
-    if (!lgasSnapshot.empty) {
-        throw new Error("Cannot delete state: It contains LGAs. Delete LGAs first.");
-    }
-    await deleteDoc(doc(db, GEOGRAPHY_COLLECTION, stateId));
+    const stateRef = doc(db, GEOGRAPHY_COLLECTION, stateId);
+    await runTransaction(db, async (transaction) => {
+      const lgasSnapshot = await getDocs(collection(stateRef, LGAS_SUBCOLLECTION));
+      if (!lgasSnapshot.empty) {
+          // To cascade delete, one would iterate and delete each LGA, and recursively its cities.
+          // For now, we prevent deletion if children exist as per original logic.
+          throw new Error("Cannot delete state: It contains LGAs. Delete LGAs first or implement cascade delete.");
+      }
+      transaction.delete(stateRef);
+    });
   } catch (error) {
     console.error("Error deleting state:", error);
     throw error; 
@@ -75,11 +80,10 @@ export async function deleteState(stateId: string): Promise<void> {
 // --- LGA Actions ---
 export async function addLga(stateId: string, lgaData: Omit<FirestoreGeographyLGAData, 'id' | 'stateId'>): Promise<GeographyLGA> {
   try {
-    const lgaId = lgaData.name.toLowerCase().replace(/\s+/g, "-").replace(/\//g, "-");
+    const lgaId = lgaData.name.toLowerCase().replace(/\s+/g, "-").replace(/[^\w-]+/g, '');
     const lgaRef = doc(db, GEOGRAPHY_COLLECTION, stateId, LGAS_SUBCOLLECTION, lgaId);
     const dataToSet = { ...lgaData, stateId };
     
-    // Use setDoc to create or overwrite the document with the predictable ID
     await setDoc(lgaRef, dataToSet);
 
     return { id: lgaId, ...dataToSet };
@@ -109,7 +113,8 @@ export async function updateLga(stateId: string, lgaId: string, dataToUpdate: Pa
   try {
     const lgaRef = doc(db, GEOGRAPHY_COLLECTION, stateId, LGAS_SUBCOLLECTION, lgaId);
     await updateDoc(lgaRef, dataToUpdate);
-  } catch (error) {
+  } catch (error)
+ {
     console.error("Error updating LGA:", error);
     throw new Error("Failed to update LGA.");
   }
@@ -117,11 +122,14 @@ export async function updateLga(stateId: string, lgaId: string, dataToUpdate: Pa
 
 export async function deleteLga(stateId: string, lgaId: string): Promise<void> {
   try {
-    const citiesSnapshot = await getDocs(collection(db, GEOGRAPHY_COLLECTION, stateId, LGAS_SUBCOLLECTION, lgaId, CITIES_SUBCOLLECTION));
-    if (!citiesSnapshot.empty) {
-        throw new Error("Cannot delete LGA: It contains cities/towns. Delete them first.");
-    }
-    await deleteDoc(doc(db, GEOGRAPHY_COLLECTION, stateId, LGAS_SUBCOLLECTION, lgaId));
+    const lgaRef = doc(db, GEOGRAPHY_COLLECTION, stateId, LGAS_SUBCOLLECTION, lgaId);
+    await runTransaction(db, async (transaction) => {
+      const citiesSnapshot = await getDocs(collection(lgaRef, CITIES_SUBCOLLECTION));
+      if (!citiesSnapshot.empty) {
+        throw new Error("Cannot delete LGA: It contains cities/towns. Delete them first or implement cascade delete.");
+      }
+      transaction.delete(lgaRef);
+    });
   } catch (error) {
     console.error("Error deleting LGA:", error);
     throw error;
@@ -131,11 +139,10 @@ export async function deleteLga(stateId: string, lgaId: string): Promise<void> {
 // --- City Actions ---
 export async function addCity(stateId: string, lgaId: string, cityData: Omit<FirestoreGeographyCityData, 'id' | 'stateId' | 'lgaId'>): Promise<GeographyCity> {
   try {
-    const cityId = cityData.name.toLowerCase().replace(/\s+/g, "-").replace(/\//g, "-");
+    const cityId = cityData.name.toLowerCase().replace(/\s+/g, "-").replace(/[^\w-]+/g, '');
     const cityRef = doc(db, GEOGRAPHY_COLLECTION, stateId, LGAS_SUBCOLLECTION, lgaId, CITIES_SUBCOLLECTION, cityId);
     const dataToSet = { ...cityData, stateId, lgaId };
 
-    // Use setDoc to create or overwrite the document with the predictable ID
     await setDoc(cityRef, dataToSet);
 
     return { id: cityId, ...dataToSet };
@@ -179,4 +186,21 @@ export async function deleteCity(stateId: string, lgaId: string, cityId: string)
     console.error("Error deleting City:", error);
     throw new Error("Failed to delete City.");
   }
+}
+
+// Helper for seeding, if used directly by a script.
+export async function seedBatchGeography(geographyBatch: any[]) {
+    const batch = writeBatch(db);
+    geographyBatch.forEach(item => {
+        let itemRef;
+        if (item.type === 'state') {
+            itemRef = doc(db, GEOGRAPHY_COLLECTION, item.id);
+        } else if (item.type === 'lga') {
+            itemRef = doc(db, GEOGRAPHY_COLLECTION, item.stateId, LGAS_SUBCOLLECTION, item.id);
+        } else { // city
+            itemRef = doc(db, GEOGRAPHY_COLLECTION, item.stateId, LGAS_SUBCOLLECTION, item.lgaId, CITIES_SUBCOLLECTION, item.id);
+        }
+        batch.set(itemRef, item.data);
+    });
+    await batch.commit();
 }
