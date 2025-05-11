@@ -9,7 +9,7 @@ export default function DocsPage() {
       <PublicHeader />
       <main className="flex-grow container mx-auto px-4 py-12">
         <div className="max-w-3xl mx-auto">
-          <Card className="shadow-xl">
+          <Card className="shadow-xl rounded-xl">
             <CardHeader className="text-center">
               <div className="inline-flex items-center justify-center rounded-full bg-primary/10 p-3 mb-4 self-center">
                 <BookOpen className="h-10 w-10 text-primary" />
@@ -22,7 +22,7 @@ export default function DocsPage() {
             <CardContent className="space-y-8 text-lg">
               <section>
                 <h2 className="text-2xl font-semibold mb-3 flex items-center">
-                  <Code2 className="mr-2 h-6 w-6 text-accent" /> Introduction
+                  <Code2 className="mr-2 h-6 w-6 text-primary" /> Introduction
                 </h2>
                 <p>
                   Welcome to the Address Data API documentation. Our API provides endpoints for address validation, 
@@ -35,7 +35,7 @@ export default function DocsPage() {
 
               <section>
                 <h2 className="text-2xl font-semibold mb-3 flex items-center">
-                  <Code2 className="mr-2 h-6 w-6 text-accent" /> Authentication
+                  <Code2 className="mr-2 h-6 w-6 text-primary" /> Authentication
                 </h2>
                 <p>
                   To authenticate your API requests, include your Public Key in the <code className="bg-muted px-1 rounded-sm">X-Public-Key</code> header 
@@ -55,7 +55,7 @@ export default function DocsPage() {
 
               <section>
                 <h2 className="text-2xl font-semibold mb-3 flex items-center">
-                  <Code2 className="mr-2 h-6 w-6 text-accent" /> Endpoints
+                  <Code2 className="mr-2 h-6 w-6 text-primary" /> Endpoints
                 </h2>
                 <div className="space-y-4">
                   <div>
@@ -82,16 +82,19 @@ export default function DocsPage() {
       </main>
       <footer className="py-8 border-t bg-background">
         <div className="container mx-auto px-4 text-center text-muted-foreground">
-          <p>
+          <p className="mb-2">
             Built for Nigeria, for developers. Powered by{' '}
             <a
               href="https://searpane.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="underline hover:text-primary"
+              className="text-primary hover:text-primary/80 no-underline"
             >
               Seapane
             </a>
+          </p>
+          <p className="text-sm">
+            &copy; {new Date().getFullYear()} Address Data. All Rights Reserved.
           </p>
         </div>
       </footer>

@@ -14,7 +14,7 @@ export default function SupportPage() {
       <PublicHeader />
       <main className="flex-grow container mx-auto px-4 py-12">
         <div className="max-w-3xl mx-auto">
-          <Card className="shadow-xl">
+          <Card className="shadow-xl rounded-xl">
             <CardHeader className="text-center">
               <div className="inline-flex items-center justify-center rounded-full bg-primary/10 p-3 mb-4 self-center">
                 <LifeBuoy className="h-10 w-10 text-primary" />
@@ -28,18 +28,18 @@ export default function SupportPage() {
               <section className="grid md:grid-cols-2 gap-6">
                 <div className="space-y-3">
                   <h2 className="text-2xl font-semibold flex items-center">
-                    <Mail className="mr-2 h-6 w-6 text-accent" /> Email Support
+                    <Mail className="mr-2 h-6 w-6 text-primary" /> Email Support
                   </h2>
                   <p>
                     For general inquiries, technical support, or API integration help, please email us. We aim to respond within 24-48 business hours.
                   </p>
-                  <Button asChild className="w-full md:w-auto">
+                  <Button asChild className="w-full md:w-auto bg-primary text-primary-foreground hover:bg-primary/90">
                     <Link href="mailto:support@addressdata.ng">support@addressdata.ng</Link>
                   </Button>
                 </div>
                 <div className="space-y-3">
                   <h2 className="text-2xl font-semibold flex items-center">
-                    <MessageSquare className="mr-2 h-6 w-6 text-accent" /> Community Forum
+                    <MessageSquare className="mr-2 h-6 w-6 text-primary" /> Community Forum
                   </h2>
                   <p>
                     Join our community forum to ask questions, share solutions, and connect with other developers and users of Address Data.
@@ -72,7 +72,7 @@ export default function SupportPage() {
                     <Textarea id="message" placeholder="Describe your issue or question in detail..." rows={5} className="mt-1" />
                   </div>
                   <div className="text-center">
-                    <Button type="submit" size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground" disabled>
+                    <Button type="submit" size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground" disabled>
                       Send Message (Form Inactive)
                     </Button>
                   </div>
@@ -85,16 +85,19 @@ export default function SupportPage() {
       </main>
       <footer className="py-8 border-t bg-background">
         <div className="container mx-auto px-4 text-center text-muted-foreground">
-          <p>
+          <p className="mb-2">
             Built for Nigeria, for developers. Powered by{' '}
             <a
               href="https://searpane.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="underline hover:text-primary"
+              className="text-primary hover:text-primary/80 no-underline"
             >
               Seapane
             </a>
+          </p>
+          <p className="text-sm">
+            &copy; {new Date().getFullYear()} Address Data. All Rights Reserved.
           </p>
         </div>
       </footer>

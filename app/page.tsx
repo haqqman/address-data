@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckCircle, DatabaseZap, SearchCheck, KeyRound, MapPin, ShieldCheck } from "lucide-react";
+import { CheckCircle, DatabaseZap, SearchCheck, KeyRound, MapPin, ShieldCheck, Building2 } from "lucide-react";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 
 export default function HomePage() {
@@ -47,6 +47,9 @@ export default function HomePage() {
         {/* Hero Section */}
         <section className="py-20 md:py-32 bg-gradient-to-br from-background to-secondary/30">
           <div className="container mx-auto px-4 text-center">
+            <div className="flex justify-center mb-6">
+              <Building2 className="h-16 w-16 text-primary" />
+            </div>
             <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-foreground">
               The Future of Nigerian Address Data
             </h1>
@@ -54,11 +57,11 @@ export default function HomePage() {
               Address Data provides developers, businesses, and admins with tools to validate, store, and retrieve Nigerian address data efficiently and accurately.
             </p>
             <div className="mt-10 flex justify-center space-x-4">
-              <Button size="lg" asChild className="bg-accent hover:bg-accent/90 text-accent-foreground">
+              <Button size="lg" asChild className="bg-primary hover:bg-primary/90 text-primary-foreground">
                 <Link href="/login">Get Started</Link>
               </Button>
-              <Button size="lg" variant="outline" asChild>
-                <Link href="/#features">Learn More</Link>
+              <Button size="lg" variant="outline" asChild className="border-primary text-primary hover:bg-primary/10">
+                <Link href="#features">Learn More</Link>
               </Button>
             </div>
           </div>
@@ -75,7 +78,7 @@ export default function HomePage() {
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {features.map((feature, index) => (
-                <Card key={index} className="shadow-lg hover:shadow-xl transition-shadow duration-300">
+                <Card key={index} className="shadow-lg hover:shadow-xl transition-shadow duration-300 rounded-xl">
                   <CardHeader>
                     <div className="flex items-center justify-center w-16 h-16 bg-primary/10 rounded-full mb-4 mx-auto">
                        {feature.icon}
@@ -114,7 +117,7 @@ export default function HomePage() {
                     </li>
                   ))}
                 </ul>
-                <Button size="lg" asChild className="bg-accent hover:bg-accent/90 text-accent-foreground">
+                <Button size="lg" asChild className="bg-primary hover:bg-primary/90 text-primary-foreground">
                   <Link href="/docs">View API Documentation</Link>
                 </Button>
               </div>
@@ -138,10 +141,10 @@ export default function HomePage() {
             <h2 className="text-3xl md:text-4xl font-bold mb-6">
               Ready to Elevate Your Address Handling?
             </h2>
-            <p className="text-lg md:text-xl mb-10 max-w-2xl mx-auto text-primary-foreground/80">
+            <p className="text-lg md:text-xl mb-10 max-w-2xl mx-auto text-primary-foreground/90">
               Join Address Data today and experience the difference accurate, structured address data can make.
             </p>
-            <Button size="lg" variant="secondary" className="bg-accent hover:bg-accent/90 text-accent-foreground" asChild>
+            <Button size="lg" variant="secondary" className="bg-white text-primary hover:bg-white/90" asChild>
               <Link href="/login">Access Portal</Link>
             </Button>
           </div>
@@ -151,16 +154,19 @@ export default function HomePage() {
       {/* Footer */}
       <footer className="py-8 border-t bg-background">
         <div className="container mx-auto px-4 text-center text-muted-foreground">
-          <p>
+          <p className="mb-2">
             Built for Nigeria, for developers. Powered by{' '}
             <a
               href="https://searpane.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="underline hover:text-primary"
+              className="text-primary hover:text-primary/80 no-underline"
             >
               Seapane
             </a>
+          </p>
+          <p className="text-sm">
+            &copy; {new Date().getFullYear()} Address Data. All Rights Reserved.
           </p>
         </div>
       </footer>

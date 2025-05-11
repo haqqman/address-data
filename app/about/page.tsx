@@ -9,7 +9,7 @@ export default function AboutPage() {
       <PublicHeader />
       <main className="flex-grow container mx-auto px-4 py-12">
         <div className="max-w-3xl mx-auto">
-          <Card className="shadow-xl">
+          <Card className="shadow-xl rounded-xl">
             <CardHeader className="text-center">
               <div className="inline-flex items-center justify-center rounded-full bg-primary/10 p-3 mb-4 self-center">
                 <Info className="h-10 w-10 text-primary" />
@@ -51,16 +51,19 @@ export default function AboutPage() {
       </main>
       <footer className="py-8 border-t bg-background">
         <div className="container mx-auto px-4 text-center text-muted-foreground">
-          <p>
+          <p className="mb-2">
             Built for Nigeria, for developers. Powered by{' '}
             <a
               href="https://searpane.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="underline hover:text-primary"
+              className="text-primary hover:text-primary/80 no-underline"
             >
               Seapane
             </a>
+          </p>
+          <p className="text-sm">
+            &copy; {new Date().getFullYear()} Address Data. All Rights Reserved.
           </p>
         </div>
       </footer>
