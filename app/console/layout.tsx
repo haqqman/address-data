@@ -1,24 +1,50 @@
 
-import type { ReactNode } from 'react';
-import { ConsoleHeader } from "@/components/layout/ConsoleHeader"; // Updated import
-import { checkAdmin } from '@/lib/auth/utils';
-import { redirect } from 'next/navigation';
+"use client";
 
-export default async function ConsoleLayout({ // Renamed from AdminLayout
+import type { ReactNode } from 'react';
+import { useEffect, useState } from 'react';
+import { ConsoleHeader } from "@/components/layout/ConsoleHeader";
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/contexts/auth-context';
+import { Spinner } from "@nextui-org/react";
+
+export default function ConsoleLayout({
   children,
 }: {
   children: ReactNode;
 }) {
-  const isAdmin = await checkAdmin();
+  const { user, loading } = useAuth();
+  const router = useRouter();
+  const [displayYear, setDisplayYear] = useState<number | null>(null);
 
-  if (!isAdmin) {
-    // Redirect to console login if not an admin
-    redirect('/console'); 
+  useEffect(() => {
+    setDisplayYear(new Date().getFullYear());
+  }, []);
+
+  useEffect(() => {
+    if (!loading) {
+      if (!user || user.role !== 'admin') {
+        router.push('/console'); // Redirect to console login page
+      }
+    }
+  }, [user, loading, router]);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Spinner label="Loading Console..." color="warning" labelColor="warning" />
+      </div>
+    );
+  }
+
+  if (!user || user.role !== 'admin') {
+    // This will be brief as the useEffect above will redirect.
+    return null;
   }
 
   return (
     <div className="flex flex-col min-h-screen">
-      <ConsoleHeader /> {/* Use ConsoleHeader */}
+      <ConsoleHeader />
       <main className="flex-grow container mx-auto px-4 py-8">
         {children}
       </main>
@@ -36,7 +62,7 @@ export default async function ConsoleLayout({ // Renamed from AdminLayout
             </a>
           </p>
           <p className="text-sm">
-            &copy; {new Date().getFullYear()} Address Data. All Rights Reserved.
+            &copy; {displayYear !== null ? displayYear : new Date().getFullYear()} Address Data. All Rights Reserved.
           </p>
         </div>
       </footer>

@@ -1,18 +1,46 @@
 
-import type { ReactNode } from 'react';
-import { AppHeader } from "@/components/layout/AppHeader";
-import { redirect } from 'next/navigation';
-import { getCurrentUser } from '@/lib/auth/utils';
+"use client";
 
-export default async function DashboardLayout({
+import type { ReactNode } from 'react';
+import { useEffect, useState } from 'react';
+import { AppHeader } from "@/components/layout/AppHeader";
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/contexts/auth-context';
+import { Spinner } from "@nextui-org/react";
+
+export default function DashboardLayout({
   children,
 }: {
   children: ReactNode;
 }) {
-  const user = await getCurrentUser();
-  if (!user) {
-    redirect('/login');
+  const { user, loading } = useAuth();
+  const router = useRouter();
+  const [displayYear, setDisplayYear] = useState<number | null>(null);
+
+  useEffect(() => {
+    setDisplayYear(new Date().getFullYear());
+  }, []);
+
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push('/login');
+    }
+  }, [user, loading, router]);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Spinner label="Loading Dashboard..." color="primary" labelColor="primary" />
+      </div>
+    );
   }
+
+  if (!user) {
+    // This will be brief as the useEffect above will redirect.
+    // You could return a loading spinner here too, or null.
+    return null; 
+  }
+
   return (
     <div className="flex flex-col min-h-screen">
       <AppHeader />
@@ -33,7 +61,7 @@ export default async function DashboardLayout({
             </a>
           </p>
           <p className="text-sm">
-            &copy; {new Date().getFullYear()} Address Data. All Rights Reserved.
+            &copy; {displayYear !== null ? displayYear : new Date().getFullYear()} Address Data. All Rights Reserved.
           </p>
         </div>
       </footer>
