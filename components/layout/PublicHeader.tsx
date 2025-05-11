@@ -1,8 +1,7 @@
-
 "use client";
 
 import Link from "next/link";
-import { Button as NextUIButton } from "@nextui-org/react"; // Changed import
+import { Button as NextUIButton } from "@nextui-org/react"; 
 import Image from "next/image";
 
 export function PublicHeader() {
@@ -28,7 +27,13 @@ export function PublicHeader() {
           <NextUIButton variant="light" as={Link} href="/support" className="text-foreground">
             Get Help
           </NextUIButton>
-          <NextUIButton color="warning" as={Link} href="/login" radius="md">
+          <NextUIButton 
+            color="warning" 
+            as={Link} 
+            href="/login" 
+            radius="md"
+            className="text-white shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out"
+          >
             Portal
           </NextUIButton>
         </nav>
@@ -36,5 +41,3 @@ export function PublicHeader() {
     </header>
   );
 }
-
-    

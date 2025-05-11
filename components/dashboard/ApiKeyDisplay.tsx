@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
@@ -43,7 +42,7 @@ export function ApiKeyDisplay() {
 
   const handleCopyToClipboard = (text: string, keyName: string) => {
     navigator.clipboard.writeText(text);
-    alert(`${keyName} copied to clipboard!`); // Simple alert, replace with toast if available
+    alert(`${keyName} copied to clipboard!`); 
   };
 
   const handleGenerateNewKey = async () => {
@@ -64,8 +63,8 @@ export function ApiKeyDisplay() {
       if (result.success && result.apiKey && result.apiKey.privateKey) {
         setNewlyGeneratedKey({ publicKey: result.apiKey.publicKey, privateKey: result.apiKey.privateKey });
         setShowPrivateKey(true);
-        setKeyNameToCreate(""); // Reset name input
-        fetchKeys(); // Refresh the list of keys
+        setKeyNameToCreate(""); 
+        fetchKeys(); 
       } else {
         setError(result.message || "Failed to generate new API key.");
       }
@@ -86,7 +85,7 @@ export function ApiKeyDisplay() {
       const result = await revokeApiKey(keyId);
       if (result.success) {
         alert(result.message);
-        fetchKeys(); // Refresh list
+        fetchKeys(); 
       } else {
         setError(result.message || "Failed to revoke API key.");
       }
@@ -169,7 +168,7 @@ export function ApiKeyDisplay() {
                 <PopoverTrigger>
                     <NextUIButton 
                     color="warning"
-                    className="text-white w-full sm:w-auto"
+                    className="text-white w-full sm:w-auto shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out"
                     isLoading={isGenerating} 
                     disabled={isGenerating || !user}
                     startContent={!isGenerating ? <PlusCircle className="h-4 w-4" /> : null}
@@ -181,7 +180,12 @@ export function ApiKeyDisplay() {
                     <div className="px-1 py-2">
                     <div className="text-small font-bold">Confirm Generation</div>
                     <div className="text-tiny">This will create a new set of API keys.</div>
-                    <NextUIButton size="sm" color="warning" className="mt-2 text-white" onPress={handleGenerateNewKey} fullWidth>
+                    <NextUIButton 
+                        size="sm" 
+                        color="warning" 
+                        className="mt-2 text-white w-full shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out" 
+                        onPress={handleGenerateNewKey}
+                    >
                         Confirm &amp; Generate
                     </NextUIButton>
                     </div>
@@ -201,7 +205,7 @@ export function ApiKeyDisplay() {
         </NextUICardHeader>
         <NextUICardBody className="p-6">
           {isLoadingKeys && <div className="flex justify-center items-center py-8"><Spinner label="Loading your keys..." color="warning" /></div>}
-          {!isLoadingKeys && error && <p className="text-danger text-center py-4">{error}</p>}
+          {!isLoadingKeys && error && <p className="text-danger-500 text-center py-4">{error}</p>}
           {!isLoadingKeys && !error && userApiKeys.length === 0 && (
             <p className="text-foreground-500 text-center py-4">You have not generated any API keys yet.</p>
           )}

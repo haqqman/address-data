@@ -1,4 +1,3 @@
-
 "use client";
 
 import { Button as NextUIButton } from "@nextui-org/react";
@@ -58,6 +57,7 @@ export function LogInButtons() {
         disabled={isLoadingGoogle || isLoadingGitHub}
         isLoading={isLoadingGoogle}
         startContent={!isLoadingGoogle ? <Chrome className="h-5 w-5" /> : null}
+        className="shadow-sm hover:shadow-md hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out"
       >
         {isLoadingGoogle ? "Logging in..." : "Log in with Google"}
       </NextUIButton>
@@ -68,6 +68,7 @@ export function LogInButtons() {
         disabled={isLoadingGoogle || isLoadingGitHub}
         isLoading={isLoadingGitHub}
         startContent={!isLoadingGitHub ? <Github className="h-5 w-5" /> : null}
+        className="shadow-sm hover:shadow-md hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out"
       >
         {isLoadingGitHub ? "Logging in..." : "Log in with GitHub"}
       </NextUIButton>

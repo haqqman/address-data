@@ -1,4 +1,3 @@
-
 "use client"; 
 
 import { useState, useEffect, useCallback } from "react";
@@ -54,7 +53,7 @@ export default function DashboardPage() {
           as={Link} 
           href="/dashboard/submit-address" 
           color="warning" 
-          className="text-white"
+          className="text-white shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out"
           startContent={<PlusCircle className="h-4 w-4" />}
         >
           Submit New Address
@@ -87,4 +86,3 @@ export default function DashboardPage() {
     </div>
   );
 }
-

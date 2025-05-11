@@ -1,4 +1,3 @@
-
 "use client";
 
 import type { APIKey } from "@/types";
@@ -13,12 +12,11 @@ import {
 import { format } from "date-fns";
 import { KeyRound, Trash2, RotateCcw, ShieldOff, ShieldCheck, User, Edit3 } from "lucide-react";
 import { useState } from "react";
-import { revokeApiKey, reactivateApiKey, deleteApiKey } from "@/app/actions/apiKeyActions"; // Import new actions
+import { revokeApiKey, reactivateApiKey, deleteApiKey } from "@/app/actions/apiKeyActions"; 
 
 interface ApiKeyManagementTableProps {
-  apiKeys: APIKey[]; // No longer needs userName/userEmail directly from props, APIKey type updated
+  apiKeys: APIKey[]; 
   onActionComplete: () => void;
-  // onEditKey: (key: APIKey) => void; // For future editing if needed
 }
 
 export function ApiKeyManagementTable({ apiKeys, onActionComplete }: ApiKeyManagementTableProps) {
@@ -39,10 +37,10 @@ export function ApiKeyManagementTable({ apiKeys, onActionComplete }: ApiKeyManag
     if (!selectedKey) return;
     const result = await revokeApiKey(selectedKey.id);
     if (result.success) {
-      alert(result.message); // Replace with toast
+      alert(result.message); 
       onActionComplete();
     } else {
-      alert(`Error: ${result.message}`); // Replace with toast
+      alert(`Error: ${result.message}`); 
     }
     onRevokeModalClose();
     setSelectedKey(null);
@@ -52,10 +50,10 @@ export function ApiKeyManagementTable({ apiKeys, onActionComplete }: ApiKeyManag
     if (!selectedKey) return;
     const result = await reactivateApiKey(selectedKey.id);
      if (result.success) {
-      alert(result.message); // Replace with toast
+      alert(result.message); 
       onActionComplete();
     } else {
-      alert(`Error: ${result.message}`); // Replace with toast
+      alert(`Error: ${result.message}`); 
     }
     onReactivateModalClose();
     setSelectedKey(null);
@@ -65,10 +63,10 @@ export function ApiKeyManagementTable({ apiKeys, onActionComplete }: ApiKeyManag
     if (!selectedKey) return;
     const result = await deleteApiKey(selectedKey.id);
      if (result.success) {
-      alert(result.message); // Replace with toast
+      alert(result.message); 
       onActionComplete();
     } else {
-      alert(`Error: ${result.message}`); // Replace with toast
+      alert(`Error: ${result.message}`); 
     }
     onDeleteModalClose();
     setSelectedKey(null);
@@ -130,13 +128,7 @@ export function ApiKeyManagementTable({ apiKeys, onActionComplete }: ApiKeyManag
                       </NextUIButton>
                     </Tooltip>
                   )}
-                   {/* <Tooltip content="Edit Key Name" placement="top">
-                      <NextUIButton isIconOnly size="sm" variant="light" color="default"
-                        onPress={() => onEditKey(key)} aria-label="Edit API Key Name"
-                      >
-                        <Edit3 className="h-4 w-4" />
-                      </NextUIButton>
-                  </Tooltip> */}
+                  
                   <Tooltip content="Delete Key" placement="top">
                       <NextUIButton isIconOnly size="sm" variant="light" color="danger"
                         onPress={() => openModal(key, 'delete')} aria-label="Delete API Key"
@@ -151,7 +143,7 @@ export function ApiKeyManagementTable({ apiKeys, onActionComplete }: ApiKeyManag
         </NextUITable>
       </ScrollShadow>
 
-      {/* Revoke Modal */}
+      
       <Modal isOpen={isRevokeModalOpen} onOpenChange={onRevokeModalOpenChange} backdrop="blur">
         <ModalContent>
           {(onClose) => (
@@ -163,14 +155,18 @@ export function ApiKeyManagementTable({ apiKeys, onActionComplete }: ApiKeyManag
               </ModalBody>
               <ModalFooter>
                 <NextUIButton variant="light" onPress={onClose}>Cancel</NextUIButton>
-                <NextUIButton color="warning" onPress={handleRevoke}>Revoke Key</NextUIButton>
+                <NextUIButton 
+                    color="warning" 
+                    onPress={handleRevoke}
+                    className="shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out"
+                >Revoke Key</NextUIButton>
               </ModalFooter>
             </>
           )}
         </ModalContent>
       </Modal>
 
-      {/* Reactivate Modal */}
+      
       <Modal isOpen={isReactivateModalOpen} onOpenChange={onReactivateModalOpenChange} backdrop="blur">
         <ModalContent>
           {(onClose) => (
@@ -182,14 +178,18 @@ export function ApiKeyManagementTable({ apiKeys, onActionComplete }: ApiKeyManag
               </ModalBody>
               <ModalFooter>
                 <NextUIButton variant="light" onPress={onClose}>Cancel</NextUIButton>
-                <NextUIButton color="success" onPress={handleReactivate}>Reactivate Key</NextUIButton>
+                <NextUIButton 
+                    color="success" 
+                    onPress={handleReactivate}
+                    className="text-white shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out"
+                >Reactivate Key</NextUIButton>
               </ModalFooter>
             </>
           )}
         </ModalContent>
       </Modal>
       
-      {/* Delete Modal */}
+      
       <Modal isOpen={isDeleteModalOpen} onOpenChange={onDeleteModalOpenChange} backdrop="blur">
         <ModalContent>
           {(onClose) => (
@@ -201,7 +201,11 @@ export function ApiKeyManagementTable({ apiKeys, onActionComplete }: ApiKeyManag
               </ModalBody>
               <ModalFooter>
                 <NextUIButton variant="light" onPress={onClose}>Cancel</NextUIButton>
-                <NextUIButton color="danger" onPress={handleDelete}>Delete Key</NextUIButton>
+                <NextUIButton 
+                    color="danger" 
+                    onPress={handleDelete}
+                    className="text-white shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out"
+                >Delete Key</NextUIButton>
               </ModalFooter>
             </>
           )}

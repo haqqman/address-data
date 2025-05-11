@@ -1,4 +1,3 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -6,7 +5,7 @@ import { useForm, Controller } from "react-hook-form";
 import * as z from "zod";
 import { Button as NextUIButton, Input as NextUIInput, Card as NextUICard, CardBody as NextUICardBody } from "@nextui-org/react";
 import { submitAddress } from "@/app/actions/addressActions";
-import { CheckCircle, Loader2, AlertTriangle, Info } from "lucide-react"; // Added Info icon
+import { CheckCircle, Loader2, AlertTriangle, Info } from "lucide-react"; 
 import { useState } from "react";
 import { useAuth } from "@/contexts/auth-context"; 
 
@@ -69,7 +68,7 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
       setSubmissionStatus({ type: "success", message: result.message || "Address submitted successfully!" });
       reset();
       if (onSubmissionSuccess) {
-        setTimeout(() => { // Add a small delay so user can see the message
+        setTimeout(() => { 
             onSubmissionSuccess();
         }, 2000); 
       }
@@ -205,13 +204,19 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
                 variant="bordered"
                 isInvalid={!!errors.country}
                 errorMessage={errors.country?.message}
-                isDisabled // Country is fixed to Nigeria
+                isDisabled 
                 fullWidth
               />
             )}
           />
         </div>
-        <NextUIButton type="submit" color="warning" className="w-full md:w-auto text-white" isLoading={isSubmitting} disabled={isSubmitting || !user}>
+        <NextUIButton 
+          type="submit" 
+          color="warning" 
+          className="w-full md:w-auto text-white shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out" 
+          isLoading={isSubmitting} 
+          disabled={isSubmitting || !user}
+        >
           {isSubmitting ? "Submitting..." : "Submit"}
         </NextUIButton>
       </form>

@@ -5,10 +5,10 @@ import { Card as NextUICard, CardHeader as NextUICardHeader, CardBody as NextUIC
 import { LifeBuoy, Mail, MessageSquare } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import { useState } from "react"; // Import useState
+import { useState } from "react"; 
 
 export default function SupportPage() {
-  const [formEmail, setFormEmail] = useState(""); // State for email input
+  const [formEmail, setFormEmail] = useState(""); 
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -47,7 +47,7 @@ export default function SupportPage() {
                     as={Link}
                     href="mailto:support@addressdata.ng"
                     color="primary"
-                    className="w-full md:w-auto"
+                    className="w-full md:w-auto shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out"
                     radius="md"
                   >
                     support@addressdata.ng
@@ -64,7 +64,7 @@ export default function SupportPage() {
                     as={Link}
                     href="#"
                     variant="bordered"
-                    className="w-full md:w-auto"
+                    className="w-full md:w-auto shadow-sm hover:shadow-md hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out"
                     isDisabled
                     radius="md"
                   >
@@ -135,6 +135,7 @@ export default function SupportPage() {
                       size="lg"
                       isDisabled
                       radius="md"
+                      className="shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out"
                     >
                       Send Message (Form Inactive)
                     </NextUIButton>

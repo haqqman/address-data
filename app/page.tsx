@@ -1,5 +1,4 @@
-
-"use client"; // Added "use client" directive
+"use client"; 
 
 import Image from "next/image";
 import Link from "next/link";
@@ -71,10 +70,25 @@ export default function HomePage() {
               Address Data provides developers, businesses, and operations with tools to validate, store, and retrieve Nigerian address data efficiently and accurately.
             </p>
             <div className="mt-10 flex justify-center space-x-4">
-              <NextUIButton size="lg" color="primary" as={Link} href="/login" radius="md">
+              <NextUIButton 
+                size="lg" 
+                color="primary" 
+                as={Link} 
+                href="/login" 
+                radius="md"
+                className="shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out"
+              >
                 Get Started
               </NextUIButton>
-              <NextUIButton size="lg" variant="bordered" color="primary" as={Link} href="#features" radius="md">
+              <NextUIButton 
+                size="lg" 
+                variant="bordered" 
+                color="primary" 
+                as={Link} 
+                href="#features" 
+                radius="md"
+                className="shadow-sm hover:shadow-md hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out"
+              >
                 Learn More
               </NextUIButton>
             </div>
@@ -87,7 +101,7 @@ export default function HomePage() {
             <div className="flex flex-col lg:flex-row items-center gap-12">
               <div className="lg:w-1/2">
                 <Image 
-                  src="https://res.cloudinary.com/seapane-cloud/seapane-bucket/address-data/meta/address-illustration-amico.svg" 
+                  src="https://res.cloudinary.com/seapane-cloud/seapane-bucket/address-data/meta/address-illustration-amiko.svg" 
                   alt="Features Illustration" 
                   width={500} 
                   height={450} 
@@ -103,7 +117,7 @@ export default function HomePage() {
                   Our platform is purpose-built for Nigeria, offering unparalleled accuracy and developer-friendly tools.
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  {features.slice(0,4).map((feature, index) => ( // Show first 4 compact features
+                  {features.slice(0,4).map((feature, index) => ( 
                     <div key={index} className="flex items-start space-x-3">
                        <div className="flex-shrink-0 mt-1 text-primary">{feature.icon}</div>
                        <div>
@@ -115,7 +129,7 @@ export default function HomePage() {
                 </div>
               </div>
             </div>
-             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-16"> {/* Remaining features as cards */}
+             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-16"> 
               {features.slice(4).map((feature, index) => (
                 <NextUICard key={index} isHoverable shadow="md" radius="xl" className="transition-shadow">
                   <NextUICardHeader className="flex flex-col items-center pt-6 pb-2">
@@ -156,7 +170,14 @@ export default function HomePage() {
                     </li>
                   ))}
                 </ul>
-                <NextUIButton size="lg" color="primary" as={Link} href="/docs" radius="md">
+                <NextUIButton 
+                  size="lg" 
+                  color="primary" 
+                  as={Link} 
+                  href="/docs" 
+                  radius="md"
+                  className="shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out"
+                >
                   View API Documentation
                 </NextUIButton>
               </div>
@@ -192,7 +213,7 @@ export default function HomePage() {
               as={Link} 
               href="/login" 
               radius="md"
-              className="bg-white text-primary hover:bg-white/90 shadow-md"
+              className="bg-white text-primary hover:bg-gray-100 shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out"
             >
               Access Portal
             </NextUIButton>
@@ -222,5 +243,3 @@ export default function HomePage() {
     </div>
   );
 }
-
-    

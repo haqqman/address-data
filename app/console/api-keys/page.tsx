@@ -1,18 +1,16 @@
-
 "use client"; 
 
 import { useState, useEffect, useCallback } from "react";
 import { ApiKeyManagementTable } from "@/components/admin/ApiKeyManagementTable";
-import type { APIKey, User as AppUser } from "@/types"; // Renamed User to AppUser to avoid conflict
+import type { APIKey } from "@/types"; 
 import { Skeleton as NextUISkeleton, Card as NextUICard, CardHeader as NextUICardHeader, CardBody as NextUICardBody, Button as NextUIButton, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Input as NextUIInput, useDisclosure, Autocomplete, AutocompleteItem } from "@nextui-org/react";
 import { AlertTriangle, PlusCircle } from "lucide-react";
 import { getAllApiKeys, createApiKey } from "@/app/actions/apiKeyActions";
-import { db } from "@/lib/firebase/config"; // For fetching users for the dropdown
-import { collection, getDocs } from "firebase/firestore"; // For fetching users
+import { db } from "@/lib/firebase/config"; 
+import { collection, getDocs } from "firebase/firestore"; 
 import { useAuth } from "@/contexts/auth-context";
 
 
-// Simplified user type for dropdown
 interface SimpleUser {
   id: string;
   name?: string | null;
@@ -20,28 +18,22 @@ interface SimpleUser {
 }
 
 async function fetchAllUsers(): Promise<SimpleUser[]> {
-    // This is a simplified fetch for user selection.
-    // In a real app, you might have a dedicated 'users' collection or use Firebase Auth listUsers (admin SDK).
-    // For now, we'll try to fetch from 'users' collection if it exists, or an empty array.
     try {
-        const usersCol = collection(db, "users"); // Assuming a 'users' collection exists
+        const usersCol = collection(db, "users"); 
         const querySnapshot = await getDocs(usersCol);
         const users: SimpleUser[] = [];
         querySnapshot.forEach((doc) => {
             const data = doc.data();
             users.push({
-                id: doc.id, // Firestore document ID, should be Firebase Auth UID
+                id: doc.id, 
                 name: data.name || data.displayName || "Unnamed User",
                 email: data.email
             });
         });
-        // Add admin users if not in 'users' collection (e.g. if they only exist in Auth)
-        // This part is tricky without direct access to Firebase Auth user list client-side or a proper users collection.
-        // For simplicity, let's assume 'users' collection has all relevant users for API key assignment.
         return users;
     } catch (error) {
         console.error("Error fetching users for API key assignment:", error);
-        return []; // Return empty if 'users' collection doesn't exist or error occurs
+        return []; 
     }
 }
 
@@ -107,9 +99,9 @@ export default function ConsoleApiKeysPage() {
         keyName: newKeyName || undefined,
       });
       if (result.success) {
-        alert(result.message); // Replace with toast
-        fetchApiKeys(); // Refresh list
-        onClose(); // Close modal
+        alert(result.message); 
+        fetchApiKeys(); 
+        onClose(); 
         setNewKeyName("");
         setSelectedUserId(null);
       } else {
@@ -137,7 +129,12 @@ export default function ConsoleApiKeysPage() {
             Oversee, create, and revoke API keys for developers using the platform.
             </p>
         </div>
-        <NextUIButton onPress={onOpen} color="warning" className="text-white" startContent={<PlusCircle className="h-4 w-4" />}>
+        <NextUIButton 
+            onPress={onOpen} 
+            color="warning" 
+            className="text-white shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out" 
+            startContent={<PlusCircle className="h-4 w-4" />}
+        >
              Create New API Key
         </NextUIButton>
       </div>
@@ -158,7 +155,7 @@ export default function ConsoleApiKeysPage() {
             </div>
           )}
 
-          {error && !isLoading && ( // Show error only if not loading
+          {error && !isLoading && ( 
             <NextUICard className="mt-4 bg-danger-50 border-danger-200 rounded-xl">
               <NextUICardBody className="p-4">
                 <div className="flex items-center">
@@ -178,7 +175,7 @@ export default function ConsoleApiKeysPage() {
         </NextUICardBody>
       </NextUICard>
 
-      {/* Create New API Key Modal */}
+      
       <Modal isOpen={isOpen} onOpenChange={onOpenChange} backdrop="blur">
         <ModalContent>
           {(modalOnClose) => (
@@ -217,7 +214,13 @@ export default function ConsoleApiKeysPage() {
                 <NextUIButton variant="light" onPress={modalOnClose} disabled={isCreating}>
                   Cancel
                 </NextUIButton>
-                <NextUIButton color="warning" onPress={handleCreateNewKey} isLoading={isCreating} disabled={isCreating || !selectedUserId}>
+                <NextUIButton 
+                    color="warning" 
+                    onPress={handleCreateNewKey} 
+                    isLoading={isCreating} 
+                    disabled={isCreating || !selectedUserId}
+                    className="text-white shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out"
+                >
                   {isCreating ? "Creating..." : "Create API Key"}
                 </NextUIButton>
               </ModalFooter>
