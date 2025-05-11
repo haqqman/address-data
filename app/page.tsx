@@ -60,7 +60,7 @@ export default function HomePage() {
               The Future of Nigerian Address Data
             </h1>
             <p className="mt-6 text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto">
-              Address Data provides developers, businesses, and admins with tools to validate, store, and retrieve Nigerian address data efficiently and accurately.
+              Address Data provides developers, businesses, and operations with tools to validate, store, and retrieve Nigerian address data efficiently and accurately.
             </p>
             <div className="mt-10 flex justify-center space-x-4">
               <NextUIButton size="lg" color="primary" as={Link} href="/login" radius="md">
