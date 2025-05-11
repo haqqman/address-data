@@ -1,4 +1,3 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -7,14 +6,16 @@ import * as z from "zod";
 import { Button as NextUIButton, Input as NextUIInput } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
-import { Loader2 } from "lucide-react";
 import { useState } from "react";
 
 const consoleSignInSchema = z.object({
-  email: z.string().email({ message: "Invalid email address." }).refine(
-    (email) => email.endsWith("@haqqman.com"),
-    { message: "Access restricted to @haqqman.com emails." }
-  ),
+  email: z.string()
+    .transform(val => val.toLowerCase().replace(/\s+/g, ''))
+    .email({ message: "Invalid email address." })
+    .refine(
+      (email) => email.endsWith("@haqqman.com"),
+      { message: "Access restricted to @haqqman.com emails." }
+    ),
   password: z.string().min(6, { message: "Password must be at least 6 characters." }),
 });
 
@@ -39,18 +40,17 @@ export function ConsoleSignInForm() {
     setIsLoading(true);
     setErrorMessage(null);
     try {
-      const user = await signInWithEmail(values.email, values.password, true); // true for isAdmin check in auth context
-      if (user) { // Check if user object is returned
+      // The email value passed to signInWithEmail will already be transformed by Zod
+      const user = await signInWithEmail(values.email, values.password, true); 
+      if (user) { 
         router.push('/console/dashboard');
       } else {
-        // This case should ideally be handled by an error thrown from signInWithEmail if login fails
         setErrorMessage("Login failed. Please check your credentials.");
       }
     } catch (error: any) {
       const friendlyErrorMessage = error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password'
         ? "Invalid email or password. Please try again."
         : error.message || "An unexpected error occurred. Please try again.";
-      console.error("Console Log In Failed:", error);
       setErrorMessage(friendlyErrorMessage);
     } finally {
       setIsLoading(false);
@@ -76,6 +76,10 @@ export function ConsoleSignInForm() {
             isInvalid={!!errors.email || !!errorMessage}
             errorMessage={errors.email?.message}
             fullWidth
+            onValueChange={(value) => {
+              const transformedValue = value.toLowerCase().replace(/\s+/g, '');
+              field.onChange(transformedValue);
+            }}
           />
         )}
       />

@@ -1,4 +1,3 @@
-
 "use client";
 
 import { PublicHeader } from "@/components/layout/PublicHeader";
@@ -6,8 +5,11 @@ import { Card as NextUICard, CardHeader as NextUICardHeader, CardBody as NextUIC
 import { LifeBuoy, Mail, MessageSquare } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { useState } from "react"; // Import useState
 
 export default function SupportPage() {
+  const [formEmail, setFormEmail] = useState(""); // State for email input
+
   return (
     <div className="flex flex-col min-h-screen">
       <PublicHeader />
@@ -100,6 +102,11 @@ export default function SupportPage() {
                       placeholder="your.email@example.com"
                       variant="bordered"
                       classNames={{ label: "text-base" }}
+                      value={formEmail}
+                      onValueChange={(value) => {
+                        const transformedValue = value.toLowerCase().replace(/\s+/g, '');
+                        setFormEmail(transformedValue);
+                      }}
                     />
                   </div>
                   <div>
