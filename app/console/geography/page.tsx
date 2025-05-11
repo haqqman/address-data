@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
@@ -324,24 +325,26 @@ export default function GeographyManagementPage() {
         <Tab key="lgas" title={<span className="flex items-center"><Building className="mr-2 h-5 w-5" />LGAs</span>}>
           <NextUICard className="shadow-xl rounded-xl">
             <NextUICardHeader className="px-6 pt-6 pb-2">
-              <div className="flex flex-col space-y-0.5 mb-4">
-                <h2 className="text-xl font-semibold">Manage LGAs</h2>
-                <p className="text-sm text-foreground-500">Select a state to view and manage its LGAs.</p>
+              <div className="flex justify-between items-center w-full mb-4">
+                <div className="flex flex-col space-y-0.5">
+                  <h2 className="text-xl font-semibold">Manage LGAs</h2>
+                  <p className="text-sm text-foreground-500">Select a state to view and manage its LGAs.</p>
+                </div>
+                <NextUISelect
+                  label="Select State"
+                  placeholder="Choose a state"
+                  selectedKeys={selectedStateIdForLgas ? [selectedStateIdForLgas] : []}
+                  onSelectionChange={(keys) => setSelectedStateIdForLgas(Array.from(keys)[0] as string)}
+                  className="max-w-xs"
+                  variant="bordered"
+                >
+                  {states.map((state) => (
+                    <NextUISelectItem key={state.id} value={state.id}>
+                      {state.name}
+                    </NextUISelectItem>
+                  ))}
+                </NextUISelect>
               </div>
-              <NextUISelect
-                label="Select State"
-                placeholder="Choose a state"
-                selectedKeys={selectedStateIdForLgas ? [selectedStateIdForLgas] : []}
-                onSelectionChange={(keys) => setSelectedStateIdForLgas(Array.from(keys)[0] as string)}
-                className="max-w-xs mb-4"
-                variant="bordered"
-              >
-                {states.map((state) => (
-                  <NextUISelectItem key={state.id} value={state.id}>
-                    {state.name}
-                  </NextUISelectItem>
-                ))}
-              </NextUISelect>
             </NextUICardHeader>
             <NextUICardBody className="p-2 md:p-4">
               {isLoadingLgas ? renderLoading() : !selectedStateIdForLgas ? <p className="text-foreground-500">Please select a state.</p> :
@@ -567,3 +570,4 @@ export default function GeographyManagementPage() {
     </div>
   );
 }
+
