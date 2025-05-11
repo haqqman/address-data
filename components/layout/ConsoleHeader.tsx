@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Button as NextUIButton, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, DropdownSection, User as NextUIUser } from "@nextui-org/react";
-import { Users, KeyRound, LogOut, UserCircle, LayoutGrid } from "lucide-react";
+import { Users, KeyRound, LogOut, UserCircle, LayoutGrid, Map } from "lucide-react"; // Added Map icon
 import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/auth-context";
@@ -12,6 +12,7 @@ const navItems = [
   { href: "/console/dashboard", label: "Review Queue", icon: <LayoutGrid className="mr-2 h-4 w-4" /> },
   { href: "/console/users", label: "User Submissions", icon: <Users className="mr-2 h-4 w-4" /> },
   { href: "/console/api-keys", label: "Manage API Keys", icon: <KeyRound className="mr-2 h-4 w-4" /> },
+  { href: "/console/geography", label: "Geography", icon: <Map className="mr-2 h-4 w-4" /> }, // New Geography link
 ];
 
 export function ConsoleHeader() {
@@ -44,18 +45,18 @@ export function ConsoleHeader() {
           {navItems.map((item) => (
             <NextUIButton
               key={item.href}
-              variant="ghost" // Use ghost for more control over custom border/bg
+              variant="ghost" 
               as={Link}
               href={item.href}
               className={cn(
-                "justify-start",
+                "justify-start", // Text and icon fully opaque by default
                 "shadow-md hover:shadow-lg",
                 "hover:-translate-y-px active:translate-y-0.5",
                 "transition-all duration-150 ease-in-out",
-                "border", // Base border class
+                "border", 
                 pathname === item.href 
-                  ? "bg-warning/20 text-warning-foreground border-warning" // Active state: accent bg, text, and border
-                  : "text-foreground border-foreground/20 hover:border-warning hover:bg-warning/10" // Inactive: subtle border, hover effects
+                  ? "bg-warning/20 text-warning-foreground border-warning" 
+                  : "text-foreground border-foreground/20 hover:border-warning hover:bg-warning/10" 
               )}
               startContent={item.icon}
             >
@@ -95,5 +96,3 @@ export function ConsoleHeader() {
     </header>
   );
 }
-
-    
