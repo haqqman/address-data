@@ -1,6 +1,6 @@
 # Firestore Initial Data Seeding Guide
 
-After the application has been updated to use Firestore as its data source, you'll need to populate your Firestore database with the initial mock data. This guide provides the data structure. You can add this data manually via the Firebase Console or use a script with the Firebase Admin SDK or client SDK.
+After the application has been updated to use Firestore as its data source, you'll need to populate your Firestore database with the initial mock data. This guide provides the data structure. You can add this data manually via the Firebase Console or use a script with the Firebase Console SDK or client SDK.
 
 **Important:**
 - Replace string dates with Firestore `Timestamp` objects. In the Firebase console, you can use the date picker. If scripting, use `admin.firestore.Timestamp.fromDate(new Date("YYYY-MM-DDTHH:mm:ssZ"))` or `firebase.firestore.Timestamp.fromDate(...)`.
@@ -32,7 +32,7 @@ Create a collection named `addressSubmissions`. Add documents with the following
   "aiFlaggedReason": null,
   "submittedAt": "Timestamp(seconds=1715322000, nanoseconds=0)", // Firestore Timestamp for new Date(2024, 4, 10, 10, 0, 0)
   "reviewedAt": "Timestamp(seconds=1715325600, nanoseconds=0)", // Firestore Timestamp for new Date(2024, 4, 10, 11, 0, 0)
-  "reviewerId": "mockAdminId"
+  "reviewerId": "mockConsoleId"
 }
 ```
 
@@ -136,7 +136,7 @@ Create a collection named `apiKeys`. Add documents with the following structure.
 ### Notes on Timestamps:
 The `Timestamp(seconds=..., nanoseconds=0)` format is a representation. When using the Firebase Console, you can select dates. When scripting:
 - **Client-side (JS/TS):** `import { Timestamp } from "firebase/firestore"; Timestamp.fromDate(new Date("2023-11-01T00:00:00Z"));`
-- **Admin SDK (Node.js):** `admin.firestore.Timestamp.fromDate(new Date("2023-11-01T00:00:00Z"));`
+- **Console SDK (Node.js):** `admin.firestore.Timestamp.fromDate(new Date("2023-11-01T00:00:00Z"));`
 
 Adjust the actual timestamp values to match the intended dates precisely. The seconds provided above are approximations.
 For `submittedAt` in `addressSubmissions` and `createdAt` in `apiKeys` when creating new documents through the app, `serverTimestamp()` will be used by the code, so Firestore will automatically set the correct time. For this initial seed, you set them manually.

@@ -2,7 +2,7 @@ export interface User {
   id: string;
   email?: string | null;
   name?: string | null;
-  role: "user" | "admin";
+  role: "user" | "cto" | "administrator" | "manager";
 }
 
 export interface Address {

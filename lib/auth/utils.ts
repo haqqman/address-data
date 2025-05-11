@@ -1,46 +1,60 @@
 // lib/auth/utils.ts
-import { auth } from '@/lib/firebase/config';
+import { auth, db } from '@/lib/firebase/config'; // Added db
 import type { User as FirebaseUser } from 'firebase/auth';
 import type { User } from '@/types';
+import { doc, getDoc } from 'firebase/firestore'; // Added getDoc
 
 /**
- * Retrieves the current authenticated user.
- * IMPORTANT: This is a simplified version. For Server Components, robust server-side session management 
- * (e.g., verifying ID tokens from cookies/headers via Firebase Admin SDK) is recommended 
- * instead of relying directly on the Firebase client SDK's `auth.currentUser`.
- * This function's reliability in server components depends on how/where auth state is initialized and persisted.
+ * Retrieves the current authenticated user with role from Firestore.
  */
 export async function getCurrentUser(): Promise<User | null> {
   return new Promise((resolve, reject) => {
-    const unsubscribe = auth.onAuthStateChanged((firebaseUser: FirebaseUser | null) => {
-      unsubscribe(); // Unsubscribe after first check to avoid memory leaks
+    const unsubscribe = auth.onAuthStateChanged(async (firebaseUser: FirebaseUser | null) => {
+      unsubscribe(); 
       if (firebaseUser) {
-        const isAdminUser = firebaseUser.email?.endsWith('@haqqman.com');
+        const userDocRef = doc(db, "users", firebaseUser.uid);
+        const userDocSnap = await getDoc(userDocRef);
+        
+        let role: User['role'] = 'user'; // Default role
+
+        if (userDocSnap.exists()) {
+          const userDataFromFirestore = userDocSnap.data() as User;
+          role = userDataFromFirestore.role;
+        } else {
+          // Fallback role determination if Firestore doc doesn't exist (should be rare after login)
+          if (firebaseUser.email === "webmanager@haqqman.com") {
+            role = 'cto';
+          } else if (firebaseUser.email === "joshua+sandbox@haqqman.com") {
+            role = 'manager';
+          } else if (firebaseUser.email?.endsWith('@haqqman.com')) {
+            role = 'administrator';
+          }
+        }
+
         const appUser: User = {
           id: firebaseUser.uid,
           email: firebaseUser.email,
           name: firebaseUser.displayName,
-          // photoURL: firebaseUser.photoURL, // Add to User type if needed
-          role: isAdminUser ? 'admin' : 'user',
+          role: role,
         };
         resolve(appUser);
       } else {
         resolve(null);
       }
-    }, reject); // Handle potential errors during listener setup
+    }, reject);
   });
 }
 
 /**
- * Checks if the current authenticated user has an 'admin' role.
- * Relies on getCurrentUser. See notes on getCurrentUser for server-side considerations.
+ * Checks if the current authenticated user has a console role ('cto', 'administrator', 'manager').
  */
-export async function checkAdmin(): Promise<boolean> {
+export async function checkConsole(): Promise<boolean> {
   try {
     const user = await getCurrentUser();
-    return user?.role === 'admin';
+    const consoleRoles: User['role'][] = ['cto', 'administrator', 'manager'];
+    return user?.role ? consoleRoles.includes(user.role) : false;
   } catch (error) {
-    console.error("Error checking admin status:", error);
+    console.error("Error checking console user status:", error);
     return false;
   }
 }

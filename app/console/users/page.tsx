@@ -32,7 +32,7 @@ export default function ConsoleUserSubmissionsPage() {
       // Passing a generic admin identifier. The `getAddressSubmissions` action
       // has logic to fetch all if it recognizes an admin-like ID.
       // The layout already protects this route for admins.
-      const data = await getAddressSubmissions("mockAdminId"); 
+      const data = await getAddressSubmissions("mockConsoleId"); 
       setAllSubmissions(data);
     } catch (err)_ {
       setError("Failed to load user submissions.");

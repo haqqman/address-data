@@ -147,7 +147,7 @@ export async function getAddressSubmissions(userId: string): Promise<AddressSubm
     // This part might need refinement if admin IDs are not fixed strings.
     // For now, assuming specific IDs like "abdulhaqq_cto_id" or "joshua_manager_id" are admin identifiers passed from console.
     // Or a more robust role check could be performed here if user roles are stored in Firestore alongside users.
-    const adminIds = ["mockAdminId", "abdulhaqq_cto_id", "joshua_manager_id"]; // Example admin identifiers
+    const adminIds = ["mockConsoleId", "abdulhaqq_cto_id", "joshua_manager_id"]; // Example admin identifiers
     if (adminIds.includes(userId)) { 
       q = query(submissionsCol, orderBy("submittedAt", "desc"));
     } else {

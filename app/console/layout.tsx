@@ -23,7 +23,8 @@ export default function ConsoleLayout({
 
   useEffect(() => {
     if (!loading) {
-      if (!user || user.role !== 'admin') {
+      const consoleRoles: Array<User['role'] | undefined> = ['cto', 'administrator', 'manager'];
+      if (!user || !consoleRoles.includes(user.role)) {
         router.push('/console'); // Redirect to console login page
       }
     }
@@ -37,7 +38,8 @@ export default function ConsoleLayout({
     );
   }
 
-  if (!user || user.role !== 'admin') {
+  const consoleRoles: Array<User['role'] | undefined> = ['cto', 'administrator', 'manager'];
+  if (!user || !consoleRoles.includes(user.role)) {
     // This will be brief as the useEffect above will redirect.
     return null;
   }
@@ -45,7 +47,7 @@ export default function ConsoleLayout({
   return (
     <div className="flex flex-col min-h-screen">
       <ConsoleHeader />
-      <main className="flex-grow container mx-auto px-4 py-8 max-w-6xl"> {/* Changed max-w-7xl to max-w-6xl */}
+      <main className="flex-grow container mx-auto px-4 py-8 max-w-6xl">
         {children}
       </main>
       <footer className="py-8 border-t bg-background">
@@ -69,4 +71,3 @@ export default function ConsoleLayout({
     </div>
   );
 }
-

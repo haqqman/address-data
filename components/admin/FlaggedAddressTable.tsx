@@ -30,7 +30,7 @@ export function FlaggedAddressTable({ addresses, onActionComplete }: FlaggedAddr
 
   const handleAction = async (newStatus: "approved" | "rejected") => {
     if (!selectedSubmissionId || !user || user.role !== 'admin') {
-        console.error("Action cannot be performed. Admin user not found or invalid submission.");
+        console.error("Action cannot be performed. Console user not found or invalid submission.");
         return;
     }
 
