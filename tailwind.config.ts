@@ -11,86 +11,76 @@ export default {
   ],
   theme: {
   	extend: {
-  		colors: {
-  			background: 'hsl(var(--background))',
-  			foreground: 'hsl(var(--foreground))',
-  			card: {
-  				DEFAULT: 'hsl(var(--card))',
-  				foreground: 'hsl(var(--card-foreground))'
-  			},
-  			popover: {
-  				DEFAULT: 'hsl(var(--popover))',
-  				foreground: 'hsl(var(--popover-foreground))'
-  			},
-  			primary: {
-  				DEFAULT: 'hsl(var(--primary))',
-  				foreground: 'hsl(var(--primary-foreground))'
-  			},
-  			secondary: {
-  				DEFAULT: 'hsl(var(--secondary))',
-  				foreground: 'hsl(var(--secondary-foreground))'
-  			},
-  			muted: {
-  				DEFAULT: 'hsl(var(--muted))',
-  				foreground: 'hsl(var(--muted-foreground))'
-  			},
-  			accent: {
-  				DEFAULT: 'hsl(var(--accent))',
-  				foreground: 'hsl(var(--accent-foreground))'
-  			},
-  			destructive: {
-  				DEFAULT: 'hsl(var(--destructive))',
-  				foreground: 'hsl(var(--destructive-foreground))'
-  			},
-  			border: 'hsl(var(--border))',
-  			input: 'hsl(var(--input))',
-  			ring: 'hsl(var(--ring))',
-  			chart: {
-  				'1': 'hsl(var(--chart-1))',
-  				'2': 'hsl(var(--chart-2))',
-  				'3': 'hsl(var(--chart-3))',
-  				'4': 'hsl(var(--chart-4))',
-  				'5': 'hsl(var(--chart-5))'
-  			},
-  			sidebar: {
-  				DEFAULT: 'hsl(var(--sidebar-background))',
-  				foreground: 'hsl(var(--sidebar-foreground))',
-  				primary: 'hsl(var(--sidebar-primary))',
-  				'primary-foreground': 'hsl(var(--sidebar-primary-foreground))',
-  				accent: 'hsl(var(--sidebar-accent))',
-  				'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
-  				border: 'hsl(var(--sidebar-border))',
-  				ring: 'hsl(var(--sidebar-ring))'
-  			}
-  		},
-  		borderRadius: {
-  			lg: 'var(--radius)',
-  			md: 'calc(var(--radius) - 2px)',
-  			sm: 'calc(var(--radius) - 4px)'
-  		},
-  		keyframes: {
-  			'accordion-down': {
-  				from: {
-  					height: '0'
-  				},
-  				to: {
-  					height: 'var(--radix-accordion-content-height)'
-  				}
-  			},
-  			'accordion-up': {
-  				from: {
-  					height: 'var(--radix-accordion-content-height)'
-  				},
-  				to: {
-  					height: '0'
-  				}
-  			}
-  		},
-  		animation: {
-  			'accordion-down': 'accordion-down 0.2s ease-out',
-  			'accordion-up': 'accordion-up 0.2s ease-out'
-  		}
-  	}
+      // Removed ShadCN specific theme extensions for colors, borderRadius, keyframes, and animation
+      // NextUI handles this through its plugin and theme configuration below
+    }
   },
-  plugins: [require("tailwindcss-animate"), nextui()],
+  plugins: [
+    nextui({
+      themes: {
+        light: {
+          colors: {
+            background: "#FFFFFF", // or DEFAULT
+            foreground: "#11181C", // or DEFAULT
+            primary: {
+              DEFAULT: "#388E3C", // Green
+              foreground: "#FFFFFF",
+            },
+            secondary: {
+              DEFAULT: "#E0E0E0", // Light Gray
+              foreground: "#11181C", // Dark text for readability on light gray
+            },
+            danger: { // NextUI uses danger for destructive actions
+              DEFAULT: "#FF0000", // Example, adjust if needed
+              foreground: "#FFFFFF",
+            },
+            // Accent is often mapped to 'warning' or a custom color in NextUI
+            // Using warning for orange as NextUI has predefined slots
+            warning: {
+              DEFAULT: "#FF5722", // Orange
+              foreground: "#FFFFFF",
+            }
+          },
+           layout: {
+            radius: {
+              small: "0.25rem", // 4px
+              medium: "0.5rem", // 8px
+              large: "0.75rem", // 12px
+            },
+            // other layout properties
+          },
+        },
+        dark: {
+          colors: {
+            background: "#000000", // or DEFAULT
+            foreground: "#ECEDEE", // or DEFAULT
+            primary: {
+              DEFAULT: "#388E3C",
+              foreground: "#FFFFFF",
+            },
+            secondary: {
+              DEFAULT: "#333333", // Darker Gray for dark mode
+              foreground: "#ECEDEE",
+            },
+            danger: {
+              DEFAULT: "#FF0000",
+              foreground: "#FFFFFF",
+            },
+            warning: {
+              DEFAULT: "#FF5722",
+              foreground: "#FFFFFF",
+            },
+          },
+           layout: {
+            radius: {
+              small: "0.25rem",
+              medium: "0.5rem",
+              large: "0.75rem",
+            },
+          },
+        },
+      },
+    }),
+    // require("tailwindcss-animate") // Removed
+  ],
 } satisfies Config;

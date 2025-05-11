@@ -1,17 +1,12 @@
-
 "use client"; 
 
 import { useState, useEffect, useCallback } from "react";
 import { ApiKeyManagementTable } from "@/components/admin/ApiKeyManagementTable";
-// import { listAllApiKeys } from "@/app/actions/adminApiKeyActions"; // Mock this action
 import type { APIKey } from "@/types";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Terminal, PlusCircle } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Skeleton as NextUISkeleton, Card as NextUICard, CardHeader as NextUICardHeader, CardBody as NextUICardBody, Button as NextUIButton } from "@nextui-org/react";
+import { AlertTriangle, PlusCircle } from "lucide-react";
 
-// Mock data and function for listing all API keys
+// Mock data and function
 const mockApiKeys: (APIKey & { userName?: string, userEmail?: string })[] = [
   {
     id: "key_1", userId: "user_A", userName: "Alice Wonderland", userEmail: "alice@example.com",
@@ -34,8 +29,7 @@ async function listAllApiKeys(): Promise<(APIKey & { userName?: string, userEmai
   return new Promise(resolve => setTimeout(() => resolve(mockApiKeys), 1000));
 }
 
-
-export default function ConsoleApiKeysPage() { // Renamed from AdminApiKeysPage
+export default function ConsoleApiKeysPage() {
   const [apiKeys, setApiKeys] = useState<(APIKey & { userName?: string, userEmail?: string })[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -59,9 +53,7 @@ export default function ConsoleApiKeysPage() { // Renamed from AdminApiKeysPage
   }, [fetchApiKeys]);
 
   const handleCreateNewGlobalKey = () => {
-    // This would open a modal or form to select a user and create a key
     alert("Placeholder: Open modal to create a new API key for a selected user.");
-    // Potentially call fetchApiKeys() after creation in a real scenario
   };
 
   return (
@@ -69,44 +61,50 @@ export default function ConsoleApiKeysPage() { // Renamed from AdminApiKeysPage
       <div className="flex justify-between items-center">
         <div>
             <h1 className="text-3xl font-bold tracking-tight">Manage Developer API Keys</h1>
-            <p className="text-muted-foreground">
+            <p className="text-foreground-500">
             Oversee, create, and revoke API keys for developers using the platform.
             </p>
         </div>
-        <Button onClick={handleCreateNewGlobalKey} className="bg-accent hover:bg-accent/90 text-accent-foreground">
-            <PlusCircle className="mr-2 h-4 w-4" /> Create New API Key
-        </Button>
+        <NextUIButton onPress={handleCreateNewGlobalKey} color="warning" className="text-white" startContent={<PlusCircle className="h-4 w-4" />}>
+             Create New API Key
+        </NextUIButton>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>All Developer API Keys</CardTitle>
-          <CardDescription>
+      <NextUICard className="shadow-xl rounded-xl">
+        <NextUICardHeader className="px-6 pt-6 pb-2">
+          <h2 className="text-xl font-semibold">All Developer API Keys</h2>
+          <p className="text-sm text-foreground-500">
             A list of all API keys issued to developers. Manage their status and usage.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+          </p>
+        </NextUICardHeader>
+        <NextUICardBody className="p-2 md:p-4">
           {isLoading && (
             <div className="space-y-4">
-              <Skeleton className="h-10 w-full" />
-              <Skeleton className="h-10 w-full" />
-              <Skeleton className="h-10 w-full" />
+              <NextUISkeleton className="h-10 w-full rounded-lg" />
+              <NextUISkeleton className="h-10 w-full rounded-lg" />
+              <NextUISkeleton className="h-10 w-full rounded-lg" />
             </div>
           )}
 
           {error && (
-            <Alert variant="destructive">
-              <Terminal className="h-4 w-4" />
-              <AlertTitle>Error</AlertTitle>
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
+            <NextUICard className="mt-4 bg-danger-50 border-danger-200 rounded-xl">
+              <NextUICardBody className="p-4">
+                <div className="flex items-center">
+                  <AlertTriangle className="h-5 w-5 text-danger mr-3" />
+                  <div>
+                    <p className="font-semibold text-danger-700">Error</p>
+                    <p className="text-sm text-danger-600">{error}</p>
+                  </div>
+                </div>
+              </NextUICardBody>
+            </NextUICard>
           )}
 
           {!isLoading && !error && (
             <ApiKeyManagementTable apiKeys={apiKeys} onActionComplete={fetchApiKeys} />
           )}
-        </CardContent>
-      </Card>
+        </NextUICardBody>
+      </NextUICard>
     </div>
   );
 }

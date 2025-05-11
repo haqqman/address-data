@@ -1,20 +1,11 @@
-
 "use client";
 
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { Button as NextUIButton, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, DropdownSection, User as NextUIUser } from "@nextui-org/react";
 import { Building2, LayoutDashboard, KeyRound, LogOut, UserCircle } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { useAuth } from "contexts/auth-context"; // Adjusted import path
+import { useAuth } from "contexts/auth-context"; 
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: <LayoutDashboard className="mr-2 h-4 w-4" /> },
@@ -29,10 +20,9 @@ export function AppHeader() {
   const handleSignOut = async () => {
     try {
       await signOut();
-      router.push('/'); // Redirect to homepage after sign out
+      router.push('/'); 
     } catch (error) {
       console.error("Failed to sign out", error);
-      // Handle error (e.g., show a toast message)
     }
   };
 
@@ -45,46 +35,47 @@ export function AppHeader() {
         </Link>
         <nav className="flex items-center space-x-1">
           {navItems.map((item) => (
-            <Button
+            <NextUIButton
               key={item.href}
               variant="ghost"
-              asChild
+              as={Link}
+              href={item.href}
               className={cn(
-                pathname === item.href ? "bg-accent text-accent-foreground" : "",
+                pathname === item.href ? "bg-warning/20 text-warning-foreground" : "text-foreground", // Using warning for accent
                 "justify-start"
               )}
+              startContent={item.icon}
             >
-              <Link href={item.href}>
-                {item.icon}
-                {item.label}
-              </Link>
-            </Button>
+              {item.label}
+            </NextUIButton>
           ))}
         </nav>
         <div className="ml-auto flex items-center space-x-4">
           {user && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                  <UserCircle className="h-7 w-7" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56" align="end" forceMount>
-                <DropdownMenuLabel className="font-normal">
-                  <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium leading-none">{user.name || user.email}</p>
-                    {user.name && <p className="text-xs leading-none text-muted-foreground">
-                      {user.email}
-                    </p>}
-                  </div>
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleSignOut}>
-                  <LogOut className="mr-2 h-4 w-4" />
-                  <span>Log out</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <Dropdown placement="bottom-end">
+              <DropdownTrigger>
+                <NextUIButton isIconOnly variant="ghost" className="relative h-8 w-8 rounded-full">
+                   <UserCircle className="h-7 w-7" />
+                </NextUIButton>
+              </DropdownTrigger>
+              <DropdownMenu aria-label="User Actions" variant="flat">
+                <DropdownSection showDivider>
+                    <DropdownItem isReadOnly key="profile" className="h-14 gap-2 opacity-100 cursor-default">
+                        <NextUIUser
+                            name={user.name || user.email?.split('@')[0]}
+                            description={user.email}
+                            avatarProps={{
+                                icon: <UserCircle />,
+                                classNames: {icon: "text-2xl"}
+                            }}
+                        />
+                    </DropdownItem>
+                </DropdownSection>
+                <DropdownItem key="logout" color="danger" onPress={handleSignOut} startContent={<LogOut className="h-4 w-4" />}>
+                  Log out
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
           )}
         </div>
       </div>

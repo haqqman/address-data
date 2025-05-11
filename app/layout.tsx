@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import { Lato } from 'next/font/google'; // Changed from Inter to Lato
 import './globals.css';
-import { Toaster } from '@/components/ui/toaster';
-import { AuthProvider } from '@/contexts/auth-context'; // Corrected import path
+// import { Toaster } from '@/components/ui/toaster'; // Removed
+import { AuthProvider } from 'contexts/auth-context'; // Corrected import path
 import { Providers } from './providers'; 
 
 const lato = Lato({ 
@@ -23,10 +23,10 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={lato.className}> {/* Changed from inter.className to lato.className */}
-        <Providers>
+        <Providers> {/* This should wrap AuthProvider and include NextUIProvider */}
           <AuthProvider>
             {children}
-            <Toaster />
+            {/* <Toaster /> */} {/* Removed */}
           </AuthProvider>
         </Providers>
       </body>

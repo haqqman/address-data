@@ -1,6 +1,5 @@
-
 import Link from "next/link";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card as NextUICard, CardHeader as NextUICardHeader, CardBody as NextUICardBody } from "@nextui-org/react";
 import { SignInButtons } from "@/components/forms/SignInButtons";
 import { Building2 } from "lucide-react";
 
@@ -11,12 +10,12 @@ export default function LoginPage() {
           <Building2 className="h-8 w-8 text-primary" />
           <span className="font-bold text-2xl">Address Data</span>
         </Link>
-      <Card className="w-full max-w-md shadow-xl">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl">Welcome Back!</CardTitle>
-          <CardDescription>Log in to access your dashboard and manage your addresses.</CardDescription>
-        </CardHeader>
-        <CardContent>
+      <NextUICard className="w-full max-w-md shadow-xl p-2 md:p-4 rounded-xl"> {/* Added padding and rounded-xl */}
+        <NextUICardHeader className="flex flex-col items-center text-center pt-6 pb-2"> {/* Adjusted padding */}
+          <h1 className="text-2xl font-bold">Welcome Back!</h1> {/* Replaced CardTitle */}
+          <p className="text-muted-foreground mt-1">Log in to access your dashboard and manage your addresses.</p> {/* Replaced CardDescription */}
+        </NextUICardHeader>
+        <NextUICardBody className="pt-2"> {/* Adjusted padding */}
           <SignInButtons />
           <p className="mt-6 text-center text-sm text-muted-foreground">
             Not ready to Log In?{" "}
@@ -24,9 +23,8 @@ export default function LoginPage() {
               Get Started
             </Link>
           </p>
-        </CardContent>
-      </Card>
+        </NextUICardBody>
+      </NextUICard>
     </div>
   );
 }
-

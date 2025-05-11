@@ -1,112 +1,95 @@
-
 "use client";
 
-import type { APIKey } from "@/types"; // Assuming User type is also relevant
-import { Button } from "@/components/ui/button";
+import type { APIKey } from "@/types";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
+  Table as NextUITable, TableHeader as NextUITableHeader, TableColumn as NextUITableColumn, TableBody as NextUITableBody, TableRow as NextUITableRow, TableCell as NextUITableCell,
+  Chip as NextUIChip,
+  Button as NextUIButton,
+  ScrollShadow,
+  Tooltip
+} from "@nextui-org/react";
 import { format } from "date-fns";
 import { KeyRound, Trash2, PlusCircle, RotateCcw } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
-// Mock actions - replace with actual server actions
-// import { createApiKey, revokeApiKey, listApiKeysForUser } from "@/app/actions/adminApiKeyActions";
 
 interface ApiKeyManagementTableProps {
-  apiKeys: (APIKey & { userName?: string, userEmail?: string })[]; // Assuming APIKey type is extended with user info
+  apiKeys: (APIKey & { userName?: string, userEmail?: string })[];
   onActionComplete: () => void;
 }
 
 export function ApiKeyManagementTable({ apiKeys, onActionComplete }: ApiKeyManagementTableProps) {
-  const { toast } = useToast();
 
   const handleRevokeKey = async (keyId: string) => {
-    // const result = await revokeApiKey(keyId);
-    // For mock:
+    // Mock action
     const result = { success: true, message: `API Key ${keyId} revoked successfully.` };
     if (result.success) {
-      toast({ title: "Action Successful", description: result.message });
+      console.log("Action Successful", result.message);
       onActionComplete();
     } else {
-      toast({ title: "Action Failed", description: result.message, variant: "destructive" });
+      console.error("Action Failed", result.message);
     }
   };
 
-  const handleCreateKey = async (userId: string) => {
-    // const result = await createApiKey(userId, "New API Key");
-     // For mock:
-    const result = { success: true, message: `New API Key created for user ${userId}.` };
-    if (result.success) {
-      toast({ title: "Action Successful", description: result.message });
-      onActionComplete();
-    } else {
-      toast({ title: "Action Failed", description: result.message, variant: "destructive" });
-    }
-  }
-
   if (apiKeys.length === 0) {
-    return <p className="text-muted-foreground">No API keys found for any user.</p>;
+    return <p className="text-foreground-500">No API keys found for any user.</p>;
   }
 
   return (
-    <ScrollArea className="h-[600px] w-full rounded-md border shadow-md">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>User</TableHead>
-            <TableHead>Key Name / ID</TableHead>
-            <TableHead>Public Key Prefix</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Created At</TableHead>
-            <TableHead>Last Used</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {apiKeys.map((key) => (
-            <TableRow key={key.id}>
-              <TableCell>
+    <ScrollShadow hideScrollBar className="h-[600px] w-full border shadow-md rounded-lg">
+      <NextUITable aria-label="API Key Management Table" removeWrapper>
+        <NextUITableHeader>
+          <NextUITableColumn>USER</NextUITableColumn>
+          <NextUITableColumn>KEY NAME / ID</NextUITableColumn>
+          <NextUITableColumn>PUBLIC KEY PREFIX</NextUITableColumn>
+          <NextUITableColumn>STATUS</NextUITableColumn>
+          <NextUITableColumn>CREATED AT</NextUITableColumn>
+          <NextUITableColumn>LAST USED</NextUITableColumn>
+          <NextUITableColumn className="text-right">ACTIONS</NextUITableColumn>
+        </NextUITableHeader>
+        <NextUITableBody items={apiKeys} emptyContent="No API keys found.">
+          {(key) => (
+            <NextUITableRow key={key.id}>
+              <NextUITableCell>
                 <div>{key.userName || "N/A"}</div>
-                <div className="text-xs text-muted-foreground">{key.userEmail || key.userId}</div>
-              </TableCell>
-              <TableCell>
+                <div className="text-xs text-foreground-500">{key.userEmail || key.userId}</div>
+              </NextUITableCell>
+              <NextUITableCell>
                 <div>{key.name || "Untitled Key"}</div>
-                <div className="text-xs text-muted-foreground">{key.id}</div>
-              </TableCell>
-              <TableCell className="font-mono">{key.publicKey.substring(0, 12)}...</TableCell>
-              <TableCell>
-                <Badge variant={key.isActive ? "default" : "destructive"}>
+                <div className="text-xs text-foreground-500">{key.id}</div>
+              </NextUITableCell>
+              <NextUITableCell className="font-mono">{key.publicKey.substring(0, 12)}...</NextUITableCell>
+              <NextUITableCell>
+                <NextUIChip size="sm" color={key.isActive ? "success" : "danger"} variant="flat">
                   {key.isActive ? "Active" : "Revoked"}
-                </Badge>
-              </TableCell>
-              <TableCell>{format(new Date(key.createdAt), "PPp")}</TableCell>
-              <TableCell>{key.lastUsedAt ? format(new Date(key.lastUsedAt), "PPp") : "Never"}</TableCell>
-              <TableCell className="text-right space-x-2">
+                </NextUIChip>
+              </NextUITableCell>
+              <NextUITableCell>{format(new Date(key.createdAt), "PPp")}</NextUITableCell>
+              <NextUITableCell>{key.lastUsedAt ? format(new Date(key.lastUsedAt), "PPp") : "Never"}</NextUITableCell>
+              <NextUITableCell className="text-right">
                 {key.isActive ? (
-                  <Button variant="ghost" size="sm" className="text-red-600 hover:text-red-700 hover:bg-red-100" onClick={() => handleRevokeKey(key.id)}>
-                    <Trash2 className="mr-1 h-4 w-4" /> Revoke
-                  </Button>
+                  <Tooltip content="Revoke Key" placement="top">
+                    <NextUIButton 
+                      isIconOnly 
+                      size="sm" 
+                      variant="light" 
+                      color="danger" 
+                      onPress={() => handleRevokeKey(key.id)}
+                      aria-label="Revoke API Key"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </NextUIButton>
+                  </Tooltip>
                 ) : (
-                   <Button variant="ghost" size="sm" disabled>
-                    <RotateCcw className="mr-1 h-4 w-4" /> Revoked
-                  </Button>
+                  <Tooltip content="Key is Revoked" placement="top">
+                     <NextUIButton isIconOnly size="sm" variant="light" isDisabled>
+                       <RotateCcw className="h-4 w-4" />
+                     </NextUIButton>
+                  </Tooltip>
                 )}
-                {/* Add functionality to create a new key for this specific user */}
-                {/* <Button variant="outline" size="sm" onClick={() => handleCreateKey(key.userId)}>
-                  <PlusCircle className="mr-1 h-4 w-4" /> New Key for User
-                </Button> */}
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </ScrollArea>
+              </NextUITableCell>
+            </NextUITableRow>
+          )}
+        </NextUITableBody>
+      </NextUITable>
+    </ScrollShadow>
   );
 }

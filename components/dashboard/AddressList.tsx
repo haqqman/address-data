@@ -1,11 +1,7 @@
-
 "use client";
 
 import type { AddressSubmission } from "@/types";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { Card as NextUICard, CardHeader as NextUICardHeader, CardBody as NextUICardBody, Table as NextUITable, TableHeader as NextUITableHeader, TableColumn as NextUITableColumn, TableBody as NextUITableBody, TableRow as NextUITableRow, TableCell as NextUITableCell, Chip as NextUIChip, ScrollShadow } from "@nextui-org/react";
 import { format } from "date-fns";
 
 interface AddressListProps {
@@ -13,16 +9,17 @@ interface AddressListProps {
 }
 
 export function AddressList({ addresses }: AddressListProps) {
-  const getStatusBadgeVariant = (status: AddressSubmission['status']) => {
+  
+  const getStatusChipColor = (status: AddressSubmission['status']): "primary" | "secondary" | "danger" | "default" | "success" | "warning" => {
     switch (status) {
       case "approved":
-        return "default"; // bg-primary
+        return "success"; 
       case "pending_review":
-        return "secondary"; // bg-secondary
+        return "warning"; 
       case "rejected":
-        return "destructive";
+        return "danger";
       default:
-        return "outline";
+        return "default";
     }
   };
 
@@ -32,55 +29,53 @@ export function AddressList({ addresses }: AddressListProps) {
 
   if (addresses.length === 0) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>My Address Submissions</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground">You haven't submitted any addresses yet.</p>
-        </CardContent>
-      </Card>
+      <NextUICard className="shadow-lg rounded-xl mt-8">
+        <NextUICardHeader className="px-6 pt-6 pb-2">
+          <h2 className="text-xl font-semibold">My Address Submissions</h2>
+        </NextUICardHeader>
+        <NextUICardBody className="p-6">
+          <p className="text-foreground-500">You haven't submitted any addresses yet.</p>
+        </NextUICardBody>
+      </NextUICard>
     );
   }
 
   return (
-    <Card className="shadow-lg">
-      <CardHeader>
-        <CardTitle>My Address Submissions</CardTitle>
-        <CardDescription>View the status of your submitted addresses.</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <ScrollArea className="h-[400px] w-full">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Address</TableHead>
-                <TableHead>Submitted At</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Notes/Reason</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {addresses.map((address) => (
-                <TableRow key={address.id}>
-                  <TableCell className="font-medium max-w-xs truncate">{formatAddress(address.submittedAddress)}</TableCell>
-                  <TableCell>{format(new Date(address.submittedAt), "PPP")}</TableCell>
-                  <TableCell>
-                    <Badge variant={getStatusBadgeVariant(address.status)}>
-                      {address.status.replace("_", " ").toUpperCase()}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="max-w-xs truncate">
-                    {address.status === 'pending_review' && address.aiFlaggedReason ? `AI: ${address.aiFlaggedReason}` : 
-                     address.status === 'rejected' ? 'Rejected by admin' :
-                     address.status === 'approved' ? 'Approved' : '-'}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </ScrollArea>
-      </CardContent>
-    </Card>
+    <NextUICard className="shadow-lg rounded-xl mt-8">
+      <NextUICardHeader className="px-6 pt-6 pb-2">
+        <h2 className="text-xl font-semibold">My Address Submissions</h2>
+        <p className="text-sm text-foreground-500">View the status of your submitted addresses.</p>
+      </NextUICardHeader>
+      <NextUICardBody className="p-0 md:p-2"> {/* Adjusted padding for table */}
+        <ScrollShadow hideScrollBar className="h-[400px] w-full">
+          <NextUITable aria-label="Address Submissions List" removeWrapper>
+            <NextUITableHeader>
+              <NextUITableColumn>ADDRESS</NextUITableColumn>
+              <NextUITableColumn>SUBMITTED AT</NextUITableColumn>
+              <NextUITableColumn>STATUS</NextUITableColumn>
+              <NextUITableColumn>NOTES/REASON</NextUITableColumn>
+            </NextUITableHeader>
+            <NextUITableBody items={addresses} emptyContent="No addresses submitted yet.">
+              {(item) => (
+                <NextUITableRow key={item.id}>
+                  <NextUITableCell className="max-w-xs truncate" title={formatAddress(item.submittedAddress)}>{formatAddress(item.submittedAddress)}</NextUITableCell>
+                  <NextUITableCell>{format(new Date(item.submittedAt), "PPP")}</NextUITableCell>
+                  <NextUITableCell>
+                    <NextUIChip color={getStatusChipColor(item.status)} size="sm" variant="flat">
+                      {item.status.replace("_", " ").toUpperCase()}
+                    </NextUIChip>
+                  </NextUITableCell>
+                  <NextUITableCell className="max-w-xs truncate">
+                    {item.status === 'pending_review' && item.aiFlaggedReason ? `AI: ${item.aiFlaggedReason}` : 
+                     item.status === 'rejected' ? 'Rejected by admin' :
+                     item.status === 'approved' ? 'Approved' : '-'}
+                  </NextUITableCell>
+                </NextUITableRow>
+              )}
+            </NextUITableBody>
+          </NextUITable>
+        </ScrollShadow>
+      </NextUICardBody>
+    </NextUICard>
   );
 }

@@ -1,23 +1,10 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import * as z from "zod";
-import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/hooks/use-toast";
+import { Button as NextUIButton, Input as NextUIInput, Textarea as NextUITextarea, Card as NextUICard, CardHeader as NextUICardHeader, CardBody as NextUICardBody } from "@nextui-org/react";
 import { submitAddress } from "@/app/actions/addressActions";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
 
@@ -38,10 +25,9 @@ interface AddressFormProps {
 }
 
 export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
-  const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const form = useForm<AddressFormValues>({
+  const { control, handleSubmit, formState: { errors }, reset } = useForm<AddressFormValues>({
     resolver: zodResolver(addressSchema),
     defaultValues: {
       streetAddress: "",
@@ -50,7 +36,7 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
       lga: "",
       state: "",
       zipCode: "",
-      country: "Nigeria", // Default to Nigeria
+      country: "Nigeria", 
     },
   });
 
@@ -58,7 +44,7 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
     setIsSubmitting(true);
     const formData = new FormData();
     Object.entries(values).forEach(([key, value]) => {
-      if (value !== undefined) {
+      if (value !== undefined && value !== null) {
         formData.append(key, value as string);
       }
     });
@@ -67,153 +53,144 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
     setIsSubmitting(false);
 
     if (result.success) {
-      toast({
-        title: "Submission Successful",
-        description: result.message,
-      });
-      form.reset();
+      console.log("Submission Successful", result.message);
+      // toast removed
+      reset();
       if (onSubmissionSuccess) {
         onSubmissionSuccess();
       }
     } else {
-      toast({
-        title: "Submission Failed",
-        description: result.message || "An error occurred.",
-        variant: "destructive",
-      });
-      if (result.errors) {
-        // Set form errors if any from server-side validation
-        Object.entries(result.errors).forEach(([field, messages]) => {
-          if (messages && messages.length > 0) {
-            form.setError(field as keyof AddressFormValues, {
-              type: "server",
-              message: messages.join(", "),
-            });
-          }
-        });
-      }
+      console.error("Submission Failed", result.message, result.errors);
+      // toast removed
+      // Server-side validation errors could be mapped to form errors if needed
+      // For now, relying on client-side validation primarily.
     }
   }
 
   return (
-    <Card className="w-full shadow-lg">
-      <CardHeader>
-        <CardTitle>Submit Your Address</CardTitle>
-        <CardDescription>
+    <NextUICard className="w-full shadow-lg rounded-xl">
+      <NextUICardHeader className="flex flex-col px-6 pt-6 pb-2">
+        <h2 className="text-xl font-semibold">Submit Your Address</h2>
+        <p className="text-sm text-foreground-500">
           Enter your address details. Addresses are verified for accuracy.
           Submitted addresses will be reviewed.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <FormField
-                control={form.control}
-                name="streetAddress"
-                render={({ field }) => (
-                  <FormItem className="md:col-span-2">
-                    <FormLabel>Street Address</FormLabel>
-                    <FormControl>
-                      <Input placeholder="e.g., 123 Main Street, XYZ Layout" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="areaDistrict"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Area / District</FormLabel>
-                    <FormControl>
-                      <Input placeholder="e.g., Ikeja GRA, Asokoro" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="city"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>City / Town</FormLabel>
-                    <FormControl>
-                      <Input placeholder="e.g., Lagos, Abuja" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="lga"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>LGA (Local Government Area)</FormLabel>
-                    <FormControl>
-                      <Input placeholder="e.g., Ikeja, Abuja Municipal" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="state"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>State</FormLabel>
-                    <FormControl>
-                      <Input placeholder="e.g., Lagos, FCT" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="zipCode"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Zip Code (Optional)</FormLabel>
-                    <FormControl>
-                      <Input placeholder="e.g., 100001" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="country"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Country</FormLabel>
-                    <FormControl>
-                      <Input {...field} disabled />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <Button type="submit" className="w-full md:w-auto bg-accent hover:bg-accent/90 text-accent-foreground" disabled={isSubmitting}>
-              {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Submit Address
-            </Button>
-          </form>
-        </Form>
-      </CardContent>
-    </Card>
+        </p>
+      </NextUICardHeader>
+      <NextUICardBody className="p-6">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Controller
+              name="streetAddress"
+              control={control}
+              render={({ field }) => (
+                <NextUIInput
+                  {...field}
+                  label="Street Address"
+                  placeholder="e.g., 123 Main Street, XYZ Layout"
+                  variant="bordered"
+                  isInvalid={!!errors.streetAddress}
+                  errorMessage={errors.streetAddress?.message}
+                  className="md:col-span-2"
+                  fullWidth
+                />
+              )}
+            />
+            <Controller
+              name="areaDistrict"
+              control={control}
+              render={({ field }) => (
+                <NextUIInput
+                  {...field}
+                  label="Area / District"
+                  placeholder="e.g., Ikeja GRA, Asokoro"
+                  variant="bordered"
+                  isInvalid={!!errors.areaDistrict}
+                  errorMessage={errors.areaDistrict?.message}
+                  fullWidth
+                />
+              )}
+            />
+            <Controller
+              name="city"
+              control={control}
+              render={({ field }) => (
+                <NextUIInput
+                  {...field}
+                  label="City / Town"
+                  placeholder="e.g., Lagos, Abuja"
+                  variant="bordered"
+                  isInvalid={!!errors.city}
+                  errorMessage={errors.city?.message}
+                  fullWidth
+                />
+              )}
+            />
+             <Controller
+              name="lga"
+              control={control}
+              render={({ field }) => (
+                <NextUIInput
+                  {...field}
+                  label="LGA (Local Government Area)"
+                  placeholder="e.g., Ikeja, Abuja Municipal"
+                  variant="bordered"
+                  isInvalid={!!errors.lga}
+                  errorMessage={errors.lga?.message}
+                  fullWidth
+                />
+              )}
+            />
+            <Controller
+              name="state"
+              control={control}
+              render={({ field }) => (
+                <NextUIInput
+                  {...field}
+                  label="State"
+                  placeholder="e.g., Lagos, FCT"
+                  variant="bordered"
+                  isInvalid={!!errors.state}
+                  errorMessage={errors.state?.message}
+                  fullWidth
+                />
+              )}
+            />
+            <Controller
+              name="zipCode"
+              control={control}
+              render={({ field }) => (
+                <NextUIInput
+                  {...field}
+                  label="Zip Code (Optional)"
+                  placeholder="e.g., 100001"
+                  variant="bordered"
+                  isInvalid={!!errors.zipCode}
+                  errorMessage={errors.zipCode?.message}
+                  fullWidth
+                />
+              )}
+            />
+            <Controller
+              name="country"
+              control={control}
+              render={({ field }) => (
+                <NextUIInput
+                  {...field}
+                  label="Country"
+                  variant="bordered"
+                  isInvalid={!!errors.country}
+                  errorMessage={errors.country?.message}
+                  isDisabled // Country is fixed to Nigeria
+                  fullWidth
+                />
+              )}
+            />
+          </div>
+          <NextUIButton type="submit" color="warning" className="w-full md:w-auto text-white" isLoading={isSubmitting} disabled={isSubmitting}>
+            {isSubmitting ? "Submitting..." : "Submit Address"}
+          </NextUIButton>
+        </form>
+      </NextUICardBody>
+    </NextUICard>
   );
 }

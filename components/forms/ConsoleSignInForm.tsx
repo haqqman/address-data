@@ -1,22 +1,11 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import * as z from "zod";
-import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { useToast } from "@/hooks/use-toast";
+import { Button as NextUIButton, Input as NextUIInput } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/contexts/auth-context";
+import { useAuth } from "contexts/auth-context";
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
 
@@ -31,12 +20,11 @@ const consoleSignInSchema = z.object({
 type ConsoleSignInFormValues = z.infer<typeof consoleSignInSchema>;
 
 export function ConsoleSignInForm() {
-  const { toast } = useToast();
   const router = useRouter();
   const { signInWithEmail } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
 
-  const form = useForm<ConsoleSignInFormValues>({
+  const { control, handleSubmit, formState: { errors } } = useForm<ConsoleSignInFormValues>({
     resolver: zodResolver(consoleSignInSchema),
     defaultValues: {
       email: "",
@@ -46,63 +34,62 @@ export function ConsoleSignInForm() {
 
   async function onSubmit(values: ConsoleSignInFormValues) {
     setIsLoading(true);
-    toast({
-      title: "Attempting console log-in...",
-      description: "Please wait.",
-    });
+    // toast removed
     try {
       await signInWithEmail(values.email, values.password, true); // true for isAdmin
-      toast({
-        title: "Console Log In Successful",
-        description: "Redirecting to console dashboard...",
-      });
+      // toast removed
       router.push('/console/dashboard');
     } catch (error: any) {
       const errorMessage = error.message || "Invalid console credentials or unauthorized email domain.";
-       toast({
-          title: "Console Log In Failed",
-          description: errorMessage,
-          variant: "destructive",
-        });
+      console.error("Console Log In Failed:", errorMessage);
+      // toast removed
     } finally {
       setIsLoading(false);
     }
   }
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Email Address</FormLabel>
-              <FormControl>
-                <Input placeholder="example@haqqman.com" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="password"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Password</FormLabel>
-              <FormControl>
-                <Input type="password" placeholder="••••••••" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button type="submit" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground" disabled={isLoading}>
-          {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Log In
-        </Button>
-      </form>
-    </Form>
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <Controller
+        name="email"
+        control={control}
+        render={({ field }) => (
+          <NextUIInput
+            {...field}
+            label="Email Address"
+            placeholder="example@haqqman.com"
+            variant="bordered"
+            isInvalid={!!errors.email}
+            errorMessage={errors.email?.message}
+            fullWidth
+          />
+        )}
+      />
+      <Controller
+        name="password"
+        control={control}
+        render={({ field }) => (
+          <NextUIInput
+            {...field}
+            label="Password"
+            type="password"
+            placeholder="••••••••"
+            variant="bordered"
+            isInvalid={!!errors.password}
+            errorMessage={errors.password?.message}
+            fullWidth
+          />
+        )}
+      />
+      <NextUIButton 
+        type="submit" 
+        color="warning" // Mapped from accent
+        fullWidth 
+        isLoading={isLoading}
+        disabled={isLoading}
+      >
+        {isLoading ? "Logging In..." : "Log In"}
+      </NextUIButton>
+    </form>
   );
 }

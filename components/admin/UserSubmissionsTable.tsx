@@ -1,10 +1,12 @@
-
 "use client";
 
 import type { AddressSubmission } from "@/types";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  Table as NextUITable, TableHeader as NextUITableHeader, TableColumn as NextUITableColumn, TableBody as NextUITableBody, TableRow as NextUITableRow, TableCell as NextUITableCell,
+  Chip as NextUIChip,
+  ScrollShadow,
+  Tooltip
+} from "@nextui-org/react";
 import { format } from "date-fns";
 
 interface UserSubmissionsTableProps {
@@ -12,16 +14,17 @@ interface UserSubmissionsTableProps {
 }
 
 export function UserSubmissionsTable({ submissions }: UserSubmissionsTableProps) {
-  const getStatusBadgeVariant = (status: AddressSubmission['status']) => {
+  
+  const getStatusChipColor = (status: AddressSubmission['status']): "success" | "warning" | "danger" | "default" => {
     switch (status) {
       case "approved":
-        return "default";
+        return "success";
       case "pending_review":
-        return "secondary";
+        return "warning";
       case "rejected":
-        return "destructive";
+        return "danger";
       default:
-        return "outline";
+        return "default";
     }
   };
 
@@ -30,48 +33,48 @@ export function UserSubmissionsTable({ submissions }: UserSubmissionsTableProps)
   };
 
   if (submissions.length === 0) {
-    return <p className="text-muted-foreground">No address submissions found.</p>;
+    return <p className="text-foreground-500">No address submissions found.</p>;
   }
 
   return (
-    <ScrollArea className="h-[600px] w-full rounded-md border shadow-md">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>User</TableHead>
-            <TableHead>Submitted Address</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Submitted At</TableHead>
-            <TableHead>Reviewed At</TableHead>
-            <TableHead>AI Reason / Notes</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {submissions.map((submission) => (
-            <TableRow key={submission.id}>
-              <TableCell>
+    <ScrollShadow hideScrollBar className="h-[600px] w-full border shadow-md rounded-lg">
+      <NextUITable aria-label="User Submissions Table" removeWrapper>
+        <NextUITableHeader>
+          <NextUITableColumn>USER</NextUITableColumn>
+          <NextUITableColumn>SUBMITTED ADDRESS</NextUITableColumn>
+          <NextUITableColumn>STATUS</NextUITableColumn>
+          <NextUITableColumn>SUBMITTED AT</NextUITableColumn>
+          <NextUITableColumn>REVIEWED AT</NextUITableColumn>
+          <NextUITableColumn>AI REASON / NOTES</NextUITableColumn>
+        </NextUITableHeader>
+        <NextUITableBody items={submissions} emptyContent="No submissions found.">
+          {(submission) => (
+            <NextUITableRow key={submission.id}>
+              <NextUITableCell>
                 <div>{submission.userName || "N/A"}</div>
-                <div className="text-xs text-muted-foreground">{submission.userEmail || "N/A"}</div>
-              </TableCell>
-              <TableCell className="max-w-xs">
-                 <div className="font-medium truncate" title={formatFullAddress(submission.submittedAddress)}>
-                  {formatFullAddress(submission.submittedAddress)}
-                </div>
-              </TableCell>
-              <TableCell>
-                <Badge variant={getStatusBadgeVariant(submission.status)}>
+                <div className="text-xs text-foreground-500">{submission.userEmail || "N/A"}</div>
+              </NextUITableCell>
+              <NextUITableCell className="max-w-xs">
+                 <Tooltip content={formatFullAddress(submission.submittedAddress)} placement="top-start">
+                    <div className="font-medium truncate">
+                      {formatFullAddress(submission.submittedAddress)}
+                    </div>
+                  </Tooltip>
+              </NextUITableCell>
+              <NextUITableCell>
+                <NextUIChip size="sm" color={getStatusChipColor(submission.status)} variant="flat">
                   {submission.status.replace("_", " ").toUpperCase()}
-                </Badge>
-              </TableCell>
-              <TableCell>{format(new Date(submission.submittedAt), "PPp")}</TableCell>
-              <TableCell>{submission.reviewedAt ? format(new Date(submission.reviewedAt), "PPp") : "N/A"}</TableCell>
-              <TableCell className="max-w-xs truncate" title={submission.aiFlaggedReason || "N/A"}>
+                </NextUIChip>
+              </NextUITableCell>
+              <NextUITableCell>{format(new Date(submission.submittedAt), "PPp")}</NextUITableCell>
+              <NextUITableCell>{submission.reviewedAt ? format(new Date(submission.reviewedAt), "PPp") : "N/A"}</NextUITableCell>
+              <NextUITableCell className="max-w-xs truncate" title={submission.aiFlaggedReason || "N/A"}>
                 {submission.aiFlaggedReason || (submission.status === 'approved' || submission.status === 'rejected' ? 'Manually Reviewed' : 'N/A')}
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </ScrollArea>
+              </NextUITableCell>
+            </NextUITableRow>
+          )}
+        </NextUITableBody>
+      </NextUITable>
+    </ScrollShadow>
   );
 }
