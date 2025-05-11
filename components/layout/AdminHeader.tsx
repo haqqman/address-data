@@ -14,7 +14,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useAuth } from "@/contexts/auth-context";
+import { useAuth } from "contexts/auth-context"; // Adjusted import path
 
 
 const navItems = [
@@ -31,7 +31,7 @@ export function AdminHeader() {
   const handleSignOut = async () => {
     try {
       await signOut();
-      router.push('/admin/signin');
+      router.push('/admin/login'); // Adjusted redirect to admin login
     } catch (error) {
       console.error("Failed to sign out", error);
       // Handle error (e.g., show a toast message)
@@ -40,7 +40,7 @@ export function AdminHeader() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 items-center">
+      <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex h-16 items-center">
         <Link href="/admin/dashboard" className="flex items-center space-x-2 mr-6">
           <ShieldCheck className="h-6 w-6 text-primary" />
           <span className="font-bold text-lg">Admin Console</span>
@@ -74,7 +74,7 @@ export function AdminHeader() {
               <DropdownMenuContent className="w-56" align="end" forceMount>
                 <DropdownMenuLabel className="font-normal">
                   <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium leading-none">{user.displayName || "Admin User"}</p>
+                    <p className="text-sm font-medium leading-none">{user.name || "Admin User"}</p>
                     <p className="text-xs leading-none text-muted-foreground">
                       {user.email}
                     </p>
