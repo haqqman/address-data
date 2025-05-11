@@ -5,7 +5,7 @@ import { Button as NextUIButton, Dropdown, DropdownTrigger, DropdownMenu, Dropdo
 import { Building2, LayoutDashboard, KeyRound, LogOut, UserCircle } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { useAuth } from "contexts/auth-context"; 
+import { useAuth } from "@/contexts/auth-context"; 
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: <LayoutDashboard className="mr-2 h-4 w-4" /> },

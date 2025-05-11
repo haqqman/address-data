@@ -2,7 +2,7 @@
 
 import { Button as NextUIButton } from "@nextui-org/react";
 import { Chrome, Github, Loader2 } from "lucide-react"; // Assuming Loader2 is a custom spinner or from lucide
-import { useAuth } from "contexts/auth-context";
+import { useAuth } from "@/contexts/auth-context";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 

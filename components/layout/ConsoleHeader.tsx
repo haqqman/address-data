@@ -5,7 +5,7 @@ import { Button as NextUIButton, Dropdown, DropdownTrigger, DropdownMenu, Dropdo
 import { ShieldCheck, Users, KeyRound, LogOut, UserCircle, LayoutGrid } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { useAuth } from "contexts/auth-context";
+import { useAuth } from "@/contexts/auth-context";
 
 const navItems = [
   { href: "/console/dashboard", label: "Review Queue", icon: <LayoutGrid className="mr-2 h-4 w-4" /> },

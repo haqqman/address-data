@@ -5,7 +5,7 @@ import { useForm, Controller } from "react-hook-form";
 import * as z from "zod";
 import { Button as NextUIButton, Input as NextUIInput } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
-import { useAuth } from "contexts/auth-context";
+import { useAuth } from "@/contexts/auth-context";
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
 
