@@ -153,10 +153,10 @@ export default function SupportPage() {
           <p className="mb-2">
             Built for Nigeria, for developers. Powered by{' '}
             <a
-              href="https://searpane.com"
+              href="https://seapane.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-primary hover:text-primary/80 no-underline"
+              className="text-primary hover:text-secondary no-underline"
             >
               Seapane
             </a>

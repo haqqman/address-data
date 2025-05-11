@@ -4,12 +4,11 @@ import { db } from "@/lib/firebase/config";
 import type { GeographyState, GeographyLGA, GeographyCity, FirestoreGeographyStateData, FirestoreGeographyLGAData, FirestoreGeographyCityData } from "@/types";
 import { 
   collection, 
-  addDoc, 
-  getDocs, 
   doc, 
+  setDoc, // Changed from addDoc/updateDoc for add operations
+  getDocs, 
   updateDoc, 
   deleteDoc,
-  writeBatch,
   query,
   where,
   orderBy
@@ -22,18 +21,11 @@ const CITIES_SUBCOLLECTION = "cities";
 // --- State Actions ---
 export async function addState(stateData: Omit<FirestoreGeographyStateData, 'id'>): Promise<GeographyState> {
   try {
-    // Use state name (lowercase, hyphenated) as document ID for consistency
     const stateId = stateData.name.toLowerCase().replace(/\s+/g, "-");
     const stateRef = doc(db, GEOGRAPHY_COLLECTION, stateId);
     
-    await updateDoc(stateRef, stateData, { merge: true }); // Use updateDoc with merge to act like set if doc doesn't exist or update if it does
-                                                        // This is safer if we decide to manually create docs or if IDs might clash.
-                                                        // For a strict "add only if not exists", use setDoc with a getDoc check first, or rely on Firestore rules.
-                                                        // Since we are making stateId predictable, `setDoc` is also an option.
-                                                        // Let's use `setDoc` to be explicit about creating/overwriting.
-    // await setDoc(stateRef, stateData); // Simpler if we intend to overwrite or create
-     await updateDoc(doc(db, GEOGRAPHY_COLLECTION, stateId), stateData);
-
+    // Use setDoc to create or overwrite the document with the predictable ID
+    await setDoc(stateRef, stateData);
 
     return { id: stateId, ...stateData };
   } catch (error) {
@@ -69,9 +61,6 @@ export async function updateState(stateId: string, dataToUpdate: Partial<Firesto
 
 export async function deleteState(stateId: string): Promise<void> {
   try {
-    // Advanced: Implement cascading delete for LGAs and Cities if required
-    // For now, direct delete. Consider Firestore rules or a Cloud Function for cascading.
-    // Check if state has LGAs first
     const lgasSnapshot = await getDocs(collection(db, GEOGRAPHY_COLLECTION, stateId, LGAS_SUBCOLLECTION));
     if (!lgasSnapshot.empty) {
         throw new Error("Cannot delete state: It contains LGAs. Delete LGAs first.");
@@ -79,7 +68,7 @@ export async function deleteState(stateId: string): Promise<void> {
     await deleteDoc(doc(db, GEOGRAPHY_COLLECTION, stateId));
   } catch (error) {
     console.error("Error deleting state:", error);
-    throw error; // Re-throw to be caught by UI
+    throw error; 
   }
 }
 
@@ -89,9 +78,9 @@ export async function addLga(stateId: string, lgaData: Omit<FirestoreGeographyLG
     const lgaId = lgaData.name.toLowerCase().replace(/\s+/g, "-").replace(/\//g, "-");
     const lgaRef = doc(db, GEOGRAPHY_COLLECTION, stateId, LGAS_SUBCOLLECTION, lgaId);
     const dataToSet = { ...lgaData, stateId };
-    // await setDoc(lgaRef, dataToSet);
-    await updateDoc(lgaRef, dataToSet);
-
+    
+    // Use setDoc to create or overwrite the document with the predictable ID
+    await setDoc(lgaRef, dataToSet);
 
     return { id: lgaId, ...dataToSet };
   } catch (error) {
@@ -145,8 +134,9 @@ export async function addCity(stateId: string, lgaId: string, cityData: Omit<Fir
     const cityId = cityData.name.toLowerCase().replace(/\s+/g, "-").replace(/\//g, "-");
     const cityRef = doc(db, GEOGRAPHY_COLLECTION, stateId, LGAS_SUBCOLLECTION, lgaId, CITIES_SUBCOLLECTION, cityId);
     const dataToSet = { ...cityData, stateId, lgaId };
-    // await setDoc(cityRef, dataToSet);
-    await updateDoc(cityRef, dataToSet);
+
+    // Use setDoc to create or overwrite the document with the predictable ID
+    await setDoc(cityRef, dataToSet);
 
     return { id: cityId, ...dataToSet };
   } catch (error) {
@@ -157,7 +147,7 @@ export async function addCity(stateId: string, lgaId: string, cityData: Omit<Fir
 
 export async function getCitiesForLga(stateId: string, lgaId: string): Promise<GeographyCity[]> {
   try {
-    const citiesCol = collection(db, GEOGRAPHY_COLlection, stateId, LGAS_SUBCOLLECTION, lgaId, CITIES_SUBCOLLECTION);
+    const citiesCol = collection(db, GEOGRAPHY_COLLECTION, stateId, LGAS_SUBCOLLECTION, lgaId, CITIES_SUBCOLLECTION);
     const q = query(citiesCol, orderBy("name"));
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map(docSnap => ({
