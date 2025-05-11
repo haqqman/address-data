@@ -1,9 +1,8 @@
-
 "use client";
 
 import Link from "next/link";
 import { Button as NextUIButton, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, DropdownSection, User as NextUIUser } from "@nextui-org/react";
-import { LayoutDashboard, KeyRound, LogOut, UserCircle, PlusCircle } from "lucide-react"; // Added PlusCircle
+import { LayoutDashboard, KeyRound, LogOut, UserCircle, PlusCircle } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/auth-context"; 
@@ -11,7 +10,7 @@ import Image from "next/image";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: <LayoutDashboard className="mr-2 h-4 w-4" /> },
-  { href: "/dashboard/submit-address", label: "Submit Address", icon: <PlusCircle className="mr-2 h-4 w-4" /> }, // Added Submit Address nav item
+  { href: "/dashboard/submit-address", label: "Submit Address", icon: <PlusCircle className="mr-2 h-4 w-4" /> },
   { href: "/dashboard/api-keys", label: "API Keys", icon: <KeyRound className="mr-2 h-4 w-4" /> },
 ];
 
@@ -22,10 +21,10 @@ export function AppHeader() {
 
   const handleSignOut = async () => {
     try {
-      await signOut();
-      router.push('/'); 
+      await signOut(false); // Explicitly pass false for portal sign out
     } catch (error) {
       console.error("Failed to sign out", error);
+      // Optionally show a toast or error message to the user
     }
   };
 
@@ -38,8 +37,9 @@ export function AppHeader() {
             alt="Address Data Logomark" 
             width={24} 
             height={24}
+            className="text-primary"
           />
-          <span className="font-bold text-lg">Address Data</span>
+          <span className="font-bold text-lg text-primary">Address Data</span>
         </Link>
         <nav className="flex items-center space-x-1">
           {navItems.map((item) => (
@@ -49,8 +49,11 @@ export function AppHeader() {
               as={Link}
               href={item.href}
               className={cn(
-                pathname === item.href ? "bg-warning text-white font-semibold" : "text-foreground hover:bg-warning/10", 
-                "justify-start"
+                "justify-start shadow-sm hover:shadow-md border border-transparent hover:border-warning/50",
+                "hover:-translate-y-px active:translate-y-0.5 transition-all duration-150 ease-in-out",
+                pathname === item.href 
+                  ? "bg-warning/20 text-primary font-semibold border-warning" 
+                  : "text-foreground hover:bg-warning/10"
               )}
               startContent={item.icon}
             >
@@ -60,10 +63,10 @@ export function AppHeader() {
         </nav>
         <div className="ml-auto flex items-center space-x-4">
           {user && (
-            <Dropdown placement="bottom-end">
+            <Dropdown placement="bottom-end" backdrop="blur">
               <DropdownTrigger>
                 <NextUIButton isIconOnly variant="ghost" className="relative h-8 w-8 rounded-full">
-                   <UserCircle className="h-7 w-7" />
+                   <UserCircle className="h-7 w-7 text-primary" />
                 </NextUIButton>
               </DropdownTrigger>
               <DropdownMenu aria-label="User Actions" variant="flat">
@@ -73,7 +76,7 @@ export function AppHeader() {
                             name={user.name || user.email?.split('@')[0]}
                             description={user.email}
                             avatarProps={{
-                                icon: <UserCircle />,
+                                icon: <UserCircle className="text-primary" />,
                                 classNames: {icon: "text-2xl"}
                             }}
                         />

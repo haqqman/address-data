@@ -1,8 +1,7 @@
-
 "use server";
 
 import { db } from "@/lib/firebase/config";
-import type { APIKey, User } from "@/types";
+import type { APIKey } from "@/types"; // User type not directly needed here
 import { 
   collection, 
   addDoc, 
@@ -14,31 +13,32 @@ import {
   serverTimestamp, 
   Timestamp,
   orderBy,
-  getDoc,
+  // getDoc, // Not used directly here, but good to have if needed later
   deleteDoc
 } from "firebase/firestore";
-import { randomBytes } from "crypto"; // For generating secure random strings
-// import bcrypt from 'bcryptjs'; // For hashing private keys - install if not present: npm install bcryptjs @types/bcryptjs
+import { randomBytes } from "crypto"; 
 
 // Helper to convert Firestore Timestamps in APIKey objects
 const convertApiKeyTimestamps = (docData: any): APIKey => {
   const data = { ...docData };
-  for (const key in data) {
-    if (data[key] instanceof Timestamp) {
-      data[key] = data[key].toDate();
-    }
+  // Ensure all Timestamp fields are converted
+  if (data.createdAt instanceof Timestamp) {
+    data.createdAt = data.createdAt.toDate();
   }
+  if (data.lastUsedAt instanceof Timestamp) {
+    data.lastUsedAt = data.lastUsedAt.toDate();
+  }
+  // Handle cases where lastUsedAt might be null or undefined from Firestore
+  if (data.lastUsedAt === undefined) data.lastUsedAt = null;
+
   return data as APIKey;
 };
 
-// Function to generate a new API key pair (mocking private key handling)
 const generateKeyPair = (): { publicKey: string; privateKey: string; privateKeyHash: string } => {
   const publicKey = `pk_live_${randomBytes(12).toString('hex')}`;
   const privateKey = `sk_live_${randomBytes(24).toString('hex')}`;
-  // In a real app, hash the privateKey before storing. For now, storing a placeholder.
-  // const salt = bcrypt.genSaltSync(10);
-  // const privateKeyHash = bcrypt.hashSync(privateKey, salt);
-  const privateKeyHash = `hashed_${privateKey.substring(0,15)}`; // Placeholder
+  // Placeholder for hashing. In a real app, use bcryptjs or similar.
+  const privateKeyHash = `hashed_${privateKey.substring(0, 15)}...`; 
   return { publicKey, privateKey, privateKeyHash };
 };
 
@@ -60,14 +60,14 @@ export async function createApiKey({
 
     const { publicKey, privateKey, privateKeyHash } = generateKeyPair();
     
-    const apiKeyData: Omit<APIKey, 'id' | 'createdAt'> & { createdAt: any } = {
+    const apiKeyData: Omit<APIKey, 'id' | 'createdAt' | 'lastUsedAt'> & { createdAt: any, lastUsedAt: any } = {
       userId,
-      userName: userName || "User", // Default if not provided
-      userEmail: userEmail || "user@example.com", // Default if not provided
+      userName: userName || "User", 
+      userEmail: userEmail || "user@example.com", 
       publicKey,
-      privateKeyHash, // Store the hash
+      privateKeyHash, 
       createdAt: serverTimestamp(),
-      lastUsedAt: null,
+      lastUsedAt: null, // Initially null
       isActive: true,
       name: keyName || "Untitled Key",
     };
@@ -77,7 +77,13 @@ export async function createApiKey({
     return { 
       success: true, 
       message: "API Key created successfully. Secure your private key, it will not be shown again.",
-      apiKey: { id: docRef.id, ...apiKeyData, createdAt: new Date(), privateKey } // Return private key ONLY on creation
+      apiKey: { 
+        id: docRef.id, 
+        ...apiKeyData, 
+        createdAt: new Date(), // Use client-side Date for immediate return
+        lastUsedAt: null,      // Keep as null
+        privateKey 
+      } 
     };
   } catch (error) {
     console.error("Error creating API key in Firestore:", error);
@@ -92,8 +98,8 @@ export async function getUserApiKeys(userId: string): Promise<APIKey[]> {
     const q = query(apiKeysCol, where("userId", "==", userId), orderBy("createdAt", "desc"));
     const querySnapshot = await getDocs(q);
     const keys: APIKey[] = [];
-    querySnapshot.forEach((doc) => {
-      keys.push({ id: doc.id, ...convertApiKeyTimestamps(doc.data()) });
+    querySnapshot.forEach((docSnap) => {
+      keys.push({ id: docSnap.id, ...convertApiKeyTimestamps(docSnap.data()) });
     });
     return keys;
   } catch (error) {
@@ -102,14 +108,14 @@ export async function getUserApiKeys(userId: string): Promise<APIKey[]> {
   }
 }
 
-export async function getAllApiKeys(): Promise<APIKey[]> {
+export async function getAllApiKeys(): Promise<APIKey[]> { // For console use
   try {
     const apiKeysCol = collection(db, "apiKeys");
     const q = query(apiKeysCol, orderBy("createdAt", "desc"));
     const querySnapshot = await getDocs(q);
     const keys: APIKey[] = [];
-    querySnapshot.forEach((doc) => {
-      keys.push({ id: doc.id, ...convertApiKeyTimestamps(doc.data()) });
+    querySnapshot.forEach((docSnap) => {
+      keys.push({ id: docSnap.id, ...convertApiKeyTimestamps(docSnap.data()) });
     });
     return keys;
   } catch (error) {
@@ -121,7 +127,10 @@ export async function getAllApiKeys(): Promise<APIKey[]> {
 export async function revokeApiKey(apiKeyId: string): Promise<{ success: boolean; message: string }> {
   try {
     const keyRef = doc(db, "apiKeys", apiKeyId);
-    await updateDoc(keyRef, { isActive: false, lastUsedAt: serverTimestamp() }); // Optionally update lastUsedAt on revoke
+    await updateDoc(keyRef, { 
+      isActive: false, 
+      lastUsedAt: serverTimestamp() // Update lastUsedAt on revoke for auditing
+    });
     return { success: true, message: `API Key ${apiKeyId} revoked successfully.` };
   } catch (error) {
     console.error("Error revoking API key in Firestore:", error);
@@ -132,7 +141,7 @@ export async function revokeApiKey(apiKeyId: string): Promise<{ success: boolean
 export async function reactivateApiKey(apiKeyId: string): Promise<{ success: boolean; message: string }> {
     try {
       const keyRef = doc(db, "apiKeys", apiKeyId);
-      await updateDoc(keyRef, { isActive: true });
+      await updateDoc(keyRef, { isActive: true }); // lastUsedAt is not reset here, it reflects last actual use or revoke
       return { success: true, message: `API Key ${apiKeyId} reactivated successfully.` };
     } catch (error) {
       console.error("Error reactivating API key in Firestore:", error);

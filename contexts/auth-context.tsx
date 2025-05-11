@@ -1,4 +1,3 @@
-
 "use client";
 
 import type { ReactNode} from 'react';
@@ -12,10 +11,10 @@ import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
 } from 'firebase/auth';
-import { auth, db } from '@/lib/firebase/config'; // Added db
+import { auth, db } from '@/lib/firebase/config';
 import type { User } from '@/types';
 import { useRouter } from 'next/navigation';
-import { doc, getDoc, setDoc } from 'firebase/firestore'; // Added getDoc, setDoc
+import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 
 interface AuthContextType {
   user: User | null;
@@ -23,7 +22,7 @@ interface AuthContextType {
   signInWithGoogle: () => Promise<FirebaseUser | null>;
   signInWithGitHub: () => Promise<FirebaseUser | null>;
   signInWithEmail: (email: string, pass: string, isConsole?: boolean) => Promise<FirebaseUser | null>;
-  signOut: () => Promise<void>;
+  signOut: (isConsole?: boolean) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -33,117 +32,97 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
+  const determineUserRole = (email: string | null | undefined): User['role'] => {
+    if (!email) return 'user';
+    if (email === "webmanager@haqqman.com") return 'cto';
+    if (email === "joshua+sandbox@haqqman.com") return 'manager';
+    if (email.endsWith('@haqqman.com')) return 'administrator';
+    return 'user';
+  };
+
+  const syncUserWithFirestore = async (firebaseUser: FirebaseUser, determinedRole: User['role']): Promise<User> => {
+    const userDocRef = doc(db, "users", firebaseUser.uid);
+    const userDocSnap = await getDoc(userDocRef);
+
+    let finalRole = determinedRole;
+    let userDataToSave: Partial<User> & { email: string | null, lastLogin?: any, createdAt?: any, authProvider?: string } = {
+      email: firebaseUser.email,
+      name: firebaseUser.displayName || firebaseUser.email?.split('@')[0] || 'Anonymous User',
+      role: determinedRole,
+      lastLogin: serverTimestamp(),
+      authProvider: firebaseUser.providerData[0]?.providerId || 'password',
+    };
+
+    if (userDocSnap.exists()) {
+      const existingData = userDocSnap.data() as User;
+      // If a role exists and it's a console role, prefer it, unless the determined role is more specific (e.g. cto > administrator)
+      const consoleRoles: User['role'][] = ['cto', 'manager', 'administrator'];
+      if (consoleRoles.includes(existingData.role) && !consoleRoles.includes(determinedRole)) {
+        finalRole = existingData.role; // Keep existing console role if determined one is just 'user'
+      } else if (determinedRole === 'cto' || (determinedRole === 'manager' && existingData.role !== 'cto')) {
+         finalRole = determinedRole; // Upgrade if determined role is higher or more specific console role
+      } else {
+        finalRole = existingData.role; // Default to existing role
+      }
+      userDataToSave.role = finalRole; // Ensure the role to save is the final one
+      await setDoc(userDocRef, userDataToSave, { merge: true });
+    } else {
+      userDataToSave.createdAt = serverTimestamp();
+      await setDoc(userDocRef, userDataToSave);
+    }
+    
+    return {
+      id: firebaseUser.uid,
+      email: firebaseUser.email,
+      name: userDataToSave.name,
+      role: finalRole,
+    };
+  };
+
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser: FirebaseUser | null) => {
+      setLoading(true);
       if (firebaseUser) {
-        // Fetch user data from Firestore to get the role
-        const userDocRef = doc(db, "users", firebaseUser.uid);
-        const userDocSnap = await getDoc(userDocRef);
-        
-        let role: User['role'] = 'user'; // Default role
-
-        if (userDocSnap.exists()) {
-          const userDataFromFirestore = userDocSnap.data() as User;
-          role = userDataFromFirestore.role;
-        } else {
-          // If user doc doesn't exist, create it with a default role or derive it
-          // This logic is crucial if users are created only via Firebase Auth initially
-          // For console users, their specific roles should be set during seed or first login if possible
-          if (firebaseUser.email === "webmanager@haqqman.com") {
-            role = 'cto';
-          } else if (firebaseUser.email === "joshua+sandbox@haqqman.com") {
-            role = 'manager';
-          } else if (firebaseUser.email?.endsWith('@haqqman.com')) {
-            role = 'administrator';
-          }
-          // Optionally, save this derived role back to Firestore if it's the first time
-          // await setDoc(userDocRef, { email: firebaseUser.email, name: firebaseUser.displayName, role: role }, { merge: true });
-        }
-        
-        const appUser: User = {
-          id: firebaseUser.uid,
-          email: firebaseUser.email,
-          name: firebaseUser.displayName,
-          role: role,
-        };
+        const determinedRole = determineUserRole(firebaseUser.email);
+        const appUser = await syncUserWithFirestore(firebaseUser, determinedRole);
         setUser(appUser);
       } else {
         setUser(null);
       }
       setLoading(false);
     });
-
     return () => unsubscribe();
   }, []);
 
   const handleSuccessfulLogin = async (firebaseUser: FirebaseUser, isConsole: boolean = false) => {
-    const userDocRef = doc(db, "users", firebaseUser.uid);
-    let userDocSnap = await getDoc(userDocRef);
-    let role: User['role'] = 'user';
-
-    if (firebaseUser.email === "webmanager@haqqman.com") {
-      role = 'cto';
-    } else if (firebaseUser.email === "joshua+sandbox@haqqman.com") {
-      role = 'manager';
-    } else if (firebaseUser.email?.endsWith('@haqqman.com')) {
-      role = 'administrator';
-    }
-
-    if (!userDocSnap.exists()) {
-      // Create user document in Firestore if it doesn't exist
-      await setDoc(userDocRef, {
-        email: firebaseUser.email,
-        name: firebaseUser.displayName || firebaseUser.email?.split('@')[0],
-        role: role,
-        createdAt: new Date(),
-        authProvider: firebaseUser.providerData[0]?.providerId || 'password',
-      });
-       userDocSnap = await getDoc(userDocRef); // Re-fetch after creation
-    } else {
-        // If user exists, ensure role is updated if it differs from the derived one
-        // This is particularly for console users if their roles were not set correctly initially
-        const existingData = userDocSnap.data();
-        if (existingData && existingData.role !== role && (role === 'cto' || role === 'manager' || role === 'administrator')) {
-             await setDoc(userDocRef, { role: role }, { merge: true });
-        }
-    }
-    
-    const finalRole = userDocSnap.exists() ? (userDocSnap.data() as User).role : role;
-
-    const appUser: User = {
-      id: firebaseUser.uid,
-      email: firebaseUser.email,
-      name: firebaseUser.displayName,
-      role: finalRole,
-    };
+    setLoading(true);
+    const determinedRole = determineUserRole(firebaseUser.email);
+    const appUser = await syncUserWithFirestore(firebaseUser, determinedRole);
     setUser(appUser);
     setLoading(false);
 
+    const consoleRoles: User['role'][] = ['cto', 'administrator', 'manager'];
     if (isConsole) {
-      if (finalRole === 'cto' || finalRole === 'administrator' || finalRole === 'manager') {
+      if (consoleRoles.includes(appUser.role)) {
         router.push('/console/dashboard');
       } else {
-        await firebaseSignOut(auth); // Sign out if not a console role
+        await firebaseSignOut(auth);
         setUser(null);
         throw new Error("Access Denied. Not a valid console user role.");
       }
     } else {
       router.push('/dashboard');
     }
-     return firebaseUser;
+    return firebaseUser;
   };
-
 
   const signInWithGoogle = async (): Promise<FirebaseUser | null> => {
     setLoading(true);
     try {
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
-      if (result.user) {
-        return await handleSuccessfulLogin(result.user);
-      }
-      setLoading(false);
-      return null;
+      return await handleSuccessfulLogin(result.user);
     } catch (error) {
       console.error("Error signing in with Google:", error);
       setLoading(false);
@@ -156,13 +135,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const provider = new GithubAuthProvider();
       const result = await signInWithPopup(auth, provider);
-       if (result.user) {
-        return await handleSuccessfulLogin(result.user);
-      }
-      setLoading(false);
-      return null;
-    } catch (error)
-       {
+      return await handleSuccessfulLogin(result.user);
+    } catch (error) {
       console.error("Error signing in with GitHub:", error);
       setLoading(false);
       throw error;
@@ -172,20 +146,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signInWithEmail = async (email: string, pass: string, isConsole: boolean = false): Promise<FirebaseUser | null> => {
     setLoading(true);
     try {
-      if (isConsole) {
-        if (email === "webmanager@haqqman.com" || email === "joshua+sandbox@haqqman.com" || email.endsWith('@haqqman.com') ) {
-           // Proceed
-        } else {
-             setLoading(false);
-             throw new Error("Console access restricted to specific @haqqman.com emails or general @haqqman.com domain.");
-        }
+      if (isConsole && !determineUserRole(email).match(/cto|administrator|manager/)) {
+         setLoading(false);
+         throw new Error("Console access restricted.");
       }
       const userCredential = await signInWithEmailAndPassword(auth, email, pass);
-      if (userCredential.user) {
-        return await handleSuccessfulLogin(userCredential.user, isConsole);
-      }
-       setLoading(false);
-      return null;
+      return await handleSuccessfulLogin(userCredential.user, isConsole);
     } catch (error) {
       console.error("Error signing in with email:", error);
       setLoading(false);
@@ -193,11 +159,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const signOut = async () => {
+  const signOut = async (isConsole: boolean = false) => {
     setLoading(true);
     try {
       await firebaseSignOut(auth);
       setUser(null);
+      router.push(isConsole ? '/console' : '/login');
     } catch (error) {
       console.error("Error signing out:", error);
       throw error;

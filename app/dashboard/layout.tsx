@@ -1,4 +1,3 @@
-
 "use client";
 
 import type { ReactNode } from 'react';
@@ -37,7 +36,12 @@ export default function DashboardLayout({
 
   if (!user) {
     // This will be brief as the useEffect above will redirect.
-    return null; 
+    // Or, you can show a message or a simpler layout here if preferred.
+    return (
+        <div className="flex items-center justify-center min-h-screen">
+            <p>Redirecting to login...</p>
+        </div>
+    );
   }
 
   return (
@@ -67,3 +71,4 @@ export default function DashboardLayout({
     </div>
   );
 }
+

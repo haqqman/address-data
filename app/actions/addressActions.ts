@@ -34,8 +34,9 @@ const convertTimestamps = (docData: any): any => {
   for (const key in data) {
     if (data[key] instanceof Timestamp) {
       data[key] = data[key].toDate();
-    } else if (typeof data[key] === 'object' && data[key] !== null) {
-      // Recursively convert for nested objects if any
+    } else if (typeof data[key] === 'object' && data[key] !== null && !(data[key] instanceof Date)) {
+       // Check if it's a plain object and not already a Date
+      convertTimestamps(data[key]); // Recursively convert for nested objects
     }
   }
   return data;
@@ -45,6 +46,7 @@ const convertTimestamps = (docData: any): any => {
 // Simulate fetching Google Maps address - This remains a mock as it's external
 async function fetchGoogleMapsAddress(addressParts: z.infer<typeof addressSchema>): Promise<string> {
   const { streetAddress, areaDistrict, city, state, country, zipCode } = addressParts;
+  // Simplified mock for demonstration. In a real app, call Google Maps API.
   if (streetAddress.toLowerCase().includes("test discrepancy")) {
      return `${streetAddress.replace(", Test Discrepancy Layout", "")}, ${areaDistrict}, ${city}, ${state} ${zipCode || ''}, ${country}`.replace(/,\s*,/g, ',').trim();
   }
@@ -107,7 +109,7 @@ export async function submitAddress({ formData, user }: SubmitAddressParams) {
       status = "approved"; 
     }
     
-    const newSubmissionData: Omit<AddressSubmission, 'id' | 'submittedAt'> & { submittedAt: any } = {
+    const newSubmissionData: Omit<AddressSubmission, 'id' | 'submittedAt' | 'reviewedAt'> & { submittedAt: any, reviewedAt: any } = {
       userId: user.id,
       userName: user.name || "User",
       userEmail: user.email || "user@example.com",
@@ -116,16 +118,30 @@ export async function submitAddress({ formData, user }: SubmitAddressParams) {
       status: status,
       aiFlaggedReason: aiFlaggedReason,
       submittedAt: serverTimestamp(), 
-      reviewedAt: null,
+      reviewedAt: null, // Explicitly set to null, will be serverTimestamp() on update
       reviewerId: null,
+      reviewNotes: undefined, // Ensure reviewNotes is part of the type if used
     };
 
     const docRef = await addDoc(collection(db, "addressSubmissions"), newSubmissionData);
+    
+    // For the returned object, we can convert serverTimestamp placeholder to an actual Date for immediate UI use if needed
+    // However, Firestore typically returns a Timestamp object which convertTimestamps handles.
+    // For `addDoc`, the immediate `newSubmissionData` still has `serverTimestamp()`.
+    // Fetching the doc right after `addDoc` would give the actual Timestamp.
+    // For simplicity, we'll assume `convertTimestamps` on the client side handles it or we pass a client-side Date.
 
     return {
       success: true,
       message: `Address submitted. Status: ${status}.${aiFlaggedReason ? ` Reason: ${aiFlaggedReason}` : ''}`,
-      submission: { id: docRef.id, ...newSubmissionData, submittedAt: new Date() }, 
+      submission: { 
+        id: docRef.id, 
+        ...newSubmissionData, 
+        // Replace serverTimestamp() with a client-side new Date() for immediate return consistency.
+        // The actual stored value will be a server-generated Timestamp.
+        submittedAt: new Date(), 
+        reviewedAt: null // Keep as null
+      }, 
     };
 
   } catch (error) {
@@ -143,12 +159,12 @@ export async function getAddressSubmissions(userId: string): Promise<AddressSubm
     const submissionsCol = collection(db, "addressSubmissions");
     let q;
     
-    // Logic for admin check: if userId corresponds to an admin ID, fetch all.
-    // This part might need refinement if admin IDs are not fixed strings.
-    // For now, assuming specific IDs like "abdulhaqq_cto_id" or "joshua_manager_id" are admin identifiers passed from console.
-    // Or a more robust role check could be performed here if user roles are stored in Firestore alongside users.
-    const adminIds = ["mockConsoleId", "abdulhaqq_cto_id", "joshua_manager_id"]; // Example admin identifiers
-    if (adminIds.includes(userId)) { 
+    // This is a simplified admin check. In a real app, use custom claims or roles collection.
+    const consoleUserIdentifiers = ["CONSOLE_USER_UID_ABDULHAQQ", "CONSOLE_USER_UID_JOSHUA"]; 
+    const isAdminUser = consoleUserIdentifiers.includes(userId) || userId === "mockConsoleId"; // mockConsoleId for generic console calls
+
+
+    if (isAdminUser) { 
       q = query(submissionsCol, orderBy("submittedAt", "desc"));
     } else {
       q = query(submissionsCol, where("userId", "==", userId), orderBy("submittedAt", "desc"));
@@ -156,8 +172,9 @@ export async function getAddressSubmissions(userId: string): Promise<AddressSubm
 
     const querySnapshot = await getDocs(q);
     const submissions: AddressSubmission[] = [];
-    querySnapshot.forEach((doc) => {
-      submissions.push({ id: doc.id, ...convertTimestamps(doc.data()) } as AddressSubmission);
+    querySnapshot.forEach((docSnap) => {
+      // Ensure the entire document data is passed to convertTimestamps
+      submissions.push({ id: docSnap.id, ...convertTimestamps(docSnap.data()) } as AddressSubmission);
     });
     return submissions;
   } catch (error) {
@@ -169,12 +186,13 @@ export async function getAddressSubmissions(userId: string): Promise<AddressSubm
 export async function getFlaggedAddresses(): Promise<AddressSubmission[]> {
   try {
     const submissionsCol = collection(db, "addressSubmissions");
+    // Fetch addresses that are 'pending_review'
     const q = query(submissionsCol, where("status", "==", "pending_review"), orderBy("submittedAt", "desc"));
     
     const querySnapshot = await getDocs(q);
     const submissions: AddressSubmission[] = [];
-    querySnapshot.forEach((doc) => {
-      submissions.push({ id: doc.id, ...convertTimestamps(doc.data()) } as AddressSubmission);
+    querySnapshot.forEach((docSnap) => {
+      submissions.push({ id: docSnap.id, ...convertTimestamps(docSnap.data()) } as AddressSubmission);
     });
     return submissions;
   } catch (error) {
@@ -183,7 +201,12 @@ export async function getFlaggedAddresses(): Promise<AddressSubmission[]> {
   }
 }
 
-export async function updateAddressStatus(submissionId: string, newStatus: "approved" | "rejected", reviewerId: string, reviewNotes?: string): Promise<{success: boolean, message: string}> {
+export async function updateAddressStatus(
+  submissionId: string, 
+  newStatus: "approved" | "rejected", 
+  reviewerId: string, 
+  reviewNotes?: string
+): Promise<{success: boolean, message: string}> {
   try {
     const submissionRef = doc(db, "addressSubmissions", submissionId);
     
@@ -192,13 +215,13 @@ export async function updateAddressStatus(submissionId: string, newStatus: "appr
       return { success: false, message: "Submission not found." };
     }
 
-    const updateData: any = {
+    const updateData: Partial<AddressSubmission> & { reviewedAt: any } = { // Use any for serverTimestamp
       status: newStatus,
       reviewedAt: serverTimestamp(),
       reviewerId: reviewerId, 
     };
 
-    if (reviewNotes) updateData.reviewNotes = reviewNotes; // Assuming reviewNotes field exists in AddressSubmission type
+    if (reviewNotes) updateData.reviewNotes = reviewNotes;
 
     await updateDoc(submissionRef, updateData);
     

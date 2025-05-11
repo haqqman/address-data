@@ -1,20 +1,21 @@
-
 "use client";
 
 import Link from "next/link";
 import { Button as NextUIButton, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, DropdownSection, User as NextUIUser } from "@nextui-org/react";
-import { Users, KeyRound, LogOut, UserCircle, LayoutGrid, Map, Users2 } from "lucide-react"; // Added Users2 for Team Manager
+import { Users, KeyRound, LogOut, UserCircle, LayoutGrid, Map, Users2 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/auth-context";
 import Image from "next/image";
 import type { ReactNode } from "react";
+import type { User } from "@/types";
+
 
 interface NavItem {
   href: string;
   label: string;
   icon: ReactNode;
-  roles?: Array<User['role']>; // Optional roles to restrict visibility
+  roles?: Array<User['role']>; 
 }
 
 const baseNavItems: NavItem[] = [
@@ -26,7 +27,7 @@ const baseNavItems: NavItem[] = [
     href: "/console/team", 
     label: "Team Manager", 
     icon: <Users2 className="mr-2 h-4 w-4" />, 
-    roles: ['cto'] // Only visible to CTO
+    roles: ['cto'] 
   },
 ];
 
@@ -37,18 +38,16 @@ export function ConsoleHeader() {
 
   const handleSignOut = async () => {
     try {
-      await signOut();
-      router.push('/console'); 
+      await signOut(true); // Pass true for console sign out
     } catch (error) {
-      console.error("Failed to sign out", error);
+      console.error("Failed to sign out from console", error);
     }
   };
 
-  // Filter nav items based on user role
   const navItems = baseNavItems.filter(item => {
-    if (!item.roles) return true; // No role restriction
-    if (!user) return false; // User not logged in
-    return item.roles.includes(user.role); // Check if user role is allowed
+    if (!item.roles) return true; 
+    if (!user) return false; 
+    return item.roles.includes(user.role); 
   });
 
   return (
@@ -102,7 +101,7 @@ export function ConsoleHeader() {
                             name={user.name || "Console User"}
                             description={user.email}
                              avatarProps={{
-                                icon: <UserCircle className="text-primary"/>, // Ensure icon has color
+                                icon: <UserCircle className="text-primary"/>, 
                                 classNames: {icon: "text-2xl"}
                             }}
                         />
