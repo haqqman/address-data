@@ -142,9 +142,13 @@ export default function HomePage() {
         </section>
 
         {/* Call to Action Section */}
-        <section className="py-20 md:py-32 bg-primary text-primary-foreground">
-          <div className="container mx-auto px-4 text-center">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">
+        <section 
+          className="relative py-20 md:py-32 bg-cover bg-center"
+          style={{ backgroundImage: "url('https://address-data.vercel.app/assets/images/hero-bg-3.jpg')" }}
+        >
+          <div className="absolute inset-0 bg-primary/80"></div> {/* Overlay */}
+          <div className="container mx-auto px-4 text-center relative z-10">
+            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-primary-foreground">
               Ready to Elevate Your Address Handling?
             </h2>
             <p className="text-lg md:text-xl mb-10 max-w-2xl mx-auto text-primary-foreground/90">
@@ -179,4 +183,3 @@ export default function HomePage() {
     </div>
   );
 }
-
