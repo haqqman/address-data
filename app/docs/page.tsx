@@ -23,6 +23,56 @@ export default function DocsPage() {
   "googleMapsSuggestion": "123 Main St, Ikeja GRA, Ikeja, Lagos 100001, Nigeria"
 }`;
 
+  const authExample = `// Example: Fetching data with authentication headers
+fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
+  method: 'GET',
+  headers: {
+    'X-Public-Key': 'YOUR_PUBLIC_KEY',
+    'X-Private-Key': 'YOUR_PRIVATE_KEY',
+    'Content-Type': 'application/json'
+  }
+})
+.then(response => response.json())
+.then(data => console.log(data))
+.catch(error => console.error('Error:', error));`;
+
+  const autocompleteRequest = `${API_BASE_URL}/autocomplete?query=123 Allen Ave Ikeja`;
+  const autocompleteResponse = `[
+  {
+    "adc": "ADC123XYZ",
+    "formattedAddress": "123 Allen Avenue, Ikeja, Lagos",
+    "streetAddress": "123 Allen Avenue",
+    "city": "Ikeja",
+    "lga": "Ikeja",
+    "state": "Lagos"
+  },
+  // ... other suggestions
+]`;
+
+  const lookupByCodeRequest = `${API_BASE_URL}/lookup-by-code/ADC789ABC`;
+
+  const statesRequest = `${API_BASE_URL}/states`;
+  const statesResponse = `[
+  { "name": "Abia", "capital": "Umuahia" },
+  { "name": "Lagos", "capital": "Ikeja" },
+  // ... other states
+]`;
+
+  const lgasRequest = `${API_BASE_URL}/states/Lagos/lgas`;
+  const lgasResponse = `[
+  { "name": "Agege" },
+  { "name": "Ikeja" },
+  // ... other LGAs in Lagos
+]`;
+
+  const citiesRequest = `${API_BASE_URL}/states/Lagos/lga/Ikeja/cities`;
+  const citiesResponse = `[
+  { "name": "Ikeja" },
+  { "name": "Oregun" },
+  // ... other cities/towns in Ikeja LGA
+]`;
+
+
   return (
     <div className="flex flex-col min-h-screen">
       <PublicHeader />
@@ -65,25 +115,16 @@ export default function DocsPage() {
                   and your Private Key in the <code className="bg-muted px-1.5 py-0.5 rounded-md text-sm font-mono">X-Private-Key</code> header.
                   You can generate your API keys from the developer portal.
                 </p>
+                <p className="text-base mt-4 mb-1"><strong>Authentication Example:</strong></p>
                 <Snippet 
-                  className="mt-4 text-sm max-w-full" 
+                  lang="javascript"
+                  className="text-sm max-w-full" 
                   symbol="" 
                   variant="bordered"
                   tooltipProps={{color:"primary"}}
                   copyButtonProps={{variant:"light"}}
                 >
-                  {`// Example: Fetching data with authentication headers
-fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
-  method: 'GET',
-  headers: {
-    'X-Public-Key': 'YOUR_PUBLIC_KEY',
-    'X-Private-Key': 'YOUR_PRIVATE_KEY',
-    'Content-Type': 'application/json'
-  }
-})
-.then(response => response.json())
-.then(data => console.log(data))
-.catch(error => console.error('Error:', error));`}
+                  {authExample}
                 </Snippet>
               </section>
 
@@ -149,22 +190,12 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
                       <li><code className="bg-muted px-1.5 py-0.5 rounded-md text-sm font-mono">query</code> (string, required): The partial address string to search for.</li>
                     </ul>
                     <p className="text-base mb-1"><strong>Example Request:</strong></p>
-                    <Snippet className="text-sm max-w-full" variant="bordered">
-                      {`${API_BASE_URL}/autocomplete?query=123 Allen Ave Ikeja`}
+                    <Snippet lang="bash" className="text-sm max-w-full" variant="bordered">
+                      {autocompleteRequest}
                     </Snippet>
                     <p className="text-base mt-2 mb-1"><strong>Example Success Response (200 OK):</strong></p>
                     <Snippet lang="json" className="text-sm max-w-full" variant="bordered">
-{`[
-  {
-    "adc": "ADC123XYZ",
-    "formattedAddress": "123 Allen Avenue, Ikeja, Lagos",
-    "streetAddress": "123 Allen Avenue",
-    "city": "Ikeja",
-    "lga": "Ikeja",
-    "state": "Lagos"
-  },
-  // ... other suggestions
-]`}
+                      {autocompleteResponse}
                     </Snippet>
                   </div>
 
@@ -181,8 +212,8 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
                       <li><code className="bg-muted px-1.5 py-0.5 rounded-md text-sm font-mono">adc</code> (string, required): The Address Data Code.</li>
                     </ul>
                     <p className="text-base mb-1"><strong>Example Request:</strong></p>
-                    <Snippet className="text-sm max-w-full" variant="bordered">
-                      {`${API_BASE_URL}/lookup-by-code/ADC789ABC`}
+                    <Snippet lang="bash" className="text-sm max-w-full" variant="bordered">
+                      {lookupByCodeRequest}
                     </Snippet>
                     <p className="text-base mt-2 mb-1"><strong>Example Success Response (200 OK):</strong></p>
                     <Snippet lang="json" className="text-sm max-w-full" variant="bordered">
@@ -199,16 +230,12 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
                       Lists all Nigerian states.
                     </p>
                     <p className="text-base mb-1"><strong>Example Request:</strong></p>
-                    <Snippet className="text-sm max-w-full" variant="bordered">
-                      {`${API_BASE_URL}/states`}
+                    <Snippet lang="bash" className="text-sm max-w-full" variant="bordered">
+                      {statesRequest}
                     </Snippet>
                     <p className="text-base mt-2 mb-1"><strong>Example Success Response (200 OK):</strong></p>
                     <Snippet lang="json" className="text-sm max-w-full" variant="bordered">
-{`[
-  { "name": "Abia", "capital": "Umuahia" },
-  { "name": "Lagos", "capital": "Ikeja" },
-  // ... other states
-]`}
+                      {statesResponse}
                     </Snippet>
                   </div>
                   
@@ -225,16 +252,12 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
                         <li><code className="bg-muted px-1.5 py-0.5 rounded-md text-sm font-mono">stateName</code> (string, required): The name of the state (e.g., "Lagos"). Case-insensitive.</li>
                     </ul>
                     <p className="text-base mb-1"><strong>Example Request:</strong></p>
-                    <Snippet className="text-sm max-w-full" variant="bordered">
-                      {`${API_BASE_URL}/states/Lagos/lgas`}
+                    <Snippet lang="bash" className="text-sm max-w-full" variant="bordered">
+                      {lgasRequest}
                     </Snippet>
                     <p className="text-base mt-2 mb-1"><strong>Example Success Response (200 OK):</strong></p>
                     <Snippet lang="json" className="text-sm max-w-full" variant="bordered">
-{`[
-  { "name": "Agege" },
-  { "name": "Ikeja" },
-  // ... other LGAs in Lagos
-]`}
+                      {lgasResponse}
                     </Snippet>
                   </div>
 
@@ -252,16 +275,12 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
                         <li><code className="bg-muted px-1.5 py-0.5 rounded-md text-sm font-mono">lgaName</code> (string, required): The name of the LGA.</li>
                     </ul>
                     <p className="text-base mb-1"><strong>Example Request:</strong></p>
-                    <Snippet className="text-sm max-w-full" variant="bordered">
-                      {`${API_BASE_URL}/states/Lagos/lga/Ikeja/cities`}
+                    <Snippet lang="bash" className="text-sm max-w-full" variant="bordered">
+                      {citiesRequest}
                     </Snippet>
                      <p className="text-base mt-2 mb-1"><strong>Example Success Response (200 OK):</strong></p>
                     <Snippet lang="json" className="text-sm max-w-full" variant="bordered">
-{`[
-  { "name": "Ikeja" },
-  { "name": "Oregun" },
-  // ... other cities/towns in Ikeja LGA
-]`}
+                      {citiesResponse}
                     </Snippet>
                   </div>
 
