@@ -1,10 +1,8 @@
 
+"use client";
+
 import { PublicHeader } from "@/components/layout/PublicHeader";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
+import { Card as NextUICard, CardHeader as NextUICardHeader, CardBody as NextUICardBody, Button as NextUIButton, Input as NextUIInput, Textarea as NextUITextarea } from "@nextui-org/react";
 import { LifeBuoy, Mail, MessageSquare } from "lucide-react";
 import Link from "next/link";
 
@@ -14,17 +12,17 @@ export default function SupportPage() {
       <PublicHeader />
       <main className="flex-grow container mx-auto px-4 py-12">
         <div className="max-w-3xl mx-auto">
-          <Card className="shadow-xl rounded-xl">
-            <CardHeader className="text-center">
-              <div className="inline-flex items-center justify-center rounded-full bg-primary/10 p-3 mb-4 self-center">
+          <NextUICard className="shadow-xl rounded-xl p-2">
+            <NextUICardHeader className="flex flex-col items-center text-center pt-6 pb-2">
+              <div className="inline-flex items-center justify-center rounded-full bg-primary/10 p-3 mb-4">
                 <LifeBuoy className="h-10 w-10 text-primary" />
               </div>
-              <CardTitle className="text-3xl font-bold">Get Help & Support</CardTitle>
-              <CardDescription className="text-lg text-muted-foreground">
+              <h1 className="text-3xl font-bold">Get Help & Support</h1>
+              <p className="text-lg text-muted-foreground mt-1">
                 We&apos;re here to assist you with any questions or issues.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-10">
+              </p>
+            </NextUICardHeader>
+            <NextUICardBody className="space-y-10 pt-0">
               <section className="grid md:grid-cols-2 gap-6">
                 <div className="space-y-3">
                   <h2 className="text-2xl font-semibold flex items-center">
@@ -33,9 +31,15 @@ export default function SupportPage() {
                   <p>
                     For general inquiries, technical support, or API integration help, please email us. We aim to respond within 24-48 business hours.
                   </p>
-                  <Button asChild className="w-full md:w-auto bg-primary text-primary-foreground hover:bg-primary/90">
-                    <Link href="mailto:support@addressdata.ng">support@addressdata.ng</Link>
-                  </Button>
+                  <NextUIButton 
+                    as={Link} 
+                    href="mailto:support@addressdata.ng" 
+                    color="primary" 
+                    className="w-full md:w-auto"
+                    radius="md"
+                  >
+                    support@addressdata.ng
+                  </NextUIButton>
                 </div>
                 <div className="space-y-3">
                   <h2 className="text-2xl font-semibold flex items-center">
@@ -44,43 +48,78 @@ export default function SupportPage() {
                   <p>
                     Join our community forum to ask questions, share solutions, and connect with other developers and users of Address Data.
                   </p>
-                  <Button variant="outline" asChild className="w-full md:w-auto" disabled>
-                    <Link href="#">Visit Forum (Coming Soon)</Link>
-                  </Button>
+                  <NextUIButton 
+                    as={Link} 
+                    href="#" 
+                    variant="bordered" 
+                    className="w-full md:w-auto" 
+                    isDisabled 
+                    radius="md"
+                  >
+                    Visit Forum (Coming Soon)
+                  </NextUIButton>
                 </div>
               </section>
 
-              <hr className="my-8" />
+              <hr className="my-4 border-border" />
 
               <section>
-                <h2 className="text-2xl font-semibold mb-4 text-center">Contact Us Directly</h2>
+                <h2 className="text-2xl font-semibold mb-6 text-center">Contact Us Directly</h2>
                 <form className="space-y-6">
                   <div>
-                    <Label htmlFor="name" className="text-base">Full Name</Label>
-                    <Input id="name" placeholder="Your Name" className="mt-1" />
+                    <NextUIInput 
+                      id="name" 
+                      label="Full Name" 
+                      placeholder="Your Name" 
+                      variant="bordered"
+                      classNames={{ label: "text-base" }}
+                    />
                   </div>
                   <div>
-                    <Label htmlFor="email" className="text-base">Email Address</Label>
-                    <Input id="email" type="email" placeholder="your.email@example.com" className="mt-1" />
+                    <NextUIInput 
+                      id="email" 
+                      type="email" 
+                      label="Email Address" 
+                      placeholder="your.email@example.com" 
+                      variant="bordered"
+                      classNames={{ label: "text-base" }}
+                    />
                   </div>
                   <div>
-                    <Label htmlFor="subject" className="text-base">Subject</Label>
-                    <Input id="subject" placeholder="e.g., API Key Issue" className="mt-1" />
+                    <NextUIInput 
+                      id="subject" 
+                      label="Subject" 
+                      placeholder="e.g., API Key Issue" 
+                      variant="bordered"
+                      classNames={{ label: "text-base" }}
+                    />
                   </div>
                   <div>
-                    <Label htmlFor="message" className="text-base">Message</Label>
-                    <Textarea id="message" placeholder="Describe your issue or question in detail..." rows={5} className="mt-1" />
+                    <NextUITextarea
+                      id="message"
+                      label="Message"
+                      placeholder="Describe your issue or question in detail..."
+                      variant="bordered"
+                      minRows={5}
+                      classNames={{ label: "text-base" }}
+                    />
                   </div>
-                  <div className="text-center">
-                    <Button type="submit" size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground" disabled>
+                  <div className="text-center pt-2">
+                    <NextUIButton 
+                      type="submit" 
+                      color="primary" 
+                      size="lg" 
+                      isDisabled 
+                      radius="md"
+                    >
                       Send Message (Form Inactive)
-                    </Button>
+                    </NextUIButton>
                   </div>
                 </form>
               </section>
 
-            </CardContent>
-          </Card>
+            </NextUICardBody>
+          </NextUICard>
         </div>
       </main>
       <footer className="py-8 border-t bg-background">
