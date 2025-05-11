@@ -45,8 +45,6 @@ export function ConsoleLogInForm() {
       if (user) { 
         router.push('/console/dashboard');
       } else {
-        // This path might not be reached if signInWithEmail throws or onAuthStateChanged handles redirection logic.
-        // Kept for robustness, but primarily errors are caught in the catch block.
         setErrorMessage("Login failed. Please check your credentials.");
       }
     } catch (error: any) {
@@ -75,13 +73,13 @@ export function ConsoleLogInForm() {
             label="Email Address"
             placeholder="example@haqqman.com"
             variant="bordered"
-            isInvalid={!!errors.email || !!errorMessage} // Show error state if Zod error or general login error
+            isInvalid={!!errors.email || !!errorMessage} 
             errorMessage={errors.email?.message}
             fullWidth
-            // The Zod transform handles converting to lowercase and removing spaces upon validation.
-            // For immediate visual feedback, onValueChange can be used, but Zod transform is for actual validation.
-            // If onValueChange is used, ensure it doesn't conflict with RHF's control.
-            // For simplicity, relying on Zod's transform during submit/validation.
+            onValueChange={(value) => {
+              const transformedValue = value.toLowerCase().replace(/\s+/g, '');
+              field.onChange(transformedValue); // Update RHF's state with transformed value
+            }}
           />
         )}
       />
@@ -95,7 +93,7 @@ export function ConsoleLogInForm() {
             type="password"
             placeholder="••••••••"
             variant="bordered"
-            isInvalid={!!errors.password || !!errorMessage} // Show error state if Zod error or general login error
+            isInvalid={!!errors.password || !!errorMessage} 
             errorMessage={errors.password?.message}
             fullWidth
           />
