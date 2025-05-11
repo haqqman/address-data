@@ -2,7 +2,7 @@
 "use client"; 
 
 import { useState, useEffect, useCallback } from "react";
-import { ApiKeyManagementTable } from "@/components/admin/ApiKeyManagementTable";
+import { ApiKeyManagementTable } from "@/components/console/ApiKeyManagementTable";
 import type { APIKey } from "@/types"; 
 import { Skeleton as NextUISkeleton, Card as NextUICard, CardHeader as NextUICardHeader, CardBody as NextUICardBody, Button as NextUIButton, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Input as NextUIInput, useDisclosure, Autocomplete, AutocompleteItem } from "@nextui-org/react";
 import { AlertTriangle, PlusCircle } from "lucide-react";

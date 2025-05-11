@@ -1,12 +1,12 @@
 # Address Data
 
-**Address Data** is an address intelligence platform purpose-built for Nigeria. It provides developers, businesses, and admins with tools to validate, store, and retrieve Nigerian address data in a structured, efficient, and scalable way.
+**Address Data** is an address intelligence platform purpose-built for Nigeria. It provides developers, businesses, and operations with tools to validate, store, and retrieve Nigerian address data in a structured, efficient, and scalable way.
 
 ## Project Overview
 
 The platform consists of:
-- A **User Portal** for submitting addresses.
-- An **Admin Console** for manual verification, user management, and API key management.
+- A **Portal** for users to submit and manage addresses.
+- A **Console** for manual verification, user management, and API key management.
 - A **Developer API** for programmatic access to verified address data and Nigerian geographic information.
 
 ## Local Development Setup
@@ -150,11 +150,11 @@ This will start the Genkit development UI, usually on `http://localhost:4000`.
 
 -   `app/`: Contains Next.js App Router routes and components.
     -   `(auth)/`: Routes related to authentication (login, console access).
-    -   `console/`: Routes for the admin console.
+    -   `console/`: Routes for the console.
     -   `dashboard/`: Routes for the user portal dashboard.
     -   `api/`: (Potentially for Next.js API routes, though core API logic is planned via Cloud Functions as per blueprint).
 -   `components/`: Reusable UI components.
-    -   `admin/`: Components specific to the Admin Console.
+    -   `console/`: Components specific to the Admin Console.
     -   `dashboard/`: Components specific to the User Portal Dashboard.
     -   `forms/`: Form components.
     -   `layout/`: Header, footer, and layout components.

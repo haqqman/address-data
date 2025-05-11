@@ -18,7 +18,7 @@ export default function HomePage() {
     {
       icon: <ShieldCheck className="h-8 w-8 text-secondary" />,
       title: "AI-Assisted Verification",
-      description: "Addresses are auto-approved if matching Google Maps, or flagged for admin review.",
+      description: "Addresses are auto-approved if matching Google Maps, or flagged for console review.",
       dataAiHint: "AI checkmark"
     },
     {

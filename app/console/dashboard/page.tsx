@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { FlaggedAddressTable } from "@/components/admin/FlaggedAddressTable";
+import { FlaggedAddressTable } from "@/components/console/FlaggedAddressTable";
 import { getFlaggedAddresses } from "@/app/actions/addressActions";
 import type { AddressSubmission } from "@/types";
 import { Skeleton as NextUISkeleton, Card as NextUICard, CardHeader as NextUICardHeader, CardBody as NextUICardBody } from "@nextui-org/react";
