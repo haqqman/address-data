@@ -3,7 +3,8 @@
 
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { Card as NextUICard, CardHeader as NextUICardHeader, CardBody as NextUICardBody } from "@nextui-org/react";
-import { Building2, Info } from "lucide-react";
+import { Info } from "lucide-react";
+import Image from "next/image";
 
 export default function AboutPage() {
   return (
@@ -22,6 +23,15 @@ export default function AboutPage() {
               </p>
             </NextUICardHeader>
             <NextUICardBody className="space-y-6 text-lg pt-0">
+              <div className="flex justify-center my-6">
+                <Image
+                  src="https://res.cloudinary.com/seapane-cloud/seapane-bucket/address-data/meta/address-illustration-pana.svg"
+                  alt="About Address Data Illustration"
+                  width={300}
+                  height={250}
+                  data-ai-hint="team collaboration"
+                />
+              </div>
               <p>
                 <strong>Address Data</strong> is an address intelligence platform purpose-built for Nigeria.
                 It provides developers, businesses, and admins with tools to validate, store, and retrieve
@@ -45,7 +55,13 @@ export default function AboutPage() {
                 <li>Continuously improve our platform based on user feedback and technological advancements.</li>
               </ul>
               <div className="flex justify-center pt-6">
-                <Building2 className="h-12 w-12 text-primary" />
+                <Image 
+                  src="https://res.cloudinary.com/seapane-cloud/seapane-bucket/address-data/meta/address-data-logomark-light.svg" 
+                  alt="Address Data Logomark" 
+                  width={48} 
+                  height={48}
+                  className="text-primary"
+                />
               </div>
             </NextUICardBody>
           </NextUICard>
@@ -73,3 +89,4 @@ export default function AboutPage() {
   );
 }
 
+    

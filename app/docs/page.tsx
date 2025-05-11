@@ -4,6 +4,7 @@
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { Card as NextUICard, CardHeader as NextUICardHeader, CardBody as NextUICardBody, Snippet, Link as NextUILink, Divider as NextUIDivider } from "@nextui-org/react";
 import { BookOpen, Code2, Zap, ShieldCheck, MapPinned, HelpCircle, Layers, AlertTriangle, Tag } from "lucide-react";
+import Image from "next/image";
 
 const API_BASE_URL = "https://api.addressdata.ng/v1";
 
@@ -89,6 +90,15 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
               </p>
             </NextUICardHeader>
             <NextUICardBody className="space-y-10 text-lg pt-0">
+               <div className="flex justify-center my-6">
+                <Image
+                  src="https://res.cloudinary.com/seapane-cloud/seapane-bucket/address-data/meta/address-illustration-cuate.svg"
+                  alt="API Documentation Illustration"
+                  width={350}
+                  height={300}
+                  data-ai-hint="developer documentation"
+                />
+              </div>
               
               <section id="introduction">
                 <h2 className="text-2xl font-semibold mb-3 flex items-center">
@@ -365,3 +375,4 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
   );
 }
 
+    

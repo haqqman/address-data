@@ -1,9 +1,10 @@
+
 "use client"; // Added "use client" directive
 
 import Image from "next/image";
 import Link from "next/link";
 import { Button as NextUIButton, Card as NextUICard, CardHeader as NextUICardHeader, CardBody as NextUICardBody } from "@nextui-org/react";
-import { CheckCircle, DatabaseZap, SearchCheck, KeyRound, MapPin, ShieldCheck, Building2, Gauge } from "lucide-react";
+import { CheckCircle, DatabaseZap, SearchCheck, KeyRound, MapPin, ShieldCheck, Gauge } from "lucide-react";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 
 export default function HomePage() {
@@ -54,7 +55,14 @@ export default function HomePage() {
         <section className="py-20 md:py-32 bg-gradient-to-br from-background to-secondary/30">
           <div className="container mx-auto px-4 text-center">
             <div className="flex justify-center mb-6">
-              <Building2 className="h-16 w-16 text-primary" />
+              <Image 
+                src="https://res.cloudinary.com/seapane-cloud/seapane-bucket/address-data/meta/address-data-logomark-light.svg" 
+                alt="Address Data Logomark" 
+                width={64} 
+                height={64}
+                className="text-primary"
+                data-ai-hint="logo brand"
+              />
             </div>
             <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-foreground">
               The Future of Nigerian Address Data
@@ -70,20 +78,55 @@ export default function HomePage() {
                 Learn More
               </NextUIButton>
             </div>
+            <div className="mt-16 md:mt-24">
+              <Image
+                src="https://res.cloudinary.com/seapane-cloud/seapane-bucket/address-data/meta/address-illustration-bro.svg"
+                alt="Hero Illustration"
+                width={500}
+                height={400}
+                className="mx-auto"
+                data-ai-hint="address management"
+              />
+            </div>
           </div>
         </section>
 
         {/* Features Section */}
         <section id="features" className="py-16 md:py-24 bg-background">
           <div className="container mx-auto px-4">
-            <h2 className="text-3xl md:text-4xl font-bold text-center text-foreground mb-4">
-              Why Address Data?
-            </h2>
-            <p className="text-center text-muted-foreground mb-12 md:mb-16 max-w-2xl mx-auto">
-              Our platform is purpose-built for Nigeria, offering unparalleled accuracy and developer-friendly tools.
-            </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {features.map((feature, index) => (
+            <div className="flex flex-col lg:flex-row items-center gap-12">
+              <div className="lg:w-1/2">
+                <Image 
+                  src="https://res.cloudinary.com/seapane-cloud/seapane-bucket/address-data/meta/address-illustration-amiko.svg" 
+                  alt="Features Illustration" 
+                  width={500} 
+                  height={450} 
+                  className="rounded-lg shadow-xl mx-auto"
+                  data-ai-hint="data features" 
+                />
+              </div>
+              <div className="lg:w-1/2">
+                <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+                  Why Address Data?
+                </h2>
+                <p className="text-muted-foreground mb-8 md:mb-12">
+                  Our platform is purpose-built for Nigeria, offering unparalleled accuracy and developer-friendly tools.
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  {features.slice(0,4).map((feature, index) => ( // Show first 4 compact features
+                    <div key={index} className="flex items-start space-x-3">
+                       <div className="flex-shrink-0 mt-1 text-primary">{feature.icon}</div>
+                       <div>
+                          <h4 className="font-bold text-lg text-foreground">{feature.title}</h4>
+                          <p className="text-sm text-muted-foreground">{feature.description}</p>
+                       </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-16"> {/* Remaining features as cards */}
+              {features.slice(4).map((feature, index) => (
                 <NextUICard key={index} isHoverable shadow="md" radius="xl" className="transition-shadow">
                   <NextUICardHeader className="flex flex-col items-center pt-6 pb-2">
                     <div className="flex items-center justify-center w-16 h-16 bg-primary/10 rounded-full mb-4">
@@ -129,12 +172,12 @@ export default function HomePage() {
               </div>
               <div className="lg:w-1/2">
                 <Image 
-                  src="https://picsum.photos/600/400" 
+                  src="https://res.cloudinary.com/seapane-cloud/seapane-bucket/address-data/meta/address-illustration-rafiki.svg" 
                   alt="API illustration" 
                   width={600} 
                   height={400} 
-                  className="rounded-lg shadow-xl"
-                  data-ai-hint="API code" 
+                  className="rounded-lg"
+                  data-ai-hint="API development" 
                 />
               </div>
             </div>
@@ -189,3 +232,5 @@ export default function HomePage() {
     </div>
   );
 }
+
+    

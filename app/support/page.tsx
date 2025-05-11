@@ -5,6 +5,7 @@ import { PublicHeader } from "@/components/layout/PublicHeader";
 import { Card as NextUICard, CardHeader as NextUICardHeader, CardBody as NextUICardBody, Button as NextUIButton, Input as NextUIInput, Textarea as NextUITextarea } from "@nextui-org/react";
 import { LifeBuoy, Mail, MessageSquare } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function SupportPage() {
   return (
@@ -23,6 +24,15 @@ export default function SupportPage() {
               </p>
             </NextUICardHeader>
             <NextUICardBody className="space-y-10 pt-0">
+              <div className="flex justify-center my-6">
+                <Image
+                  src="https://res.cloudinary.com/seapane-cloud/seapane-bucket/address-data/meta/address-illustration-pana.svg"
+                  alt="Support Illustration"
+                  width={300}
+                  height={250}
+                  data-ai-hint="customer support"
+                />
+              </div>
               <section className="grid md:grid-cols-2 gap-6">
                 <div className="space-y-3">
                   <h2 className="text-2xl font-semibold flex items-center">
@@ -151,3 +161,4 @@ export default function SupportPage() {
   );
 }
 
+    

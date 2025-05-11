@@ -3,10 +3,11 @@
 
 import Link from "next/link";
 import { Button as NextUIButton, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, DropdownSection, User as NextUIUser } from "@nextui-org/react";
-import { ShieldCheck, Users, KeyRound, LogOut, UserCircle, LayoutGrid } from "lucide-react";
+import { Users, KeyRound, LogOut, UserCircle, LayoutGrid } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/auth-context";
+import Image from "next/image";
 
 const navItems = [
   { href: "/console/dashboard", label: "Review Queue", icon: <LayoutGrid className="mr-2 h-4 w-4" /> },
@@ -32,7 +33,12 @@ export function ConsoleHeader() {
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex h-16 items-center">
         <Link href="/console/dashboard" className="flex items-center space-x-2 mr-6">
-          <ShieldCheck className="h-6 w-6 text-primary" />
+          <Image 
+            src="https://res.cloudinary.com/seapane-cloud/seapane-bucket/address-data/meta/address-data-logomark-light.svg" 
+            alt="Address Data Logomark" 
+            width={24} 
+            height={24}
+          />
           <span className="font-bold text-lg">Console</span>
         </Link>
         <nav className="flex items-center space-x-1">
@@ -85,3 +91,4 @@ export function ConsoleHeader() {
   );
 }
 
+    
