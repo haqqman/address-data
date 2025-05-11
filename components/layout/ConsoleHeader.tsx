@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from "next/link";
@@ -45,12 +44,18 @@ export function ConsoleHeader() {
           {navItems.map((item) => (
             <NextUIButton
               key={item.href}
-              variant="ghost"
+              variant="ghost" // Use ghost for more control over custom border/bg
               as={Link}
               href={item.href}
               className={cn(
-                pathname === item.href ? "bg-warning/20 text-warning-foreground" : "text-foreground", // Using warning for accent
-                "justify-start"
+                "justify-start",
+                "shadow-md hover:shadow-lg",
+                "hover:-translate-y-px active:translate-y-0.5",
+                "transition-all duration-150 ease-in-out",
+                "border", // Base border class
+                pathname === item.href 
+                  ? "bg-warning/20 text-warning-foreground border-warning" // Active state: accent bg, text, and border
+                  : "text-foreground border-foreground/20 hover:border-warning hover:bg-warning/10" // Inactive: subtle border, hover effects
               )}
               startContent={item.icon}
             >
@@ -60,7 +65,7 @@ export function ConsoleHeader() {
         </nav>
         <div className="ml-auto flex items-center space-x-4">
           {user && (
-             <Dropdown placement="bottom-end">
+             <Dropdown placement="bottom-end" backdrop="blur">
               <DropdownTrigger>
                 <NextUIButton isIconOnly variant="ghost" className="relative h-8 w-8 rounded-full">
                    <UserCircle className="h-7 w-7" />
