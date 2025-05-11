@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckCircle, DatabaseZap, SearchCheck, KeyRound, MapPin, ShieldCheck, Building2 } from "lucide-react";
+import { CheckCircle, DatabaseZap, SearchCheck, KeyRound, MapPin, ShieldCheck, Building2, Gauge } from "lucide-react";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 
 export default function HomePage() {
@@ -37,6 +37,12 @@ export default function HomePage() {
       title: "Structured Storage",
       description: "Addresses stored in a standardized format for maximum compatibility.",
       dataAiHint: "database structure"
+    },
+    {
+      icon: <Gauge className="h-8 w-8 text-primary" />,
+      title: "99.99% Up-time",
+      description: "We guarantee our performance. Intelligent routing, address data optimization and cache.",
+      dataAiHint: "performance gauge"
     },
   ];
 
@@ -173,3 +179,4 @@ export default function HomePage() {
     </div>
   );
 }
+
