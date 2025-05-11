@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { Lato } from 'next/font/google'; // Changed from Inter to Lato
 import './globals.css';
 // import { Toaster } from '@/components/ui/toaster'; // Removed
-import { AuthProvider } from 'contexts/auth-context'; // Corrected import path
+import { AuthProvider } from '@/contexts/auth-context'; // Corrected import path
 import { Providers } from './providers'; 
 
 const lato = Lato({ 
