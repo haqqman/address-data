@@ -1,24 +1,25 @@
+
 "use client"; 
 
 import { useState, useEffect, useCallback } from "react";
-import { AddressForm } from "@/components/forms/AddressForm";
 import { AddressList } from "@/components/dashboard/AddressList";
 import { getAddressSubmissions } from "@/app/actions/addressActions";
 import type { AddressSubmission } from "@/types";
-import { Skeleton as NextUISkeleton, Card as NextUICard, CardBody as NextUICardBody } from "@nextui-org/react";
-import { AlertTriangle } from "lucide-react";
-import { useAuth } from "@/contexts/auth-context"; // Import useAuth
+import { Skeleton as NextUISkeleton, Card as NextUICard, CardBody as NextUICardBody, Button as NextUIButton } from "@nextui-org/react";
+import { AlertTriangle, PlusCircle } from "lucide-react";
+import { useAuth } from "@/contexts/auth-context"; 
+import Link from "next/link";
 
 export default function DashboardPage() {
   const [submissions, setSubmissions] = useState<AddressSubmission[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { user, loading: authLoading } = useAuth(); // Get user and auth loading state
+  const { user, loading: authLoading } = useAuth(); 
 
   const fetchSubmissions = useCallback(async () => {
-    if (!user) { // Don't fetch if user is not yet available or logged out
-      setIsLoading(false); // Ensure loading is false if no user
-      if (!authLoading) { // Only set submissions to empty if auth is done loading and there's no user
+    if (!user) { 
+      setIsLoading(false); 
+      if (!authLoading) { 
         setSubmissions([]);
       }
       return;
@@ -34,24 +35,33 @@ export default function DashboardPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [user, authLoading]); // Add user and authLoading to dependency array
+  }, [user, authLoading]); 
 
   useEffect(() => {
-    if (!authLoading) { // Fetch submissions only after auth state is resolved
+    if (!authLoading) { 
       fetchSubmissions();
     }
-  }, [fetchSubmissions, authLoading]); // Add authLoading to dependency array
+  }, [fetchSubmissions, authLoading]); 
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-        <p className="text-foreground-500">Manage your addresses and API keys.</p>
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+          <p className="text-foreground-500">Manage your addresses and API keys.</p>
+        </div>
+        <NextUIButton 
+          as={Link} 
+          href="/dashboard/submit-address" 
+          color="warning" 
+          className="text-white"
+          startContent={<PlusCircle className="h-4 w-4" />}
+        >
+          Submit New Address
+        </NextUIButton>
       </div>
 
-      <AddressForm onSubmissionSuccess={fetchSubmissions} />
-
-      {(isLoading || authLoading) && ( // Show skeleton if either data is loading or auth is loading
+      {(isLoading || authLoading) && ( 
         <div className="space-y-4 mt-8">
           <NextUISkeleton className="h-12 w-1/3 rounded-lg" />
           <NextUISkeleton className="h-32 w-full rounded-lg" />
@@ -59,7 +69,7 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {error && !isLoading && ( // Only show error if not loading
+      {error && !isLoading && ( 
          <NextUICard className="mt-8 bg-danger-50 border-danger-200 rounded-xl">
            <NextUICardBody className="p-4">
             <div className="flex items-center">
@@ -77,3 +87,4 @@ export default function DashboardPage() {
     </div>
   );
 }
+
