@@ -2,8 +2,9 @@
 "use server";
 
 import { db } from "@/lib/firebase/config";
-import { doc, updateDoc, getDoc } from "firebase/firestore";
+import { doc, updateDoc, getDoc, setDoc } from "firebase/firestore";
 import { z } from "zod";
+import type { User } from "@/types";
 
 // UIDs for the console users - REPLACE THESE WITH ACTUAL UIDs from Firebase Authentication
 const CONSOLE_USER_UIDS = {
@@ -15,6 +16,7 @@ const consoleUserUpdateSchema = z.object({
   userIdToUpdate: z.enum(["abdulhaqq", "joshua"]),
   name: z.string().min(1, "Name is required."),
   phoneNumber: z.string().min(1, "Phone number is required."),
+  role: z.enum(["cto", "administrator", "manager"], { required_error: "Role is required."}),
 });
 
 export type ConsoleUserUpdateFormValues = z.infer<typeof consoleUserUpdateSchema>;
@@ -23,7 +25,7 @@ export async function updateConsoleUserDetails(
   values: ConsoleUserUpdateFormValues
 ): Promise<{ success: boolean; message: string }> {
   try {
-    const { userIdToUpdate, name, phoneNumber } = values;
+    const { userIdToUpdate, name, phoneNumber, role } = values;
     const uid = CONSOLE_USER_UIDS[userIdToUpdate];
 
     if (!uid || uid.startsWith("CONSOLE_USER_UID_")) {
@@ -33,16 +35,29 @@ export async function updateConsoleUserDetails(
     const userRef = doc(db, "users", uid);
     const userDoc = await getDoc(userRef);
 
-    if (!userDoc.exists()) {
-      return { success: false, message: `User document for ${userIdToUpdate} (UID: ${uid}) not found in Firestore.` };
-    }
-
-    await updateDoc(userRef, {
+    const dataToUpdate: Partial<User> = {
       name: name,
       phoneNumber: phoneNumber,
-    });
+      role: role,
+    };
 
-    return { success: true, message: `Successfully updated details for ${name}.` };
+    if (!userDoc.exists()) {
+      // If user document doesn't exist, create it with the essential fields.
+      // This scenario should be less common if users are created during auth.
+      // For console users, their email is fixed.
+      const email = userIdToUpdate === "abdulhaqq" ? "webmanager@haqqman.com" : "joshua+sandbox@haqqman.com";
+      await setDoc(userRef, {
+        ...dataToUpdate,
+        email: email, // Add email if creating new
+        createdAt: new Date(), // Add createdAt if creating new
+        authProvider: "password", // Assuming password auth
+      });
+      return { success: true, message: `Successfully created and updated details for ${name}.` };
+    } else {
+      await updateDoc(userRef, dataToUpdate);
+      return { success: true, message: `Successfully updated details for ${name}.` };
+    }
+
   } catch (error) {
     console.error("Error updating console user details:", error);
     const errorMessage = error instanceof Error ? error.message : "An unknown error occurred.";

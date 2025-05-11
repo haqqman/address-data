@@ -19,16 +19,24 @@ import { z } from "zod";
 import { User, ShieldAlert, CheckCircle } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import type { User as UserType } from "@/types";
 
 const consoleUserUpdateSchema = z.object({
   userIdToUpdate: z.enum(["abdulhaqq", "joshua"], { required_error: "Please select a user to update."}),
   name: z.string().min(1, "Name is required."),
   phoneNumber: z.string().min(1, "Phone number is required."),
+  role: z.enum(["cto", "administrator", "manager"], { required_error: "Role is required."}),
 });
 
 const usersToUpdate = [
   { label: "Abdulhaqq Sule (CTO)", value: "abdulhaqq" },
   { label: "Joshua Ajorgbor (Manager)", value: "joshua" },
+];
+
+const roleOptions: { label: string; value: UserType['role'] }[] = [
+  { label: "CTO", value: "cto" },
+  { label: "Administrator", value: "administrator" },
+  { label: "Manager", value: "manager" },
 ];
 
 export default function ConsoleUserUpdatePage() {
@@ -46,6 +54,7 @@ export default function ConsoleUserUpdatePage() {
       userIdToUpdate: undefined,
       name: "",
       phoneNumber: "",
+      role: undefined,
     },
   });
 
@@ -153,6 +162,28 @@ export default function ConsoleUserUpdatePage() {
                   isInvalid={!!errors.phoneNumber}
                   errorMessage={errors.phoneNumber?.message}
                 />
+              )}
+            />
+             <Controller
+              name="role"
+              control={control}
+              render={({ field }) => (
+                <NextUISelect
+                  {...field}
+                  label="Role"
+                  placeholder="Select user role"
+                  variant="bordered"
+                  isInvalid={!!errors.role}
+                  errorMessage={errors.role?.message}
+                  selectedKeys={field.value ? [field.value] : []}
+                  onSelectionChange={(keys) => field.onChange(Array.from(keys)[0] as UserType['role'])}
+                >
+                  {roleOptions.map((roleOpt) => (
+                    <NextUISelectItem key={roleOpt.value} value={roleOpt.value}>
+                      {roleOpt.label}
+                    </NextUISelectItem>
+                  ))}
+                </NextUISelect>
               )}
             />
             <NextUIButton
