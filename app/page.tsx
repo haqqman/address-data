@@ -102,7 +102,7 @@ export default function HomePage() {
             <div className="flex flex-col lg:flex-row items-center gap-12">
               <div className="lg:w-1/2">
                 <Image 
-                  src="https://res.cloudinary.com/seapane-cloud/seapane-bucket/address-data/meta/address-illustration-amico.svg" 
+                  src="https://res.cloudinary.com/seapane-cloud/seapane-bucket/address-data/meta/address-illustration-amiko.svg" 
                   alt="Features Illustration" 
                   width={500} 
                   height={450} 
@@ -149,7 +149,7 @@ export default function HomePage() {
         </section>
         
         {/* API Section */}
-        <section id="api" className="py-16 bg-primary/5"> {/* Subtle primary bg */}
+        <section id="api" className="py-8 bg-primary/5"> {/* Subtle primary bg */}
           <div className="container mx-auto px-4">
             <div className="flex flex-col lg:flex-row items-center gap-12">
               <div className="lg:w-1/2">
