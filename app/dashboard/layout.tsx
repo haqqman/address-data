@@ -21,27 +21,24 @@ export default function DashboardLayout({
     setDisplayYear(new Date().getFullYear());
   }, []);
 
-  // Temporarily disabled authentication check
-  // useEffect(() => {
-  //   if (!loading && !user) {
-  //     router.push('/login');
-  //   }
-  // }, [user, loading, router]);
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push('/login');
+    }
+  }, [user, loading, router]);
 
-  // Temporarily disabled loading state and user check
-  // if (loading) {
-  //   return (
-  //     <div className="flex items-center justify-center min-h-screen">
-  //       <Spinner label="Loading Dashboard..." color="primary" labelColor="primary" />
-  //     </div>
-  //   );
-  // }
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Spinner label="Loading Dashboard..." color="primary" labelColor="warning" />
+      </div>
+    );
+  }
 
-  // if (!user) {
-  //   // This will be brief as the useEffect above will redirect.
-  //   // You could return a loading spinner here too, or null.
-  //   // return null; 
-  // }
+  if (!user) {
+    // This will be brief as the useEffect above will redirect.
+    return null; 
+  }
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -70,4 +67,3 @@ export default function DashboardLayout({
     </div>
   );
 }
-

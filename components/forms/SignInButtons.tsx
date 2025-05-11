@@ -1,7 +1,8 @@
+
 "use client";
 
 import { Button as NextUIButton } from "@nextui-org/react";
-import { Chrome, Github, Loader2 } from "lucide-react"; // Assuming Loader2 is a custom spinner or from lucide
+import { Chrome, Github } from "lucide-react"; 
 import { useAuth } from "@/contexts/auth-context";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -11,12 +12,14 @@ export function SignInButtons() {
   const router = useRouter();
   const [isLoadingGoogle, setIsLoadingGoogle] = useState(false);
   const [isLoadingGitHub, setIsLoadingGitHub] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
 
   const handleSignIn = async (provider: "google" | "github") => {
     let signInFunction;
-    let setIsLoadingFunction;
     let setLoadingState: React.Dispatch<React.SetStateAction<boolean>>;
 
+    setErrorMessage(null);
 
     if (provider === "google") {
       signInFunction = signInWithGoogle;
@@ -27,25 +30,16 @@ export function SignInButtons() {
     }
     
     setLoadingState(true);
-    // toast({ // Removed toast
-    //   title: `Attempting to log in with ${provider}...`,
-    //   description: "Please wait.",
-    // });
 
     try {
       await signInFunction();
-      // toast({ // Removed toast
-      //   title: "Log In Successful",
-      //   description: "Redirecting to dashboard...",
-      // });
-      router.push('/dashboard');
+      // Successful sign-in will trigger onAuthStateChanged,
+      // which updates user state and AuthProvider redirects based on role.
+      // The auth context already handles redirecting to /dashboard for non-admin users.
+      // The auth context already handles redirecting to /dashboard for non-admin users.
     } catch (error: any) {
       console.error(`Log In Failed with ${provider}:`, error.message);
-      // toast({ // Removed toast
-      //   title: "Log In Failed",
-      //   description: error.message || `Failed to log in with ${provider}.`,
-      //   variant: "destructive",
-      // });
+      setErrorMessage(error.message || `Failed to log in with ${provider}. Please try again.`);
     } finally {
       setLoadingState(false);
     }
@@ -53,8 +47,13 @@ export function SignInButtons() {
 
   return (
     <div className="space-y-4">
+       {errorMessage && (
+        <div className="p-3 bg-danger-50 border border-danger-200 rounded-md text-danger-700 text-sm">
+          {errorMessage}
+        </div>
+      )}
       <NextUIButton
-        variant="bordered" // Example NextUI variant
+        variant="bordered" 
         fullWidth
         onClick={() => handleSignIn("google")}
         disabled={isLoadingGoogle || isLoadingGitHub}
@@ -64,7 +63,7 @@ export function SignInButtons() {
         {isLoadingGoogle ? "Logging in..." : "Log in with Google"}
       </NextUIButton>
       <NextUIButton
-        variant="bordered" // Example NextUI variant
+        variant="bordered" 
         fullWidth
         onClick={() => handleSignIn("github")}
         disabled={isLoadingGoogle || isLoadingGitHub}

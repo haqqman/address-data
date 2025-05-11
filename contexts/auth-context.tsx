@@ -12,15 +12,16 @@ import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
 } from 'firebase/auth';
-import { auth } from '@/lib/firebase/config'; // Assuming this is your Firebase config file
-import type { User } from '@/types'; // Your custom User type
+import { auth } from '@/lib/firebase/config';
+import type { User } from '@/types';
+import { useRouter } from 'next/navigation'; // Import useRouter
 
 interface AuthContextType {
   user: User | null;
   loading: boolean;
   signInWithGoogle: () => Promise<void>;
   signInWithGitHub: () => Promise<void>;
-  signInWithEmail: (email: string, pass: string, isAdmin?: boolean) => Promise<void>;
+  signInWithEmail: (email: string, pass: string, isAdmin?: boolean) => Promise<FirebaseUser | null>; // Return FirebaseUser or null
   signOut: () => Promise<void>;
 }
 
@@ -29,20 +30,17 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const router = useRouter(); // Initialize useRouter
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser: FirebaseUser | null) => {
       if (firebaseUser) {
-        // Check if the user is an admin (example logic, adjust as needed)
-        // For this example, we'll assume an admin user has a specific claim or email domain
-        // In a real app, this check might be more robust, e.g., custom claims
         const isAdminUser = firebaseUser.email?.endsWith('@haqqman.com');
         
         const appUser: User = {
           id: firebaseUser.uid,
           email: firebaseUser.email,
           name: firebaseUser.displayName,
-          // photoURL: firebaseUser.photoURL, // You can add this to your User type if needed
           role: isAdminUser ? 'admin' : 'user',
         };
         setUser(appUser);
@@ -59,40 +57,49 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setLoading(true);
     try {
       const provider = new GoogleAuthProvider();
-      await signInWithPopup(auth, provider);
-      // onAuthStateChanged will handle setting the user
+      const result = await signInWithPopup(auth, provider);
+      if (result.user) {
+        router.push('/dashboard');
+      }
     } catch (error) {
       console.error("Error signing in with Google:", error);
       setLoading(false);
-      throw error; // Re-throw to be caught by UI
+      throw error;
     }
+    // setLoading(false) will be handled by onAuthStateChanged
   };
 
   const signInWithGitHub = async () => {
     setLoading(true);
     try {
       const provider = new GithubAuthProvider();
-      await signInWithPopup(auth, provider);
-      // onAuthStateChanged will handle setting the user
+      const result = await signInWithPopup(auth, provider);
+       if (result.user) {
+        router.push('/dashboard');
+      }
     } catch (error) {
       console.error("Error signing in with GitHub:", error);
       setLoading(false);
-      throw error; // Re-throw to be caught by UI
+      throw error;
     }
+    // setLoading(false) will be handled by onAuthStateChanged
   };
 
-  const signInWithEmail = async (email: string, pass: string, isAdmin: boolean = false) => {
+  const signInWithEmail = async (email: string, pass: string, isAdmin: boolean = false): Promise<FirebaseUser | null> => {
     setLoading(true);
     try {
       if (isAdmin && !email.endsWith('@haqqman.com')) {
+        setLoading(false);
         throw new Error("Admin access restricted to @haqqman.com emails.");
       }
-      await signInWithEmailAndPassword(auth, email, pass);
-      // onAuthStateChanged will handle setting the user and role
+      const userCredential = await signInWithEmailAndPassword(auth, email, pass);
+      // onAuthStateChanged will set user, role, and loading.
+      // Redirect handled in the component calling this, based on isAdmin flag or component context
+      return userCredential.user;
     } catch (error) {
       console.error("Error signing in with email:", error);
       setLoading(false);
-      throw error; // Re-throw to be caught by UI
+      throw error;
     }
   };
 
@@ -100,10 +107,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setLoading(true);
     try {
       await firebaseSignOut(auth);
-      setUser(null);
+      setUser(null); // Explicitly set user to null
+      // Redirect can be handled in the component calling signOut or via a listener to user state
     } catch (error) {
       console.error("Error signing out:", error);
-      throw error; // Re-throw to be caught by UI
+      throw error;
     } finally {
       setLoading(false);
     }

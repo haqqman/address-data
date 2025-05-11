@@ -39,10 +39,15 @@ export function ConsoleSignInForm() {
     setIsLoading(true);
     setErrorMessage(null);
     try {
-      await signInWithEmail(values.email, values.password, true); // true for isAdmin
-      router.push('/console/dashboard');
+      const user = await signInWithEmail(values.email, values.password, true); // true for isAdmin check in auth context
+      if (user) { // Check if user object is returned
+        router.push('/console/dashboard');
+      } else {
+        // This case should ideally be handled by an error thrown from signInWithEmail if login fails
+        setErrorMessage("Login failed. Please check your credentials.");
+      }
     } catch (error: any) {
-      const friendlyErrorMessage = error.code === 'auth/invalid-credential' 
+      const friendlyErrorMessage = error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password'
         ? "Invalid email or password. Please try again."
         : error.message || "An unexpected error occurred. Please try again.";
       console.error("Console Log In Failed:", error);
