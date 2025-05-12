@@ -58,7 +58,7 @@ export default function HomePage() {
       <main className="flex-grow">
         {/* Hero Section */}
         <section 
-          className="py-20 md:py-32 bg-gradient-to-br from-background to-primary/5 bg-cover bg-center"
+          className="py-20 md:py-32 bg-gradient-to-br from-background to-primary/5 bg-cover bg-center rounded-bl-md rounded-br-md shadow-md"
           style={{ backgroundImage: "url('https://res.cloudinary.com/seapane-cloud/seapane-bucket/address-data/hero.jpg')" }}
         >
           <div className="container mx-auto px-4 text-center relative z-10">
