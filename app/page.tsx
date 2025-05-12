@@ -1,16 +1,15 @@
-
 "use client"; 
 
 import Image from "next/image";
 import Link from "next/link";
 import { Button as NextUIButton, Card as NextUICard, CardHeader as NextUICardHeader, CardBody as NextUICardBody } from "@nextui-org/react";
-import { CheckCircle, DatabaseZap, SearchCheck, KeyRound, MapPin, ShieldCheck, Gauge } from "lucide-react";
+import { CheckCircle, DatabaseZap, SearchCheck, KeyRound, MapPin, ShieldCheck, Gauge, Layers } from "lucide-react"; // Added Layers
 import { PublicHeader } from "@/components/layout/PublicHeader";
 
 export default function HomePage() {
   const features = [
     {
-      icon: <MapPin className="h-8 w-8 text-secondary" />, // Use secondary for feature icons
+      icon: <MapPin className="h-8 w-8 text-secondary" />, 
       title: "Accurate Address Entry",
       description: "Users can save addresses exactly as they appear physically, capturing local nuances.",
       dataAiHint: "map location"
@@ -45,6 +44,12 @@ export default function HomePage() {
       description: "We guarantee our performance. Intelligent routing, address data optimization and cache.",
       dataAiHint: "performance gauge"
     },
+    {
+      icon: <Layers className="h-8 w-8 text-secondary" />,
+      title: "Geography Data",
+      description: "Access structured Nigerian states, LGAs, and cities for location-aware apps.",
+      dataAiHint: "geography database"
+    },
   ];
 
   return (
@@ -52,39 +57,41 @@ export default function HomePage() {
       <PublicHeader />
       <main className="flex-grow">
         {/* Hero Section */}
-        <section className="py-20 md:py-32 bg-gradient-to-br from-background to-primary/5"> {/* Subtle primary gradient */}
-          <div className="container mx-auto px-4 text-center">
+        <section 
+          className="py-20 md:py-32 bg-gradient-to-br from-background to-primary/5 bg-cover bg-center rounded-bl-md rounded-br-md shadow-md"
+          style={{ backgroundImage: "url('https://res.cloudinary.com/seapane-cloud/seapane-bucket/address-data/hero.jpg')" }}
+        >
+          <div className="container mx-auto px-4 text-center relative z-10">
             <div className="flex justify-center mb-6">
               <Image 
                 src="https://res.cloudinary.com/seapane-cloud/seapane-bucket/address-data/meta/address-data-logomark.svg" 
                 alt="Address Data Logomark" 
                 width={64} 
                 height={64}
-                className="text-primary" // This will be SVG fill if it's an SVG, or ignored for PNG/JPG
+                className="text-primary" 
                 data-ai-hint="logo brand"
               />
             </div>
-            <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-primary"> {/* Changed to text-primary */}
+            <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-primary"> 
               The Future of Nigerian Address Data
             </h1>
-            <p className="mt-6 text-lg md:text-xl text-foreground/80 max-w-3xl mx-auto"> {/* Slightly muted foreground */}
+            <p className="mt-6 text-lg md:text-xl text-foreground/80 max-w-3xl mx-auto"> 
               Address Data provides developers, businesses, and operations with tools to validate, store, and retrieve Nigerian address data efficiently and accurately.
             </p>
             <div className="mt-10 flex justify-center space-x-4">
               <NextUIButton 
                 size="lg" 
-                color="warning" // Main CTA uses accent color
+                color="warning" 
                 as={Link} 
                 href="/login" 
                 radius="md"
-                className="text-primary shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out" // text-primary for button text on warning
+                className="text-primary shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out" 
               >
                 Get Started
               </NextUIButton>
               <NextUIButton 
                 size="lg" 
                 variant="bordered" 
-                color="primary" // Bordered primary
                 as={Link} 
                 href="#features" 
                 radius="md"
@@ -97,7 +104,7 @@ export default function HomePage() {
         </section>
 
         {/* Features Section */}
-        <section id="features" className="py-16 bg-background"> {/* Increased padding */}
+        <section id="features" className="py-16 bg-background"> 
           <div className="container mx-auto px-4">
             <div className="flex flex-col lg:flex-row items-center gap-12">
               <div className="lg:w-1/2">
@@ -111,7 +118,7 @@ export default function HomePage() {
                 />
               </div>
               <div className="lg:w-1/2">
-                <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4"> {/* Changed to text-primary */}
+                <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4"> 
                   Why Address Data?
                 </h2>
                 <p className="text-foreground/80 mb-8 md:mb-12">
@@ -119,10 +126,10 @@ export default function HomePage() {
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   {features.slice(0,4).map((feature, index) => ( 
-                    <div key={index} className="flex items-start space-x-3 p-4 rounded-lg hover:bg-primary/5 transition-colors"> {/* Subtle hover effect */}
-                       <div className="flex-shrink-0 mt-1">{feature.icon}</div> {/* Icon color is set in features array */}
+                    <div key={index} className="flex items-start space-x-3 p-4 rounded-lg hover:bg-primary/5 transition-colors"> 
+                       <div className="flex-shrink-0 mt-1">{feature.icon}</div> 
                        <div>
-                          <h3 className="font-bold text-lg text-primary">{feature.title}</h3> {/* Changed to h3 and text-primary */}
+                          <h3 className="font-bold text-lg text-primary">{feature.title}</h3> 
                           <p className="text-sm text-foreground/70">{feature.description}</p>
                        </div>
                     </div>
@@ -134,10 +141,10 @@ export default function HomePage() {
               {features.slice(4).map((feature, index) => (
                 <NextUICard key={index} isHoverable shadow="md" radius="xl" className="transition-shadow bg-background hover:shadow-primary/20">
                   <NextUICardHeader className="flex flex-col items-center pt-6 pb-2">
-                    <div className="flex items-center justify-center w-16 h-16 bg-secondary/10 rounded-full mb-4"> {/* secondary/10 for icon bg */}
+                    <div className="flex items-center justify-center w-16 h-16 bg-secondary/10 rounded-full mb-4"> 
                        {feature.icon}
                     </div>
-                    <h3 className="font-bold text-xl text-center text-primary">{feature.title}</h3> {/* Changed to h3 and text-primary */}
+                    <h3 className="font-bold text-xl text-center text-primary">{feature.title}</h3> 
                   </NextUICardHeader>
                   <NextUICardBody className="pt-0 pb-6 text-center">
                     <p className="text-sm text-foreground/70">{feature.description}</p>
@@ -149,11 +156,11 @@ export default function HomePage() {
         </section>
         
         {/* API Section */}
-        <section id="api" className="py-8 bg-primary/5"> {/* Subtle primary bg */}
+        <section id="api" className="py-8 bg-primary/5"> 
           <div className="container mx-auto px-4">
             <div className="flex flex-col lg:flex-row items-center gap-12">
               <div className="lg:w-1/2">
-                <h2 className="text-3xl md:text-4xl font-bold text-primary mb-6"> {/* Changed to text-primary */}
+                <h2 className="text-3xl md:text-4xl font-bold text-primary mb-6"> 
                   Powerful & Simple Developer API
                 </h2>
                 <p className="text-foreground/80 mb-4 text-lg">
@@ -173,7 +180,7 @@ export default function HomePage() {
                 </ul>
                 <NextUIButton 
                   size="lg" 
-                  color="warning" // Accent color for CTA
+                  color="warning" 
                   as={Link} 
                   href="/docs" 
                   radius="md"
@@ -201,9 +208,9 @@ export default function HomePage() {
           className="relative py-20 md:py-32 bg-cover bg-center"
           style={{ backgroundImage: "url('https://address-data.vercel.app/assets/images/hero-bg-3.jpg')" }}
         >
-          <div className="absolute inset-0 bg-primary/80"></div> {/* Primary color overlay */}
+          <div className="absolute inset-0 bg-primary/80"></div> 
           <div className="container mx-auto px-4 text-center relative z-10">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-white"> {/* White text on dark overlay */}
+            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-white"> 
               Ready to Elevate Your Address Handling?
             </h2>
             <p className="text-lg md:text-xl mb-10 max-w-2xl mx-auto text-white/90">
@@ -214,7 +221,7 @@ export default function HomePage() {
               as={Link} 
               href="/login" 
               radius="md"
-              className="bg-warning text-primary hover:bg-warning/90 shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out" // Warning button with primary text
+              className="bg-warning text-primary hover:bg-warning/90 shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out" 
             >
               Access Portal
             </NextUIButton>
