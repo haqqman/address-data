@@ -46,7 +46,7 @@ export default function HomePage() {
     },
     {
       icon: <Layers className="h-8 w-8 text-secondary" />,
-      title: "Comprehensive Geography Data",
+      title: "Geography Data",
       description: "Access structured Nigerian states, LGAs, and cities for location-aware apps.",
       dataAiHint: "geography database"
     },
@@ -109,7 +109,7 @@ export default function HomePage() {
             <div className="flex flex-col lg:flex-row items-center gap-12">
               <div className="lg:w-1/2">
                 <Image 
-                  src="https://res.cloudinary.com/seapane-cloud/seapane-bucket/address-data/meta/address-illustration-amiko.svg" 
+                  src="https://res.cloudinary.com/seapane-cloud/seapane-bucket/address-data/meta/address-illustration-amico.svg" 
                   alt="Features Illustration" 
                   width={500} 
                   height={450} 
