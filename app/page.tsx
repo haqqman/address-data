@@ -1,10 +1,9 @@
-
 "use client"; 
 
 import Image from "next/image";
 import Link from "next/link";
 import { Button as NextUIButton, Card as NextUICard, CardHeader as NextUICardHeader, CardBody as NextUICardBody } from "@nextui-org/react";
-import { CheckCircle, DatabaseZap, SearchCheck, KeyRound, MapPin, ShieldCheck, Gauge } from "lucide-react";
+import { CheckCircle, DatabaseZap, SearchCheck, KeyRound, MapPin, ShieldCheck, Gauge, Layers } from "lucide-react"; // Added Layers
 import { PublicHeader } from "@/components/layout/PublicHeader";
 
 export default function HomePage() {
@@ -45,6 +44,12 @@ export default function HomePage() {
       description: "We guarantee our performance. Intelligent routing, address data optimization and cache.",
       dataAiHint: "performance gauge"
     },
+    {
+      icon: <Layers className="h-8 w-8 text-secondary" />,
+      title: "Comprehensive Geography Data",
+      description: "Access structured Nigerian states, LGAs, and cities for location-aware apps.",
+      dataAiHint: "geography database"
+    },
   ];
 
   return (
@@ -53,10 +58,9 @@ export default function HomePage() {
       <main className="flex-grow">
         {/* Hero Section */}
         <section 
-          className="relative py-20 md:py-32 bg-cover bg-center"
+          className="py-20 md:py-32 bg-gradient-to-br from-background to-primary/5 bg-cover bg-center"
           style={{ backgroundImage: "url('https://res.cloudinary.com/seapane-cloud/seapane-bucket/address-data/hero.jpg')" }}
         >
-          <div className="absolute inset-0 bg-primary/60"></div> {/* Overlay to ensure text readability */}
           <div className="container mx-auto px-4 text-center relative z-10">
             <div className="flex justify-center mb-6">
               <Image 
@@ -68,10 +72,10 @@ export default function HomePage() {
                 data-ai-hint="logo brand"
               />
             </div>
-            <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-white"> 
+            <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-primary"> 
               The Future of Nigerian Address Data
             </h1>
-            <p className="mt-6 text-lg md:text-xl text-white/90 max-w-3xl mx-auto"> 
+            <p className="mt-6 text-lg md:text-xl text-foreground/80 max-w-3xl mx-auto"> 
               Address Data provides developers, businesses, and operations with tools to validate, store, and retrieve Nigerian address data efficiently and accurately.
             </p>
             <div className="mt-10 flex justify-center space-x-4">
@@ -91,7 +95,7 @@ export default function HomePage() {
                 as={Link} 
                 href="#features" 
                 radius="md"
-                className="text-white border-white/80 hover:bg-white/10 shadow-sm hover:shadow-md hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out"
+                className="shadow-sm hover:shadow-md hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out"
               >
                 Learn More
               </NextUIButton>
@@ -247,3 +251,4 @@ export default function HomePage() {
     </div>
   );
 }
+
