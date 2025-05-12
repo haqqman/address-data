@@ -1,13 +1,26 @@
 {
+  "functions": {
+    "source": ".", // Assumes function code (or Genkit output) is in the project root.
+                  // Adjust if your Cloud Functions (including Genkit's) are in a specific directory like "functions".
+    "runtime": "nodejs20", // Specify your target Node.js runtime for Cloud Functions.
+    "runtimeOptions": { // These options are for 2nd gen Cloud Functions.
+      "maxInstances": 10
+      // If Genkit by default requests specific memory/CPU for its flows,
+      // this maxInstances setting is crucial for successful deployment.
+      // You can also specify "memory" and "cpu" here if needed, e.g.:
+      // "memory": "512MB",
+      // "cpu": 1
+    }
+  },
   "hosting": {
     "rewrites": [
       {
         "source": "**",
         "run": {
-          "serviceId": "platform",
+          "serviceId": "platform", // This is the Cloud Run service for your Next.js app
           "region": "us-central1",
           "options": {
-            "maxInstances": 10
+            "maxInstances": 10 // This setting is for the Cloud Run service.
           }
         }
       }
