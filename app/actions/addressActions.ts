@@ -51,7 +51,7 @@ const generateADC = (state: string, city: string): string => {
 
 
 // Simulate fetching Google Maps address - This remains a mock as it's external
-async function fetchGoogleMapsAddress(addressParts: Omit<z.infer<typeof addressSchema>, 'country'> & {country: string}): Promise<string> {
+async function fetchGoogleMapsAddress(addressParts: z.infer<typeof addressSchema> & {country: string}): Promise<string> {
   const { street, areaDistrict, city, state, zipCode, country } = addressParts;
   if (street.toLowerCase().includes("test discrepancy")) {
      return `${street.replace(", Test Discrepancy Layout", "")}, ${areaDistrict}, ${city}, ${state} ${zipCode || ''}, ${country}`.replace(/,\s*,/g, ',').trim();
@@ -94,19 +94,17 @@ export async function submitAddress({ formData, user }: SubmitAddressParams) {
 
   const submittedAddressData = validation.data;
   const country = "Nigeria";
-  const submittedAddressDataForDB = {
-    streetAddress: submittedAddressData.street,
-    areaDistrict: submittedAddressData.areaDistrict || "",
-    city: submittedAddressData.city,
-    lga: submittedAddressData.lga,
-    state: submittedAddressData.state,
-    zipCode: submittedAddressData.zipCode,
-    country: country,
-  };
-
 
   try {
-    const userSubmittedString = `${submittedAddressData.street}, ${submittedAddressData.areaDistrict || ''}, ${submittedAddressData.city}, ${submittedAddressData.lga}, ${submittedAddressData.state}, ${submittedAddressData.zipCode ? submittedAddressData.zipCode + ", " : ""}${country}`.replace(/,\s*,/g, ',').trim();
+    const userSubmittedString = [
+      submittedAddressData.street,
+      submittedAddressData.areaDistrict,
+      submittedAddressData.city,
+      submittedAddressData.lga,
+      submittedAddressData.state,
+      submittedAddressData.zipCode,
+      country
+    ].filter(Boolean).join(', ');
     
     const googleMapsAddress = await fetchGoogleMapsAddress({...submittedAddressData, country});
 
@@ -127,6 +125,16 @@ export async function submitAddress({ formData, user }: SubmitAddressParams) {
       adc = generateADC(submittedAddressData.state, submittedAddressData.city);
     }
     
+    const submittedAddressDataForDB = {
+      streetAddress: submittedAddressData.street,
+      areaDistrict: submittedAddressData.areaDistrict || "",
+      city: submittedAddressData.city,
+      lga: submittedAddressData.lga,
+      state: submittedAddressData.state,
+      zipCode: submittedAddressData.zipCode,
+      country: country,
+    };
+
     const newSubmissionData: Omit<AddressSubmission, 'id' | 'submittedAt' | 'reviewedAt'> & { submittedAt: any, reviewedAt: any } = {
       userId: user.id,
       userName: user.name || "User",
