@@ -26,7 +26,17 @@ const addressSchema = z.object({
   lga: z.string().min(1, "LGA is required"),
   state: z.string().min(1, "State is required"),
   zipCode: z.string().optional(),
+}).refine(data => {
+    // If city is Abuja (which is in FCT state), the district field becomes required.
+    if (data.city === 'Abuja') {
+        return !!data.areaDistrict && data.areaDistrict.length > 0;
+    }
+    return true;
+}, {
+    message: "District is required for Abuja city.",
+    path: ["areaDistrict"], // This path should match the form field name for the error message to attach correctly.
 });
+
 
 // Helper function to convert Firestore Timestamps to Date objects
 const convertTimestamps = (docData: any): any => {
@@ -131,7 +141,7 @@ export async function submitAddress({ formData, user }: SubmitAddressParams) {
       city: submittedAddressData.city,
       lga: submittedAddressData.lga,
       state: submittedAddressData.state,
-      zipCode: submittedAddressData.zipCode,
+      zipCode: submittedAddressData.zipCode || "",
       country: country,
     };
 
@@ -178,7 +188,7 @@ export async function getAddressSubmissions(userId: string): Promise<AddressSubm
     const submissionsCol = collection(db, "addressSubmissions");
     let q;
     
-    const consoleUserIdentifiers = ["CONSOLE_USER_UID_ABDULHAQQ", "CONSOLE_USER_UID_JOSHUA"]; 
+    const consoleUserIdentifiers = ["DOUKechRV9NoSkNpgGL2jNCp6Sz2", "CONSOLE_USER_UID_JOSHUA"]; 
     const isAdminUser = consoleUserIdentifiers.includes(userId) || userId === "mockConsoleId";
 
 
