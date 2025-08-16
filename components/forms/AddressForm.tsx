@@ -9,8 +9,8 @@ import { submitAddress } from "@/app/actions/addressActions";
 import { CheckCircle, Loader2, AlertTriangle, Info } from "lucide-react"; 
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/auth-context"; 
-import { getStates } from "@/app/actions/geographyActions";
-import type { GeographyState } from "@/types";
+import { getStates, getLgasForState, getCitiesForLga } from "@/app/actions/geographyActions";
+import type { GeographyState, GeographyLGA, GeographyCity } from "@/types";
 
 const addressSchema = z.object({
   streetAddress: z.string().min(1, "Street address is required"),
@@ -32,26 +32,20 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submissionStatus, setSubmissionStatus] = useState<{ type: "success" | "error" | "info"; message: string } | null>(null);
   const { user } = useAuth(); 
+  
   const [states, setStates] = useState<GeographyState[]>([]);
+  const [lgas, setLgas] = useState<GeographyLGA[]>([]);
+  const [cities, setCities] = useState<GeographyCity[]>([]);
+
   const [isLoadingStates, setIsLoadingStates] = useState(true);
+  const [isLoadingLgas, setIsLoadingLgas] = useState(false);
+  const [isLoadingCities, setIsLoadingCities] = useState(false);
 
-  useEffect(() => {
-    async function loadStates() {
-      setIsLoadingStates(true);
-      try {
-        const fetchedStates = await getStates();
-        setStates(fetchedStates);
-      } catch (error) {
-        console.error("Failed to load states", error);
-        // Optionally set an error state to show in the UI
-      } finally {
-        setIsLoadingStates(false);
-      }
-    }
-    loadStates();
-  }, []);
+  const [selectedState, setSelectedState] = useState<string>("");
+  const [selectedLga, setSelectedLga] = useState<string>("");
 
-  const { control, handleSubmit, formState: { errors }, reset } = useForm<AddressFormValues>({
+
+  const { control, handleSubmit, formState: { errors }, reset, setValue, watch } = useForm<AddressFormValues>({
     resolver: zodResolver(addressSchema),
     defaultValues: {
       streetAddress: "",
@@ -63,6 +57,79 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
       country: "Nigeria", 
     },
   });
+
+  const watchedState = watch("state");
+  const watchedLga = watch("lga");
+
+  useEffect(() => {
+    async function loadStates() {
+      setIsLoadingStates(true);
+      try {
+        const fetchedStates = await getStates();
+        setStates(fetchedStates);
+      } catch (error) {
+        console.error("Failed to load states", error);
+      } finally {
+        setIsLoadingStates(false);
+      }
+    }
+    loadStates();
+  }, []);
+
+  useEffect(() => {
+    const stateId = states.find(s => s.name === watchedState)?.id;
+    if (stateId) {
+      setSelectedState(stateId);
+      setValue("lga", "");
+      setValue("city", "");
+      setLgas([]);
+      setCities([]);
+    }
+  }, [watchedState, states, setValue]);
+
+  useEffect(() => {
+    if (selectedState) {
+      async function loadLgas() {
+        setIsLoadingLgas(true);
+        try {
+          const fetchedLgas = await getLgasForState(selectedState);
+          setLgas(fetchedLgas);
+        } catch (error) {
+          console.error("Failed to load LGAs", error);
+        } finally {
+          setIsLoadingLgas(false);
+        }
+      }
+      loadLgas();
+    }
+  }, [selectedState]);
+  
+  useEffect(() => {
+    const lgaId = lgas.find(l => l.name === watchedLga)?.id;
+    if (lgaId) {
+        setSelectedLga(lgaId);
+        setValue("city", "");
+        setCities([]);
+    }
+  }, [watchedLga, lgas, setValue]);
+
+
+  useEffect(() => {
+    if (selectedState && selectedLga) {
+      async function loadCities() {
+        setIsLoadingCities(true);
+        try {
+          const fetchedCities = await getCitiesForLga(selectedState, selectedLga);
+          setCities(fetchedCities);
+        } catch (error) {
+          console.error("Failed to load cities", error);
+        } finally {
+          setIsLoadingCities(false);
+        }
+      }
+      loadCities();
+    }
+  }, [selectedState, selectedLga]);
 
   async function onSubmit(values: AddressFormValues) {
     if (!user) {
@@ -88,6 +155,10 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
     if (result.success) {
       setSubmissionStatus({ type: "success", message: result.message || "Address submitted successfully!" });
       reset();
+      setSelectedState("");
+      setSelectedLga("");
+      setLgas([]);
+      setCities([]);
       if (onSubmissionSuccess) {
         setTimeout(() => { 
             onSubmissionSuccess();
@@ -140,7 +211,7 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
               />
             )}
           />
-          <Controller
+           <Controller
             name="areaDistrict"
             control={control}
             render={({ field }) => (
@@ -151,36 +222,6 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
                 variant="bordered"
                 isInvalid={!!errors.areaDistrict}
                 errorMessage={errors.areaDistrict?.message}
-                fullWidth
-              />
-            )}
-          />
-          <Controller
-            name="city"
-            control={control}
-            render={({ field }) => (
-              <NextUIInput
-                {...field}
-                label="City"
-                placeholder="Lagos, Abuja"
-                variant="bordered"
-                isInvalid={!!errors.city}
-                errorMessage={errors.city?.message}
-                fullWidth
-              />
-            )}
-          />
-           <Controller
-            name="lga"
-            control={control}
-            render={({ field }) => (
-              <NextUIInput
-                {...field}
-                label="LGA (Local Government Area)"
-                placeholder="Ikeja, Abuja Municipal"
-                variant="bordered"
-                isInvalid={!!errors.lga}
-                errorMessage={errors.lga?.message}
                 fullWidth
               />
             )}
@@ -203,6 +244,54 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
                 {states.map((state) => (
                   <NextUISelectItem key={state.name} value={state.name}>
                     {state.name}
+                  </NextUISelectItem>
+                ))}
+              </NextUISelect>
+            )}
+          />
+           <Controller
+            name="lga"
+            control={control}
+            render={({ field }) => (
+              <NextUISelect
+                {...field}
+                label="LGA (Local Government Area)"
+                placeholder="Select an LGA"
+                variant="bordered"
+                isInvalid={!!errors.lga}
+                errorMessage={errors.lga?.message}
+                isLoading={isLoadingLgas}
+                isDisabled={!watchedState || lgas.length === 0}
+                selectedKeys={field.value ? [field.value] : []}
+                onChange={field.onChange}
+              >
+                {lgas.map((lga) => (
+                  <NextUISelectItem key={lga.name} value={lga.name}>
+                    {lga.name}
+                  </NextUISelectItem>
+                ))}
+              </NextUISelect>
+            )}
+          />
+          <Controller
+            name="city"
+            control={control}
+            render={({ field }) => (
+              <NextUISelect
+                {...field}
+                label="City"
+                placeholder="Select a city"
+                variant="bordered"
+                isInvalid={!!errors.city}
+                errorMessage={errors.city?.message}
+                isLoading={isLoadingCities}
+                isDisabled={!watchedLga || cities.length === 0}
+                selectedKeys={field.value ? [field.value] : []}
+                onChange={field.onChange}
+              >
+                {cities.map((city) => (
+                  <NextUISelectItem key={city.name} value={city.name}>
+                    {city.name}
                   </NextUISelectItem>
                 ))}
               </NextUISelect>
@@ -252,3 +341,4 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
     </>
   );
 }
+
