@@ -3,6 +3,7 @@ import { Lato } from 'next/font/google';
 import '@/styles/globals.css';
 import { AuthProvider } from '@/contexts/auth-context';
 import { Providers } from './providers'; 
+import Analytics from '@/components/analytics';
 
 const lato = Lato({ 
   subsets: ['latin'],
@@ -21,12 +22,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={lato.className}> {/* Changed from inter.className to lato.className */}
-        <Providers> {/* This should wrap AuthProvider and include NextUIProvider */}
+      <body className={lato.className}>
+        <Providers>
           <AuthProvider>
             {children}
           </AuthProvider>
         </Providers>
+        <Analytics />
       </body>
     </html>
   );
