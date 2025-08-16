@@ -392,24 +392,38 @@ const nigerianStates = [
         "state": "FCT",
         "capital": "Abuja",
         "lgas": [
-            {"name": "Abaji", "cities": ["Abaji"]},
-            {"name": "Bwari", "cities": ["Bwari"]},
-            {"name": "Gwagwalada", "cities": ["Gwagwalada"]},
-            {"name": "Kuje", "cities": ["Kuje"]},
-            {"name": "Kwali", "cities": ["Kwali"]},
-            {
-              "name": "Municipal Area Council", 
-              "cities": [
-                "Abuja",
+          {
+            "name": "Abaji",
+            "towns": ["Abaji", "Agyana", "Nuku"]
+          },
+          {
+            "name": "Bwari",
+            "towns": ["Bwari", "Kubwa", "Dutse"]
+          },
+          {
+            "name": "Gwagwalada",
+            "towns": ["Gwagwalada", "Zuba", "Paiko"]
+          },
+          {
+            "name": "Kuje",
+            "towns": ["Kuje", "Chibiri", "Gaube"]
+          },
+          {
+            "name": "Kwali",
+            "towns": ["Kwali", "Yebu", "Dafa"]
+          },
+          {
+            "name": "Abuja Municipal Area Council (AMAC)",
+            "city": {
+              "name": "Abuja",
+              "districts": [
                 "Asokoro",
                 "Central Business District",
                 "Dakibiyu",
                 "Dawaki",
-                "Duboyi",
                 "Durumi",
-                "Gaduwa",
                 "Garki",
-                "Gudu",
+                "Gwarinpa",
                 "Guzape",
                 "Jabi",
                 "Jahi",
@@ -417,19 +431,19 @@ const nigerianStates = [
                 "Kado",
                 "Katampe",
                 "Kaura",
-                "Kukwaba",
                 "Lokogoma",
                 "Mabushi",
                 "Maitama",
-                "Mbora",
                 "Mpape",
                 "Utako",
                 "Wuse",
                 "Wuye"
               ]
-            }
+            },
+            "towns": ["Karshi", "Karu", "Nyanya", "Orozo", "Kurudu", "Gwagwa"]
+          }
         ]
-    },
+      },      
     {
         "state": "Gombe",
         "capital": "Gombe",
