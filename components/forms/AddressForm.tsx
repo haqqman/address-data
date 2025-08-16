@@ -7,7 +7,7 @@ import * as z from "zod";
 import { Button as NextUIButton, Input as NextUIInput, Card as NextUICard, CardBody as NextUICardBody, Select as NextUISelect, SelectItem as NextUISelectItem } from "@nextui-org/react";
 import { submitAddress } from "@/app/actions/addressActions";
 import { CheckCircle, Loader2, AlertTriangle, Info } from "lucide-react"; 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/contexts/auth-context"; 
 import { getStates, getLgasForState, getCitiesForLga } from "@/app/actions/geographyActions";
 import type { GeographyState, GeographyLGA, GeographyCity } from "@/types";
@@ -41,11 +41,10 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
   const [isLoadingLgas, setIsLoadingLgas] = useState(false);
   const [isLoadingCities, setIsLoadingCities] = useState(false);
 
-  const [selectedState, setSelectedState] = useState<string>("");
-  const [selectedLga, setSelectedLga] = useState<string>("");
+  const [selectedStateId, setSelectedStateId] = useState<string | null>(null);
+  const [selectedLgaId, setSelectedLgaId] = useState<string | null>(null);
 
-
-  const { control, handleSubmit, formState: { errors }, reset, setValue, watch } = useForm<AddressFormValues>({
+  const { control, handleSubmit, formState: { errors }, reset, setValue, watch, trigger } = useForm<AddressFormValues>({
     resolver: zodResolver(addressSchema),
     defaultValues: {
       streetAddress: "",
@@ -58,80 +57,95 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
     },
   });
 
-  const watchedState = watch("state");
-  const watchedLga = watch("lga");
+  const watchedStateName = watch("state");
+  const watchedLgaName = watch("lga");
 
-  useEffect(() => {
-    async function loadStates() {
-      setIsLoadingStates(true);
-      try {
-        const fetchedStates = await getStates();
-        setStates(fetchedStates);
-      } catch (error) {
-        console.error("Failed to load states", error);
-      } finally {
-        setIsLoadingStates(false);
-      }
+  const loadStates = useCallback(async () => {
+    setIsLoadingStates(true);
+    try {
+      const fetchedStates = await getStates();
+      setStates(fetchedStates);
+    } catch (error) {
+      console.error("Failed to load states", error);
+    } finally {
+      setIsLoadingStates(false);
     }
-    loadStates();
   }, []);
 
   useEffect(() => {
-    const stateId = states.find(s => s.name === watchedState)?.id;
-    if (stateId) {
-      setSelectedState(stateId);
-      setValue("lga", "");
-      setValue("city", "");
+    loadStates();
+  }, [loadStates]);
+  
+  const loadLgas = useCallback(async (stateId: string) => {
+    setIsLoadingLgas(true);
+    setLgas([]);
+    setCities([]);
+    try {
+      const fetchedLgas = await getLgasForState(stateId);
+      setLgas(fetchedLgas);
+    } catch (error) {
+      console.error("Failed to load LGAs", error);
+    } finally {
+      setIsLoadingLgas(false);
+    }
+  }, []);
+
+  const loadCities = useCallback(async (stateId: string, lgaId: string) => {
+    setIsLoadingCities(true);
+    setCities([]);
+    try {
+      const fetchedCities = await getCitiesForLga(stateId, lgaId);
+      setCities(fetchedCities);
+    } catch (error) {
+      console.error("Failed to load cities", error);
+    } finally {
+      setIsLoadingCities(false);
+    }
+  }, []);
+
+  const handleStateChange = (selectedName: string) => {
+    setValue("state", selectedName, { shouldValidate: true });
+    setValue("lga", "", { shouldValidate: false });
+    setValue("city", "", { shouldValidate: false });
+    
+    const state = states.find(s => s.name === selectedName);
+    if (state) {
+      setSelectedStateId(state.id);
+      loadLgas(state.id);
+    } else {
+      setSelectedStateId(null);
       setLgas([]);
       setCities([]);
     }
-  }, [watchedState, states, setValue]);
-
-  useEffect(() => {
-    if (selectedState) {
-      async function loadLgas() {
-        setIsLoadingLgas(true);
-        try {
-          const fetchedLgas = await getLgasForState(selectedState);
-          setLgas(fetchedLgas);
-        } catch (error) {
-          console.error("Failed to load LGAs", error);
-        } finally {
-          setIsLoadingLgas(false);
-        }
-      }
-      loadLgas();
-    }
-  }, [selectedState]);
+    setSelectedLgaId(null);
+  };
   
-  useEffect(() => {
-    const lgaId = lgas.find(l => l.name === watchedLga)?.id;
-    if (lgaId) {
-        setSelectedLga(lgaId);
-        setValue("city", "");
-        setCities([]);
-    }
-  }, [watchedLga, lgas, setValue]);
+  const handleLgaChange = (selectedName: string) => {
+    setValue("lga", selectedName, { shouldValidate: true });
+    setValue("city", "", { shouldValidate: false });
 
-
-  useEffect(() => {
-    if (selectedState && selectedLga) {
-      async function loadCities() {
-        setIsLoadingCities(true);
-        try {
-          const fetchedCities = await getCitiesForLga(selectedState, selectedLga);
-          setCities(fetchedCities);
-        } catch (error) {
-          console.error("Failed to load cities", error);
-        } finally {
-          setIsLoadingCities(false);
-        }
-      }
-      loadCities();
+    const lga = lgas.find(l => l.name === selectedName);
+    if (lga && selectedStateId) {
+      setSelectedLgaId(lga.id);
+      loadCities(selectedStateId, lga.id);
+    } else {
+      setSelectedLgaId(null);
+      setCities([]);
     }
-  }, [selectedState, selectedLga]);
+  };
+
+  const handleCityChange = (selectedName: string) => {
+    setValue("city", selectedName, { shouldValidate: true });
+  };
+
 
   async function onSubmit(values: AddressFormValues) {
+    const isValid = await trigger();
+    if (!isValid) {
+      setSubmissionStatus({ type: "error", message: "Please fill out all required fields."});
+      return;
+    }
+    
     if (!user) {
       setSubmissionStatus({ type: "error", message: "User not authenticated. Please log in."});
       return;
@@ -155,8 +169,8 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
     if (result.success) {
       setSubmissionStatus({ type: "success", message: result.message || "Address submitted successfully!" });
       reset();
-      setSelectedState("");
-      setSelectedLga("");
+      setSelectedStateId(null);
+      setSelectedLgaId(null);
       setLgas([]);
       setCities([]);
       if (onSubmissionSuccess) {
@@ -226,77 +240,56 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
               />
             )}
           />
-          <Controller
-            name="state"
-            control={control}
-            render={({ field }) => (
-               <NextUISelect
-                {...field}
-                label="State"
-                placeholder="Select a state"
-                variant="bordered"
-                isInvalid={!!errors.state}
-                errorMessage={errors.state?.message}
-                isLoading={isLoadingStates}
-                selectedKeys={field.value ? [field.value] : []}
-                onChange={field.onChange}
-              >
-                {states.map((state) => (
-                  <NextUISelectItem key={state.name} value={state.name}>
-                    {state.name}
-                  </NextUISelectItem>
-                ))}
-              </NextUISelect>
-            )}
-          />
-           <Controller
-            name="lga"
-            control={control}
-            render={({ field }) => (
-              <NextUISelect
-                {...field}
-                label="LGA (Local Government Area)"
-                placeholder="Select an LGA"
-                variant="bordered"
-                isInvalid={!!errors.lga}
-                errorMessage={errors.lga?.message}
-                isLoading={isLoadingLgas}
-                isDisabled={!watchedState || lgas.length === 0}
-                selectedKeys={field.value ? [field.value] : []}
-                onChange={field.onChange}
-              >
-                {lgas.map((lga) => (
-                  <NextUISelectItem key={lga.name} value={lga.name}>
-                    {lga.name}
-                  </NextUISelectItem>
-                ))}
-              </NextUISelect>
-            )}
-          />
-          <Controller
-            name="city"
-            control={control}
-            render={({ field }) => (
-              <NextUISelect
-                {...field}
-                label="City"
-                placeholder="Select a city"
-                variant="bordered"
-                isInvalid={!!errors.city}
-                errorMessage={errors.city?.message}
-                isLoading={isLoadingCities}
-                isDisabled={!watchedLga || cities.length === 0}
-                selectedKeys={field.value ? [field.value] : []}
-                onChange={field.onChange}
-              >
-                {cities.map((city) => (
-                  <NextUISelectItem key={city.name} value={city.name}>
-                    {city.name}
-                  </NextUISelectItem>
-                ))}
-              </NextUISelect>
-            )}
-          />
+          <NextUISelect
+            label="State"
+            placeholder="Select a state"
+            variant="bordered"
+            isInvalid={!!errors.state}
+            errorMessage={errors.state?.message}
+            isLoading={isLoadingStates}
+            selectedKeys={watchedStateName ? [watchedStateName] : []}
+            onChange={(e) => handleStateChange(e.target.value)}
+          >
+            {states.map((state) => (
+              <NextUISelectItem key={state.name} value={state.name}>
+                {state.name}
+              </NextUISelectItem>
+            ))}
+          </NextUISelect>
+          <NextUISelect
+            label="LGA (Local Government Area)"
+            placeholder="Select an LGA"
+            variant="bordered"
+            isInvalid={!!errors.lga}
+            errorMessage={errors.lga?.message}
+            isLoading={isLoadingLgas}
+            isDisabled={!watchedStateName || lgas.length === 0}
+            selectedKeys={watchedLgaName ? [watchedLgaName] : []}
+            onChange={(e) => handleLgaChange(e.target.value)}
+          >
+            {lgas.map((lga) => (
+              <NextUISelectItem key={lga.name} value={lga.name}>
+                {lga.name}
+              </NextUISelectItem>
+            ))}
+          </NextUISelect>
+          <NextUISelect
+            label="City"
+            placeholder="Select a city"
+            variant="bordered"
+            isInvalid={!!errors.city}
+            errorMessage={errors.city?.message}
+            isLoading={isLoadingCities}
+            isDisabled={!watchedLgaName || cities.length === 0}
+            selectedKeys={watch("city") ? [watch("city")] : []}
+            onChange={(e) => handleCityChange(e.target.value)}
+          >
+            {cities.map((city) => (
+              <NextUISelectItem key={city.name} value={city.name}>
+                {city.name}
+              </NextUISelectItem>
+            ))}
+          </NextUISelect>
           <Controller
             name="zipCode"
             control={control}
@@ -341,4 +334,3 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
     </>
   );
 }
-
