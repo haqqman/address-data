@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
@@ -5,6 +6,7 @@ import type { Estate } from "@/types";
 import { getEstates } from "@/app/actions/estateActions";
 import { Card, CardHeader, CardBody, Skeleton, Button, Input, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell } from "@nextui-org/react";
 import { AlertTriangle, PlusCircle, Search } from "lucide-react";
+import Link from "next/link";
 
 export default function EstatesPage() {
   const [estates, setEstates] = useState<Estate[]>([]);
@@ -83,7 +85,6 @@ export default function EstatesPage() {
                         <TableColumn>CODE</TableColumn>
                         <TableColumn>NAME</TableColumn>
                         <TableColumn>LOCATION</TableColumn>
-                        <TableColumn>SOURCE</TableColumn>
                         <TableColumn>ACTIONS</TableColumn>
                     </TableHeader>
                     <TableBody items={estates} emptyContent="No estates found.">
@@ -92,10 +93,9 @@ export default function EstatesPage() {
                                 <TableCell className="font-mono text-xs">{item.estateCode}</TableCell>
                                 <TableCell className="font-semibold">{item.name}</TableCell>
                                 <TableCell>{`${item.location.lga}, ${item.location.state}`}</TableCell>
-                                <TableCell>{item.source}</TableCell>
                                 <TableCell>
-                                    <Button size="sm" variant="light" onPress={() => alert(`Viewing details for ${item.name}`)}>
-                                        Details
+                                    <Button as={Link} href={`/estates/${item.id}`} size="sm" variant="light">
+                                        Manage
                                     </Button>
                                 </TableCell>
                             </TableRow>

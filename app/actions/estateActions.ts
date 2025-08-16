@@ -1,3 +1,4 @@
+
 "use server";
 
 import { z } from "zod";
@@ -12,7 +13,8 @@ import {
   updateDoc, 
   serverTimestamp, 
   Timestamp,
-  orderBy
+  orderBy,
+  getDoc
 } from "firebase/firestore";
 
 const estateSchema = z.object({
@@ -97,4 +99,40 @@ export async function getEstates(): Promise<Estate[]> {
     console.error("Error fetching estates from Firestore:", error);
     return [];
   }
+}
+
+export async function getEstateById(estateId: string): Promise<Estate | null> {
+  try {
+    const estateRef = doc(db, "estates", estateId);
+    const docSnap = await getDoc(estateRef);
+
+    if (!docSnap.exists()) {
+      console.log("No such estate found!");
+      return null;
+    }
+
+    return { id: docSnap.id, ...convertTimestamps(docSnap.data()) } as Estate;
+  } catch (error) {
+    console.error("Error fetching estate from Firestore:", error);
+    return null;
+  }
+}
+
+export async function updateEstate(estateId: string, dataToUpdate: Partial<Omit<Estate, 'id' | 'createdAt' | 'createdBy'>>, userId: string): Promise<{ success: boolean; message: string }> {
+    try {
+        const estateRef = doc(db, "estates", estateId);
+        
+        const updatePayload: any = {
+            ...dataToUpdate,
+            lastUpdatedBy: userId,
+            updatedAt: serverTimestamp(),
+        };
+
+        await updateDoc(estateRef, updatePayload);
+        
+        return { success: true, message: "Estate updated successfully." };
+    } catch (error) {
+        console.error("Error updating estate in Firestore:", error);
+        return { success: false, message: "Failed to update estate." };
+    }
 }
