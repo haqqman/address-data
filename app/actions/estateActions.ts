@@ -14,7 +14,8 @@ import {
   serverTimestamp, 
   Timestamp,
   orderBy,
-  getDoc
+  getDoc,
+  where
 } from "firebase/firestore";
 
 const estateSchema = z.object({
@@ -23,7 +24,6 @@ const estateSchema = z.object({
   lga: z.string().min(1, "LGA is required"),
   area: z.string().optional(),
   googleMapLink: z.string().url("Must be a valid URL").optional().or(z.literal('')),
-  source: z.string().optional(),
 });
 
 // Helper to convert Firestore Timestamps to Date objects
@@ -57,37 +57,49 @@ export async function submitEstate({ formData, user }: SubmitEstateParams) {
     const validation = estateSchema.safeParse(rawFormData);
 
     if (!validation.success) {
-        return { success: false, errors: validation.error.flatten().fieldErrors };
+        return { success: false, errors: validation.error.flatten().fieldErrors, message: "Validation failed." };
+    }
+    if (!user || !user.id) {
+        return { success: false, message: "User not authenticated." };
     }
 
-    const { name, state, lga, area, googleMapLink, source } = validation.data;
+    const { name, state, lga, area, googleMapLink } = validation.data;
 
     try {
-        const newEstateData = {
+        const newEstateData: Omit<Estate, 'id' | 'createdAt' | 'updatedAt' | 'lastUpdatedBy' | 'estateCode'> & { createdAt: any, updatedAt: any, lastUpdatedBy: any } = {
             name,
-            estateCode: generateEstateCode(state, lga),
+            status: "pending_review",
             location: { state, lga, area: area || "" },
             googleMapLink: googleMapLink || "",
-            source: source || "Platform",
+            source: "Platform",
             createdBy: user.id,
             lastUpdatedBy: user.id,
             createdAt: serverTimestamp(),
             updatedAt: serverTimestamp(),
+            reviewedBy: null,
+            reviewedAt: null,
+            reviewNotes: null,
         };
 
         const docRef = await addDoc(collection(db, "estates"), newEstateData);
 
-        return { success: true, message: "Estate submitted successfully!", estateId: docRef.id };
+        return { success: true, message: "Estate submitted for review successfully!", estateId: docRef.id };
     } catch (error) {
         console.error("Error submitting estate:", error);
         return { success: false, message: "An internal error occurred." };
     }
 }
 
-export async function getEstates(): Promise<Estate[]> {
+export async function getEstates(status?: Estate['status']): Promise<Estate[]> {
   try {
     const estatesCol = collection(db, "estates");
-    const q = query(estatesCol, orderBy("createdAt", "desc"));
+    let q;
+    
+    if (status) {
+      q = query(estatesCol, where("status", "==", status), orderBy("createdAt", "desc"));
+    } else {
+      q = query(estatesCol, orderBy("createdAt", "desc"));
+    }
     
     const querySnapshot = await getDocs(q);
     const estates: Estate[] = [];
@@ -121,12 +133,31 @@ export async function getEstateById(estateId: string): Promise<Estate | null> {
 export async function updateEstate(estateId: string, dataToUpdate: Partial<Omit<Estate, 'id' | 'createdAt' | 'createdBy'>>, userId: string): Promise<{ success: boolean; message: string }> {
     try {
         const estateRef = doc(db, "estates", estateId);
+
+        const docSnap = await getDoc(estateRef);
+        if(!docSnap.exists()) {
+            return { success: false, message: "Estate not found." };
+        }
+        
+        // Generate estate code only if it's being approved for the first time and doesn't have one
+        const currentData = docSnap.data() as Estate;
+        const isApproving = 'status' in dataToUpdate && dataToUpdate.status === 'approved';
         
         const updatePayload: any = {
             ...dataToUpdate,
             lastUpdatedBy: userId,
             updatedAt: serverTimestamp(),
         };
+
+        if(isApproving && !currentData.estateCode) {
+            updatePayload.estateCode = generateEstateCode(currentData.location.state, currentData.location.lga);
+        }
+        
+        if (isApproving || (dataToUpdate.status && dataToUpdate.status === 'rejected')) {
+            updatePayload.reviewedBy = userId;
+            updatePayload.reviewedAt = serverTimestamp();
+        }
+
 
         await updateDoc(estateRef, updatePayload);
         

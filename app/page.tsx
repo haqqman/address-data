@@ -117,10 +117,10 @@ export default function HomePage() {
                 className='flex gap-2'
               >
                 <NextUIInput
-                  aria-label='Search by Address Code'
-                  placeholder='Enter an Address Data Code (e.g., ADC123XYZ)'
-                  variant='bordered'
-                  size='lg'
+                  aria-label="Search by Address Code"
+                  placeholder="Enter an Address Data Code"
+                  variant="bordered"
+                  size="lg"
                   classNames={{
                     inputWrapper: 'bg-background/80 backdrop-blur-sm',
                   }}
