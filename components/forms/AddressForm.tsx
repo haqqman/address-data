@@ -357,7 +357,6 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
                 isInvalid={!!errors.zipCode}
                 errorMessage={errors.zipCode?.message}
                 fullWidth
-                className="md:col-span-2"
               />
             )}
           />
