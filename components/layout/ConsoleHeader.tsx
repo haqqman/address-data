@@ -52,7 +52,7 @@ export function ConsoleHeader() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 flex h-16 items-center">
+      <div className="max-w-7xl mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 flex h-16 items-center">
         <Link href="/console/dashboard" className="flex items-center space-x-2 mr-6">
           <Image 
             src="https://res.cloudinary.com/seapane-cloud/seapane-bucket/address-data/meta/address-data-logomark.svg" 
