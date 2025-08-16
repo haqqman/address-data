@@ -225,21 +225,6 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
               />
             )}
           />
-           <Controller
-            name="areaDistrict"
-            control={control}
-            render={({ field }) => (
-              <NextUIInput
-                {...field}
-                label="District"
-                placeholder="Ikeja GRA, Asokoro"
-                variant="bordered"
-                isInvalid={!!errors.areaDistrict}
-                errorMessage={errors.areaDistrict?.message}
-                fullWidth
-              />
-            )}
-          />
           <NextUISelect
             label="State"
             placeholder="Select a state"
@@ -290,6 +275,21 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
               </NextUISelectItem>
             ))}
           </NextUISelect>
+           <Controller
+            name="areaDistrict"
+            control={control}
+            render={({ field }) => (
+              <NextUIInput
+                {...field}
+                label="District"
+                placeholder="Ikeja GRA, Asokoro"
+                variant="bordered"
+                isInvalid={!!errors.areaDistrict}
+                errorMessage={errors.areaDistrict?.message}
+                fullWidth
+              />
+            )}
+          />
           <Controller
             name="zipCode"
             control={control}
