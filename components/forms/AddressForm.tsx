@@ -139,6 +139,8 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
       loadLgas(state.id);
       if (state.name === 'FCT') {
         loadDistrictsForFCT();
+        setValue("city", "Abuja", { shouldValidate: true });
+        setCities([]); // No other cities to choose from
       } else {
         setDistricts([]);
       }
@@ -159,10 +161,11 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
     const lga = lgas.find(l => l.name === selectedName);
     if (lga && selectedStateId) {
       setSelectedLgaId(lga.id);
-      loadCities(selectedStateId, lga.id);
-      // If FCT is the state, and city is implicitly Abuja, load districts
       if (watchedStateName === 'FCT') {
-        setValue("city", "Abuja", { shouldValidate: true });
+         setValue("city", "Abuja", { shouldValidate: true });
+         setCities([]);
+      } else {
+        loadCities(selectedStateId, lga.id);
       }
     } else {
       setSelectedLgaId(null);
@@ -299,23 +302,32 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
               </NextUISelectItem>
             ))}
           </NextUISelect>
-           <NextUISelect
-            label="City"
-            placeholder="Select a city"
-            variant="bordered"
-            isInvalid={!!errors.city}
-            errorMessage={errors.city?.message}
-            isLoading={isLoadingCities}
-            isDisabled={!watchedLgaName || cities.length === 0}
-            selectedKeys={watch("city") ? [watch("city")] : []}
-            onChange={(e) => handleCityChange(e.target.value)}
-          >
-            {cities.map((city) => (
-              <NextUISelectItem key={city.name} value={city.name}>
-                {city.name}
-              </NextUISelectItem>
-            ))}
-          </NextUISelect>
+          {watchedStateName === 'FCT' ? (
+              <NextUIInput
+                label="City"
+                value="Abuja"
+                isReadOnly
+                variant="bordered"
+              />
+            ) : (
+              <NextUISelect
+                label="City"
+                placeholder="Select a city"
+                variant="bordered"
+                isInvalid={!!errors.city}
+                errorMessage={errors.city?.message}
+                isLoading={isLoadingCities}
+                isDisabled={!watchedLgaName || cities.length === 0}
+                selectedKeys={watch("city") ? [watch("city")] : []}
+                onChange={(e) => handleCityChange(e.target.value)}
+              >
+                {cities.map((city) => (
+                  <NextUISelectItem key={city.name} value={city.name}>
+                    {city.name}
+                  </NextUISelectItem>
+                ))}
+              </NextUISelect>
+           )}
           <NextUISelect
             label="District"
             placeholder="Available for Abuja City Only"
