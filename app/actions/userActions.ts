@@ -1,7 +1,8 @@
+
 "use server";
 
 import { db } from "@/lib/firebase/config";
-import { doc, updateDoc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
+import { doc, updateDoc, getDoc, setDoc, serverTimestamp, collection, query, where, getDocs, orderBy } from "firebase/firestore";
 import { z } from "zod";
 import type { User } from "@/types";
 
@@ -21,6 +22,42 @@ const consoleUserUpdateSchema = z.object({
 });
 
 export type ConsoleUserUpdateFormValues = z.infer<typeof consoleUserUpdateSchema>;
+
+
+const convertUserTimestamps = (docData: any): User => {
+  const data = { ...docData };
+  if (data.createdAt && data.createdAt instanceof serverTimestamp) {
+    data.createdAt = data.createdAt.toDate();
+  }
+   if (data.lastLogin && data.lastLogin instanceof serverTimestamp) {
+    data.lastLogin = data.lastLogin.toDate();
+  }
+  return data as User;
+};
+
+
+export async function getConsoleUsers(): Promise<User[]> {
+  try {
+    const usersCol = collection(db, "users");
+    const consoleRoles = ["cto", "administrator", "manager"];
+    const q = query(
+      usersCol, 
+      where("role", "in", consoleRoles),
+      orderBy("createdAt", "desc")
+    );
+    
+    const querySnapshot = await getDocs(q);
+    const users: User[] = [];
+    querySnapshot.forEach((docSnap) => {
+      users.push({ id: docSnap.id, ...convertUserTimestamps(docSnap.data()) } as User);
+    });
+    return users;
+  } catch (error) {
+    console.error("Error fetching console users from Firestore:", error);
+    return [];
+  }
+}
+
 
 export async function updateConsoleUserDetails(
   values: ConsoleUserUpdateFormValues

@@ -12,6 +12,16 @@ export interface User {
   phoneNumber?: string | null; // Added from console-user-update page
 }
 
+export type ConsoleUserUpdateFormValues = {
+    uid: string;
+    firstName: string;
+    lastName: string;
+    phoneNumber: string;
+    role: "cto" | "administrator" | "manager";
+    email?: string;
+};
+
+
 export interface Address {
   id: string; 
   physicalAddress?: string; 
