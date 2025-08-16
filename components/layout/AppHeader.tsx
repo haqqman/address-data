@@ -2,12 +2,28 @@
 "use client";
 
 import Link from "next/link";
-import { Button as NextUIButton, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, DropdownSection, User as NextUIUser } from "@nextui-org/react";
+import { 
+  Button as NextUIButton, 
+  Dropdown, 
+  DropdownTrigger, 
+  DropdownMenu, 
+  DropdownItem, 
+  DropdownSection, 
+  User as NextUIUser,
+  Navbar,
+  NavbarBrand,
+  NavbarContent,
+  NavbarItem,
+  NavbarMenuToggle,
+  NavbarMenu,
+  NavbarMenuItem
+} from "@nextui-org/react";
 import { LayoutDashboard, KeyRound, LogOut, UserCircle, PlusCircle, Building } from "lucide-react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/auth-context"; 
 import Image from "next/image";
+import { useState } from "react";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: <LayoutDashboard className="mr-2 h-4 w-4" /> },
@@ -19,22 +35,30 @@ const navItems = [
 export function AppHeader() {
   const pathname = usePathname();
   const { user, signOut } = useAuth();
-  const router = useRouter();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleSignOut = async () => {
     try {
       await signOut(false); // Explicitly pass false for portal sign out
     } catch (error) {
       console.error("Failed to sign out", error);
-      // Optionally show a toast or error message to the user
     }
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="max-w-7xl mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex h-16 items-center">
-        <Link href="/dashboard" className="flex items-center space-x-2 mr-6">
-          <Image 
+    <Navbar 
+      onMenuOpenChange={setIsMenuOpen} 
+      isMenuOpen={isMenuOpen}
+      className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+      maxWidth="xl"
+    >
+      <NavbarContent justify="start">
+        <NavbarMenuToggle
+          aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+          className="sm:hidden text-primary"
+        />
+        <NavbarBrand as={Link} href="/dashboard" className="flex items-center space-x-2">
+           <Image 
             src="https://res.cloudinary.com/seapane-cloud/seapane-bucket/address-data/meta/address-data-logomark.svg" 
             alt="Address Data Logomark" 
             width={24} 
@@ -42,11 +66,13 @@ export function AppHeader() {
             className="text-primary"
           />
           <span className="font-bold text-lg text-primary">Address Data</span>
-        </Link>
-        <nav className="flex items-center space-x-1">
-          {navItems.map((item) => (
-            <NextUIButton
-              key={item.href}
+        </NavbarBrand>
+      </NavbarContent>
+
+      <NavbarContent className="hidden sm:flex gap-1" justify="center">
+        {navItems.map((item) => (
+          <NavbarItem key={item.href} isActive={pathname === item.href}>
+             <NextUIButton
               variant="ghost"
               as={Link}
               href={item.href}
@@ -61,9 +87,11 @@ export function AppHeader() {
             >
               {item.label}
             </NextUIButton>
-          ))}
-        </nav>
-        <div className="ml-auto flex items-center space-x-4">
+          </NavbarItem>
+        ))}
+      </NavbarContent>
+      
+      <NavbarContent justify="end">
           {user && (
             <Dropdown placement="bottom-end" backdrop="blur">
               <DropdownTrigger>
@@ -90,8 +118,24 @@ export function AppHeader() {
               </DropdownMenu>
             </Dropdown>
           )}
-        </div>
-      </div>
-    </header>
+      </NavbarContent>
+
+      <NavbarMenu className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 pt-4">
+        {navItems.map((item, index) => (
+          <NavbarMenuItem key={`${item.href}-${index}`} isActive={pathname === item.href}>
+            <Link
+              href={item.href}
+              className={cn(
+                "w-full block py-2 text-lg",
+                pathname === item.href ? "text-secondary font-semibold" : "text-foreground"
+              )}
+              onClick={() => setIsMenuOpen(false)}
+            >
+              <span className="flex items-center">{item.icon} {item.label}</span>
+            </Link>
+          </NavbarMenuItem>
+        ))}
+      </NavbarMenu>
+    </Navbar>
   );
 }
