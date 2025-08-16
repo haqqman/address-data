@@ -14,7 +14,7 @@ import type { GeographyState } from "@/types";
 
 const addressSchema = z.object({
   streetAddress: z.string().min(1, "Street address is required"),
-  areaDistrict: z.string().min(1, "Area/District is required"),
+  areaDistrict: z.string().min(1, "District is required"),
   city: z.string().min(1, "City is required"),
   lga: z.string().min(1, "LGA is required"),
   state: z.string().min(1, "State is required"),
@@ -146,7 +146,7 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
             render={({ field }) => (
               <NextUIInput
                 {...field}
-                label="Area / District"
+                label="District"
                 placeholder="Ikeja GRA, Asokoro"
                 variant="bordered"
                 isInvalid={!!errors.areaDistrict}
@@ -161,7 +161,7 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
             render={({ field }) => (
               <NextUIInput
                 {...field}
-                label="City / Town"
+                label="City"
                 placeholder="Lagos, Abuja"
                 variant="bordered"
                 isInvalid={!!errors.city}
