@@ -2,8 +2,8 @@
 // scripts/seed.ts
 
 /* eslint-disable no-console */
-import { initializeApp, getApps }_from 'firebase/app';
-import { getFirestore, collection, doc, setDoc, writeBatch }_from 'firebase/firestore';
+import { initializeApp, getApps } from 'firebase/app';
+import { getFirestore, collection, doc, setDoc, writeBatch } from 'firebase/firestore';
 import * as dotenv from 'dotenv';
 
 // Load environment variables from .env.local
