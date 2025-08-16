@@ -17,7 +17,8 @@ export default function EstatesPage() {
     setIsLoading(true);
     setError(null);
     try {
-      const data = await getEstates();
+      // Fetch only approved estates for the public list
+      const data = await getEstates("approved"); 
       setEstates(data);
     } catch (err) {
       setError("Failed to load estates.");
@@ -39,10 +40,11 @@ export default function EstatesPage() {
           <p className="text-foreground-500">Browse and manage real estate properties.</p>
         </div>
         <Button 
+          as={Link}
+          href="/submit-estate"
           color="warning" 
           className="text-primary shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out"
           startContent={<PlusCircle className="h-4 w-4" />}
-          onPress={() => alert("Submit new estate form coming soon!")}
         >
           Submit New Estate
         </Button>
@@ -87,7 +89,7 @@ export default function EstatesPage() {
                         <TableColumn>LOCATION</TableColumn>
                         <TableColumn>ACTIONS</TableColumn>
                     </TableHeader>
-                    <TableBody items={estates} emptyContent="No estates found.">
+                    <TableBody items={estates} emptyContent="No approved estates found.">
                         {(item) => (
                             <TableRow key={item.id}>
                                 <TableCell className="font-mono text-xs">{item.estateCode}</TableCell>

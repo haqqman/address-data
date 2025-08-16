@@ -1,3 +1,4 @@
+
 export interface User {
   id: string;
   email?: string | null;
@@ -100,8 +101,9 @@ export interface GeographyCity extends Omit<FirestoreGeographyCityData, 'stateId
 
 export interface Estate {
   id: string; // The document ID in Firestore
-  estateCode: string; // Format: [StateCode]-[LGACode]-[EstateNumber]
+  estateCode?: string; // Format: [StateCode]-[LGACode]-[EstateNumber] - Now optional until approval
   name: string;
+  status: "pending_review" | "approved" | "rejected";
   location: {
     state: string;
     lga: string;
@@ -113,4 +115,7 @@ export interface Estate {
   lastUpdatedBy: string; // User ID of the last person to update
   createdAt: Date;
   updatedAt: Date;
+  reviewedBy: string | null;
+  reviewedAt: Date | null;
+  reviewNotes: string | null;
 }
