@@ -404,6 +404,7 @@ const nigerianStates = [
                 "Asokoro",
                 "Central Business District",
                 "Dakibiyu",
+                "Dawaki",
                 "Duboyi",
                 "Durumi",
                 "Gaduwa",
