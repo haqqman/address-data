@@ -14,12 +14,19 @@ import type { GeographyState, GeographyLGA, GeographyCity } from "@/types";
 
 const addressSchema = z.object({
   street: z.string().min(1, "Street is required"),
-  areaDistrict: z.string().min(1, "District is required"),
+  areaDistrict: z.string().optional(),
   city: z.string().min(1, "City is required"),
   lga: z.string().min(1, "LGA is required"),
   state: z.string().min(1, "State is required"),
   zipCode: z.string().optional(),
-  country: z.string().min(1, "Country is required"),
+}).refine(data => {
+    if (data.city === 'Abuja') {
+        return !!data.areaDistrict && data.areaDistrict.length > 0;
+    }
+    return true;
+}, {
+    message: "District is required for Abuja city.",
+    path: ["areaDistrict"],
 });
 
 type AddressFormValues = z.infer<typeof addressSchema>;
@@ -55,7 +62,6 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
       lga: "",
       state: "",
       zipCode: "",
-      country: "Nigeria", 
     },
   });
 
@@ -193,6 +199,7 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
         formData.append(key, value as string);
       }
     });
+     formData.append("country", "Nigeria");
 
     const result = await submitAddress({ 
         formData, 
@@ -243,23 +250,22 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
             </NextUICardBody>
           </NextUICard>
         )}
+        <Controller
+          name="street"
+          control={control}
+          render={({ field }) => (
+            <NextUIInput
+              {...field}
+              label="Street"
+              placeholder="123 Main Street"
+              variant="bordered"
+              isInvalid={!!errors.street}
+              errorMessage={errors.street?.message}
+              fullWidth
+            />
+          )}
+        />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Controller
-            name="street"
-            control={control}
-            render={({ field }) => (
-              <NextUIInput
-                {...field}
-                label="Street"
-                placeholder="123 Main Street"
-                variant="bordered"
-                isInvalid={!!errors.street}
-                errorMessage={errors.street?.message}
-                className="md:col-span-2"
-                fullWidth
-              />
-            )}
-          />
           <NextUISelect
             label="State"
             placeholder="Select a state"
@@ -293,7 +299,7 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
               </NextUISelectItem>
             ))}
           </NextUISelect>
-          <NextUISelect
+           <NextUISelect
             label="City"
             placeholder="Select a city"
             variant="bordered"
@@ -339,21 +345,7 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
                 isInvalid={!!errors.zipCode}
                 errorMessage={errors.zipCode?.message}
                 fullWidth
-              />
-            )}
-          />
-          <Controller
-            name="country"
-            control={control}
-            render={({ field }) => (
-              <NextUIInput
-                {...field}
-                label="Country"
-                variant="bordered"
-                isInvalid={!!errors.country}
-                errorMessage={errors.country?.message}
-                isDisabled 
-                fullWidth
+                className="md:col-span-2"
               />
             )}
           />
@@ -371,5 +363,3 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
     </>
   );
 }
-
-    

@@ -26,7 +26,6 @@ const addressSchema = z.object({
   lga: z.string().min(1, "LGA is required"),
   state: z.string().min(1, "State is required"),
   zipCode: z.string().optional(),
-  country: z.string().min(1, "Country is required"),
 });
 
 // Helper function to convert Firestore Timestamps to Date objects
@@ -44,7 +43,7 @@ const convertTimestamps = (docData: any): any => {
 
 
 // Simulate fetching Google Maps address - This remains a mock as it's external
-async function fetchGoogleMapsAddress(addressParts: z.infer<typeof addressSchema>): Promise<string> {
+async function fetchGoogleMapsAddress(addressParts: Omit<z.infer<typeof addressSchema>, 'country'> & { country: string }): Promise<string> {
   const { street, areaDistrict, city, state, country, zipCode } = addressParts;
   if (street.toLowerCase().includes("test discrepancy")) {
      return `${street.replace(", Test Discrepancy Layout", "")}, ${areaDistrict}, ${city}, ${state} ${zipCode || ''}, ${country}`.replace(/,\s*,/g, ',').trim();
@@ -65,7 +64,7 @@ export async function submitAddress({ formData, user }: SubmitAddressParams) {
     lga: formData.get("lga") as string,
     state: formData.get("state") as string,
     zipCode: formData.get("zipCode") as string | undefined,
-    country: formData.get("country") as string,
+    country: formData.get("country") as string, // Country is appended manually
   };
 
   const validation = addressSchema.safeParse(rawFormData);
@@ -94,14 +93,14 @@ export async function submitAddress({ formData, user }: SubmitAddressParams) {
     lga: submittedAddressData.lga,
     state: submittedAddressData.state,
     zipCode: submittedAddressData.zipCode,
-    country: submittedAddressData.country,
+    country: rawFormData.country, // Use the manually appended country
   };
 
 
   try {
-    const userSubmittedString = `${submittedAddressData.street}, ${submittedAddressData.areaDistrict}, ${submittedAddressData.city}, ${submittedAddressData.lga}, ${submittedAddressData.state}, ${submittedAddressData.zipCode ? submittedAddressData.zipCode + ", " : ""}${submittedAddressData.country}`;
+    const userSubmittedString = `${submittedAddressData.street}, ${submittedAddressData.areaDistrict}, ${submittedAddressData.city}, ${submittedAddressData.lga}, ${submittedAddressData.state}, ${submittedAddressData.zipCode ? submittedAddressData.zipCode + ", " : ""}${rawFormData.country}`;
     
-    const googleMapsAddress = await fetchGoogleMapsAddress(submittedAddressData);
+    const googleMapsAddress = await fetchGoogleMapsAddress({ ...submittedAddressData, country: rawFormData.country });
 
     const aiResult = await flagAddressDiscrepancies({
       address: userSubmittedString,
