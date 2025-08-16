@@ -9,7 +9,7 @@ import type { User } from "@/types";
 
 
 const PROTECTED_UIDS = [
-  // "DOUKechRV9NoSkNpgGL2jNCp6Sz2"
+  "DOUKechRV9NoSkNpgGL2jNCp6Sz2"
 ];
 
 const consoleUserCreateSchema = z.object({
@@ -29,6 +29,7 @@ const consoleUserUpdateSchema = z.object({
   role: z.enum(["cto", "administrator", "manager"], { required_error: "Role is required."}),
 });
 
+// This type is exported and used in the frontend component for type safety.
 export type ConsoleUserUpdateFormValues = z.infer<typeof consoleUserUpdateSchema>;
 
 

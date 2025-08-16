@@ -2,14 +2,14 @@
 export interface User {
   id: string;
   email?: string | null;
-  firstName?: string | null; // Added
-  lastName?: string | null;  // Added
-  name?: string | null; // Kept for backward compatibility or display name if preferred
+  firstName?: string | null;
+  lastName?: string | null;
+  name?: string | null; 
   role: "user" | "cto" | "administrator" | "manager";
   createdAt?: Date;
   lastLogin?: Date;
   authProvider?: string;
-  phoneNumber?: string | null; // Added from console-user-update page
+  phoneNumber?: string | null;
 }
 
 export type ConsoleUserUpdateFormValues = {
@@ -18,7 +18,6 @@ export type ConsoleUserUpdateFormValues = {
     lastName: string;
     phoneNumber: string;
     role: "cto" | "administrator" | "manager";
-    email?: string;
 };
 
 

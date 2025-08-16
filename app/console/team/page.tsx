@@ -7,8 +7,18 @@ import { useAuth } from "@/contexts/auth-context";
 import { Spinner, Card, CardHeader, CardBody, CardFooter, Button as NextUIButton, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Input as NextUIInput, Select as NextUISelect, SelectItem as NextUISelectItem, useDisclosure, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Chip, Tooltip } from "@nextui-org/react";
 import { Users2, ShieldAlert, Edit, AlertTriangle, PlusCircle, Trash2 } from "lucide-react";
 import { getConsoleUsers, createConsoleUser, updateConsoleUser, deleteConsoleUser } from "@/app/actions/userActions";
-import type { User, ConsoleUserUpdateFormValues } from "@/types";
+import type { User } from "@/types";
 import { format } from "date-fns";
+
+// The form values for updating a user, which includes the uid.
+type ConsoleUserUpdatePayload = {
+    uid: string;
+    firstName: string;
+    lastName: string;
+    phoneNumber: string;
+    role: "cto" | "administrator" | "manager";
+};
+
 
 export default function TeamManagementPage() {
   const { user, loading: authLoading } = useAuth();
@@ -90,13 +100,16 @@ export default function TeamManagementPage() {
     if (!editingUser) return;
     setIsSubmitting(true);
     setSubmissionStatus(null);
-    const dataToUpdate: ConsoleUserUpdateFormValues = {
+    
+    // Correctly construct the payload with the UID
+    const dataToUpdate: ConsoleUserUpdatePayload = {
         uid: editingUser.id,
         firstName: editForm.firstName,
         lastName: editForm.lastName,
         phoneNumber: editForm.phoneNumber,
         role: editForm.role as "cto" | "administrator" | "manager"
     };
+
     const result = await updateConsoleUser(dataToUpdate);
     if (result.success) {
       setSubmissionStatus({ type: 'success', message: result.message });
