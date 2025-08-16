@@ -1,3 +1,4 @@
+
 /* eslint-disable no-console */
 import { initializeApp, getApps } from 'firebase/app';
 import { getFirestore, collection, doc, setDoc, writeBatch } from 'firebase/firestore';
@@ -396,7 +397,36 @@ const nigerianStates = [
             {"name": "Gwagwalada", "cities": ["Gwagwalada"]},
             {"name": "Kuje", "cities": ["Kuje"]},
             {"name": "Kwali", "cities": ["Kwali"]},
-            {"name": "Municipal Area Council", "cities": ["Abuja"]}
+            {
+              "name": "Municipal Area Council", 
+              "cities": [
+                "Abuja",
+                "Asokoro",
+                "Central Business District",
+                "Dakibiyu",
+                "Duboyi",
+                "Durumi",
+                "Gaduwa",
+                "Garki",
+                "Gudu",
+                "Guzape",
+                "Jabi",
+                "Jahi",
+                "Kabusa",
+                "Kado",
+                "Katampe",
+                "Kaura",
+                "Kukwaba",
+                "Lokogoma",
+                "Mabushi",
+                "Maitama",
+                "Mbora",
+                "Mpape",
+                "Utako",
+                "Wuse",
+                "Wuye"
+              ]
+            }
         ]
     },
     {
@@ -1096,3 +1126,5 @@ const seedDatabase = async () => {
 seedDatabase().catch((error) => {
     console.error("An unexpected error occurred during the seeding process:", error);
 });
+
+    

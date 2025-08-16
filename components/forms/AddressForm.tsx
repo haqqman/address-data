@@ -9,7 +9,7 @@ import { submitAddress } from "@/app/actions/addressActions";
 import { CheckCircle, Loader2, AlertTriangle, Info } from "lucide-react"; 
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/contexts/auth-context"; 
-import { getStates, getLgasForState, getCitiesForLga } from "@/app/actions/geographyActions";
+import { getStates, getLgasForState, getCitiesForLga, getAbujaDistricts } from "@/app/actions/geographyActions";
 import type { GeographyState, GeographyLGA, GeographyCity } from "@/types";
 
 const addressSchema = z.object({
@@ -43,7 +43,7 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
   const [states, setStates] = useState<GeographyState[]>([]);
   const [lgas, setLgas] = useState<GeographyLGA[]>([]);
   const [cities, setCities] = useState<GeographyCity[]>([]);
-  const [districts, setDistricts] = useState<GeographyLGA[]>([]); // For Abuja districts
+  const [districts, setDistricts] = useState<GeographyCity[]>([]); 
 
   const [isLoadingStates, setIsLoadingStates] = useState(true);
   const [isLoadingLgas, setIsLoadingLgas] = useState(false);
@@ -112,20 +112,18 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
     }
   }, []);
   
-  const loadDistrictsForFCT = useCallback(async () => {
-    const fctState = states.find(s => s.name === 'FCT');
-    if (!fctState) return;
+  const loadDistricts = useCallback(async () => {
     setIsLoadingDistricts(true);
     setDistricts([]);
     try {
-        const fetchedDistricts = await getLgasForState(fctState.id);
+        const fetchedDistricts = await getAbujaDistricts();
         setDistricts(fetchedDistricts);
     } catch(e) {
         console.error("Failed to load FCT Districts", e);
     } finally {
         setIsLoadingDistricts(false);
     }
-  }, [states]);
+  }, []);
 
   const handleStateChange = (selectedName: string) => {
     setValue("state", selectedName, { shouldValidate: true });
@@ -138,7 +136,7 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
       setSelectedStateId(state.id);
       loadLgas(state.id);
       if (state.name === 'FCT') {
-        loadDistrictsForFCT();
+        loadDistricts();
         setValue("city", "Abuja", { shouldValidate: true });
         setCities([]); // No other cities to choose from
       } else {
@@ -302,6 +300,8 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
               </NextUISelectItem>
             ))}
           </NextUISelect>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {watchedStateName === 'FCT' ? (
               <NextUIInput
                 label="City"
@@ -345,26 +345,27 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
                 </NextUISelectItem>
             ))}
           </NextUISelect>
-          <Controller
-            name="zipCode"
-            control={control}
-            render={({ field }) => (
-              <NextUIInput
-                {...field}
-                label="Zip Code (Optional)"
-                placeholder="100001"
-                variant="bordered"
-                isInvalid={!!errors.zipCode}
-                errorMessage={errors.zipCode?.message}
-                fullWidth
-              />
-            )}
-          />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Controller
+                name="zipCode"
+                control={control}
+                render={({ field }) => (
+                <NextUIInput
+                    {...field}
+                    label="Zip Code (Optional)"
+                    placeholder="100001"
+                    variant="bordered"
+                    isInvalid={!!errors.zipCode}
+                    errorMessage={errors.zipCode?.message}
+                />
+                )}
+            />
         </div>
         <NextUIButton 
           type="submit" 
           color="warning" 
-          className="w-full md:w-auto text-primary shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out" // text-primary for button text
+          className="w-full md:w-auto text-primary shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out" 
           isLoading={isSubmitting} 
           disabled={isSubmitting || !user}
         >
@@ -374,3 +375,5 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
     </>
   );
 }
+
+    
