@@ -1,14 +1,13 @@
 import type { Metadata } from 'next';
-import { Lato } from 'next/font/google'; // Changed from Inter to Lato
-import './globals.css';
-// import { Toaster } from '@/components/ui/toaster'; // Removed
-import { AuthProvider } from '@/contexts/auth-context'; // Corrected import path
+import { Lato } from 'next/font/google';
+import '@/styles/globals.css';
+import { AuthProvider } from '@/contexts/auth-context';
 import { Providers } from './providers'; 
 
 const lato = Lato({ 
   subsets: ['latin'],
-  weight: ['400', '700'] // Added common weights
-}); // Changed from Inter to Lato
+  weight: ['400', '700']
+});
 
 export const metadata: Metadata = {
   title: 'Address Data',
@@ -26,7 +25,6 @@ export default function RootLayout({
         <Providers> {/* This should wrap AuthProvider and include NextUIProvider */}
           <AuthProvider>
             {children}
-            {/* <Toaster /> */} {/* Removed */}
           </AuthProvider>
         </Providers>
       </body>

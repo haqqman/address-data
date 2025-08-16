@@ -2,6 +2,7 @@
   "name": "address-data",
   "version": "1.0.0",
   "private": true,
+  "appcredit": "Haqqman.Agency",
   "scripts": {
     "dev": "next dev --turbopack -p 9002",
     "genkit:dev": "genkit start -- tsx ai/dev.ts",
@@ -18,6 +19,7 @@
     "@nextui-org/react": "^2.4.1",
     "@tanstack-query-firebase/react": "^1.0.6",
     "@tanstack/react-query": "^5.66.0",
+    "@vercel/analytics": "^1.5.0",
     "clsx": "^2.1.1",
     "date-fns": "^3.6.0",
     "dotenv": "^16.5.0",
