@@ -4,15 +4,17 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, Controller } from "react-hook-form";
 import * as z from "zod";
-import { Button as NextUIButton, Input as NextUIInput, Card as NextUICard, CardBody as NextUICardBody } from "@nextui-org/react";
+import { Button as NextUIButton, Input as NextUIInput, Card as NextUICard, CardBody as NextUICardBody, Select as NextUISelect, SelectItem as NextUISelectItem } from "@nextui-org/react";
 import { submitAddress } from "@/app/actions/addressActions";
 import { CheckCircle, Loader2, AlertTriangle, Info } from "lucide-react"; 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/auth-context"; 
+import { getStates, getLgasForState, getCitiesForLga } from "@/app/actions/geographyActions";
+import type { GeographyState, GeographyLGA, GeographyCity } from "@/types";
 
 const addressSchema = z.object({
   streetAddress: z.string().min(1, "Street address is required"),
-  areaDistrict: z.string().min(1, "Area/District is required"),
+  areaDistrict: z.string().min(1, "District is required"),
   city: z.string().min(1, "City is required"),
   lga: z.string().min(1, "LGA is required"),
   state: z.string().min(1, "State is required"),
@@ -30,8 +32,20 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submissionStatus, setSubmissionStatus] = useState<{ type: "success" | "error" | "info"; message: string } | null>(null);
   const { user } = useAuth(); 
+  
+  const [states, setStates] = useState<GeographyState[]>([]);
+  const [lgas, setLgas] = useState<GeographyLGA[]>([]);
+  const [cities, setCities] = useState<GeographyCity[]>([]);
 
-  const { control, handleSubmit, formState: { errors }, reset } = useForm<AddressFormValues>({
+  const [isLoadingStates, setIsLoadingStates] = useState(true);
+  const [isLoadingLgas, setIsLoadingLgas] = useState(false);
+  const [isLoadingCities, setIsLoadingCities] = useState(false);
+
+  const [selectedState, setSelectedState] = useState<string>("");
+  const [selectedLga, setSelectedLga] = useState<string>("");
+
+
+  const { control, handleSubmit, formState: { errors }, reset, setValue, watch } = useForm<AddressFormValues>({
     resolver: zodResolver(addressSchema),
     defaultValues: {
       streetAddress: "",
@@ -43,6 +57,79 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
       country: "Nigeria", 
     },
   });
+
+  const watchedState = watch("state");
+  const watchedLga = watch("lga");
+
+  useEffect(() => {
+    async function loadStates() {
+      setIsLoadingStates(true);
+      try {
+        const fetchedStates = await getStates();
+        setStates(fetchedStates);
+      } catch (error) {
+        console.error("Failed to load states", error);
+      } finally {
+        setIsLoadingStates(false);
+      }
+    }
+    loadStates();
+  }, []);
+
+  useEffect(() => {
+    const stateId = states.find(s => s.name === watchedState)?.id;
+    if (stateId) {
+      setSelectedState(stateId);
+      setValue("lga", "");
+      setValue("city", "");
+      setLgas([]);
+      setCities([]);
+    }
+  }, [watchedState, states, setValue]);
+
+  useEffect(() => {
+    if (selectedState) {
+      async function loadLgas() {
+        setIsLoadingLgas(true);
+        try {
+          const fetchedLgas = await getLgasForState(selectedState);
+          setLgas(fetchedLgas);
+        } catch (error) {
+          console.error("Failed to load LGAs", error);
+        } finally {
+          setIsLoadingLgas(false);
+        }
+      }
+      loadLgas();
+    }
+  }, [selectedState]);
+  
+  useEffect(() => {
+    const lgaId = lgas.find(l => l.name === watchedLga)?.id;
+    if (lgaId) {
+        setSelectedLga(lgaId);
+        setValue("city", "");
+        setCities([]);
+    }
+  }, [watchedLga, lgas, setValue]);
+
+
+  useEffect(() => {
+    if (selectedState && selectedLga) {
+      async function loadCities() {
+        setIsLoadingCities(true);
+        try {
+          const fetchedCities = await getCitiesForLga(selectedState, selectedLga);
+          setCities(fetchedCities);
+        } catch (error) {
+          console.error("Failed to load cities", error);
+        } finally {
+          setIsLoadingCities(false);
+        }
+      }
+      loadCities();
+    }
+  }, [selectedState, selectedLga]);
 
   async function onSubmit(values: AddressFormValues) {
     if (!user) {
@@ -68,6 +155,10 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
     if (result.success) {
       setSubmissionStatus({ type: "success", message: result.message || "Address submitted successfully!" });
       reset();
+      setSelectedState("");
+      setSelectedLga("");
+      setLgas([]);
+      setCities([]);
       if (onSubmissionSuccess) {
         setTimeout(() => { 
             onSubmissionSuccess();
@@ -120,13 +211,13 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
               />
             )}
           />
-          <Controller
+           <Controller
             name="areaDistrict"
             control={control}
             render={({ field }) => (
               <NextUIInput
                 {...field}
-                label="Area / District"
+                label="District"
                 placeholder="Ikeja GRA, Asokoro"
                 variant="bordered"
                 isInvalid={!!errors.areaDistrict}
@@ -136,48 +227,74 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
             )}
           />
           <Controller
-            name="city"
+            name="state"
             control={control}
             render={({ field }) => (
-              <NextUIInput
+               <NextUISelect
                 {...field}
-                label="City / Town"
-                placeholder="Lagos, Abuja"
+                label="State"
+                placeholder="Select a state"
                 variant="bordered"
-                isInvalid={!!errors.city}
-                errorMessage={errors.city?.message}
-                fullWidth
-              />
+                isInvalid={!!errors.state}
+                errorMessage={errors.state?.message}
+                isLoading={isLoadingStates}
+                selectedKeys={field.value ? [field.value] : []}
+                onChange={field.onChange}
+              >
+                {states.map((state) => (
+                  <NextUISelectItem key={state.name} value={state.name}>
+                    {state.name}
+                  </NextUISelectItem>
+                ))}
+              </NextUISelect>
             )}
           />
            <Controller
             name="lga"
             control={control}
             render={({ field }) => (
-              <NextUIInput
+              <NextUISelect
                 {...field}
                 label="LGA (Local Government Area)"
-                placeholder="Ikeja, Abuja Municipal"
+                placeholder="Select an LGA"
                 variant="bordered"
                 isInvalid={!!errors.lga}
                 errorMessage={errors.lga?.message}
-                fullWidth
-              />
+                isLoading={isLoadingLgas}
+                isDisabled={!watchedState || lgas.length === 0}
+                selectedKeys={field.value ? [field.value] : []}
+                onChange={field.onChange}
+              >
+                {lgas.map((lga) => (
+                  <NextUISelectItem key={lga.name} value={lga.name}>
+                    {lga.name}
+                  </NextUISelectItem>
+                ))}
+              </NextUISelect>
             )}
           />
           <Controller
-            name="state"
+            name="city"
             control={control}
             render={({ field }) => (
-              <NextUIInput
+              <NextUISelect
                 {...field}
-                label="State"
-                placeholder="Lagos, FCT"
+                label="City"
+                placeholder="Select a city"
                 variant="bordered"
-                isInvalid={!!errors.state}
-                errorMessage={errors.state?.message}
-                fullWidth
-              />
+                isInvalid={!!errors.city}
+                errorMessage={errors.city?.message}
+                isLoading={isLoadingCities}
+                isDisabled={!watchedLga || cities.length === 0}
+                selectedKeys={field.value ? [field.value] : []}
+                onChange={field.onChange}
+              >
+                {cities.map((city) => (
+                  <NextUISelectItem key={city.name} value={city.name}>
+                    {city.name}
+                  </NextUISelectItem>
+                ))}
+              </NextUISelect>
             )}
           />
           <Controller
@@ -224,3 +341,4 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
     </>
   );
 }
+

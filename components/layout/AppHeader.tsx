@@ -10,8 +10,8 @@ import Image from "next/image";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: <LayoutDashboard className="mr-2 h-4 w-4" /> },
-  { href: "/dashboard/submit-address", label: "Submit Address", icon: <PlusCircle className="mr-2 h-4 w-4" /> },
-  { href: "/dashboard/api-keys", label: "API Keys", icon: <KeyRound className="mr-2 h-4 w-4" /> },
+  { href: "/submit-address", label: "Submit Address", icon: <PlusCircle className="mr-2 h-4 w-4" /> },
+  { href: "/api-keys", label: "API Keys", icon: <KeyRound className="mr-2 h-4 w-4" /> },
 ];
 
 export function AppHeader() {

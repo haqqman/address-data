@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/auth-context';
 import { Spinner } from "@nextui-org/react";
 
-export default function DashboardLayout({
+export default function PortalLayout({
   children,
 }: {
   children: ReactNode;
@@ -29,7 +29,7 @@ export default function DashboardLayout({
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <Spinner label="Loading Dashboard..." color="primary" labelColor="warning" />
+        <Spinner label="Loading Portal..." color="primary" labelColor="warning" />
       </div>
     );
   }
@@ -71,4 +71,3 @@ export default function DashboardLayout({
     </div>
   );
 }
-

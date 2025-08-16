@@ -52,7 +52,7 @@ export default function DashboardPage() {
         </div>
         <NextUIButton 
           as={Link} 
-          href="/dashboard/submit-address" 
+          href="/submit-address" 
           color="warning" 
           className="text-primary shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out" // text-primary for button text on warning
           startContent={<PlusCircle className="h-4 w-4" />}

@@ -20,7 +20,7 @@ import {
 
 const addressSchema = z.object({
   streetAddress: z.string().min(1, "Street address is required"),
-  areaDistrict: z.string().min(1, "Area/District is required"),
+  areaDistrict: z.string().min(1, "District is required"),
   city: z.string().min(1, "City is required"),
   lga: z.string().min(1, "LGA is required"),
   state: z.string().min(1, "State is required"),
