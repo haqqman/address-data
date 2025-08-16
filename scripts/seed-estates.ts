@@ -24,7 +24,7 @@ if (!getApps().length) {
 const db = getFirestore(app);
 
 const estatesData = [
-  // Lagos Estates
+  // Lagos Gated Estates
   {
     name: "Banana Island Estate",
     location: { state: "Lagos", lga: "Eti Osa", area: "Ikoyi" },
@@ -46,25 +46,25 @@ const estatesData = [
     googleMapLink: "https://maps.app.goo.gl/sVfHkGjJkL9nZbA7A"
   },
   {
-    name: "VGC (Victoria Garden City)",
+    name: "Victoria Garden City (VGC)",
     location: { state: "Lagos", lga: "Eti Osa", area: "Ajah" },
     googleMapLink: "https://maps.app.goo.gl/N7fKjLgY8sH6dEcF9"
   },
   {
-    name: "Ikeja G.R.A.",
-    location: { state: "Lagos", lga: "Ikeja", area: "Ikeja" },
-    googleMapLink: "https://maps.app.goo.gl/B1jYkK9XhZfW6dE7B"
+    name: "Amen Estate",
+    location: { state: "Lagos", lga: "Ibeju-Lekki", area: "Eleko" },
+    googleMapLink: "https://maps.app.goo.gl/T4aL5nFjB5aG6bC97"
   },
-  // Abuja Estates
+  // Abuja Gated Estates
   {
-    name: "Maitama District",
-    location: { state: "FCT", lga: "Municipal Area Council", area: "Maitama" },
-    googleMapLink: "https://maps.app.goo.gl/aBcD8FjGkL9oXyZ6A"
+    name: "Katampe Extension (Diplomatic Zone)",
+    location: { state: "FCT", lga: "Municipal Area Council", area: "Katampe" },
+    googleMapLink: "https://maps.app.goo.gl/H4vBwR2kXvP9eSgT8"
   },
   {
-    name: "Asokoro District",
-    location: { state: "FCT", lga: "Municipal Area Council", area: "Asokoro" },
-    googleMapLink: "https://maps.app.goo.gl/pQrStUvWxYzAbCdE8"
+    name: "Jabi District",
+    location: { state: "FCT", lga: "Municipal Area Council", area: "Jabi" },
+    googleMapLink: "https://maps.app.goo.gl/G6yHcT7RzK5jXnBcA"
   },
   {
     name: "Guzape District",
@@ -76,16 +76,16 @@ const estatesData = [
     location: { state: "FCT", lga: "Municipal Area Council", area: "Life Camp" },
     googleMapLink: "https://maps.app.goo.gl/sTuvWxyZAbCdE8pQr"
   },
-  // Port Harcourt Estates
-  {
-    name: "Old G.R.A.",
-    location: { state: "Rivers", lga: "Port Harcourt", area: "Old GRA" },
-    googleMapLink: "https.maps.app.goo.gl/jKlM9NopQrStUvWxY"
-  },
+  // Port Harcourt Gated Estates
   {
     name: "New G.R.A.",
     location: { state: "Rivers", lga: "Port Harcourt", area: "New GRA" },
     googleMapLink: "https.maps.app.goo.gl/zAbCdE8pQrStUvWxY"
+  },
+   {
+    name: "Rainbow Town",
+    location: { state: "Rivers", lga: "Port Harcourt", area: "Trans-Amadi" },
+    googleMapLink: "https.maps.app.goo.gl/Y7zF9JkK6LgH8dXbA"
   },
 ];
 
