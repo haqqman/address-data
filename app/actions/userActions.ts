@@ -2,7 +2,7 @@
 "use server";
 
 import { auth, db } from "@/lib/firebase/config";
-import { doc, updateDoc, getDoc, setDoc, serverTimestamp, collection, query, getDocs, orderBy, deleteDoc } from "firebase/firestore";
+import { doc, updateDoc, getDoc, setDoc, serverTimestamp, collection, query, getDocs, orderBy, deleteDoc, Timestamp } from "firebase/firestore";
 import { createUserWithEmailAndPassword, deleteUser as deleteAuthUser } from "firebase/auth";
 import { z } from "zod";
 import type { User } from "@/types";
@@ -33,15 +33,14 @@ const consoleUserUpdateSchema = z.object({
 export type ConsoleUserUpdateFormValues = z.infer<typeof consoleUserUpdateSchema>;
 
 
-const convertUserTimestamps = (docData: any): User => {
+const convertUserTimestamps = (docData: any): any => {
   const data = { ...docData };
-  if (data.createdAt && data.createdAt instanceof serverTimestamp) {
-    data.createdAt = data.createdAt.toDate();
+  for (const key in data) {
+    if (data[key] instanceof Timestamp) {
+      data[key] = data[key].toDate();
+    }
   }
-   if (data.lastLogin && data.lastLogin instanceof serverTimestamp) {
-    data.lastLogin = data.lastLogin.toDate();
-  }
-  return data as User;
+  return data;
 };
 
 
