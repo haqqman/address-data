@@ -60,6 +60,7 @@ export interface AddressSubmission {
     zipCode?: string;
     country: string;
   };
+  adc: string | null; // Address Data Code, null until approved
   googleMapsSuggestion?: string;
   status: "pending_review" | "approved" | "rejected";
   aiFlaggedReason?: string | null; // Allow null

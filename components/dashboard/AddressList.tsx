@@ -56,6 +56,7 @@ export function AddressList({ addresses }: AddressListProps) {
           <NextUITable aria-label="Address Submissions List" removeWrapper>
             <NextUITableHeader>
               <NextUITableColumn>ADDRESS</NextUITableColumn>
+              <NextUITableColumn>ADC</NextUITableColumn>
               <NextUITableColumn>SUBMITTED AT</NextUITableColumn>
               <NextUITableColumn>STATUS</NextUITableColumn>
               <NextUITableColumn>NOTES/REASON</NextUITableColumn>
@@ -64,6 +65,7 @@ export function AddressList({ addresses }: AddressListProps) {
               {(item) => (
                 <NextUITableRow key={item.id}>
                   <NextUITableCell className="max-w-xs truncate" title={formatAddress(item.submittedAddress)}>{formatAddress(item.submittedAddress)}</NextUITableCell>
+                  <NextUITableCell className="font-mono text-xs">{item.adc || 'N/A'}</NextUITableCell>
                   <NextUITableCell>{format(new Date(item.submittedAt), "PPP")}</NextUITableCell>
                   <NextUITableCell>
                     <NextUIChip color={getStatusChipColor(item.status)} size="sm" variant="flat">

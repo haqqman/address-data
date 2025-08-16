@@ -21,11 +21,19 @@ import {
 
 const addressSchema = z.object({
   street: z.string().min(1, "Street is required"),
-  areaDistrict: z.string().min(1, "District is required"),
+  areaDistrict: z.string().optional(),
   city: z.string().min(1, "City is required"),
   lga: z.string().min(1, "LGA is required"),
   state: z.string().min(1, "State is required"),
   zipCode: z.string().optional(),
+}).refine(data => {
+    if (data.city === 'Abuja') {
+        return !!data.areaDistrict && data.areaDistrict.length > 0;
+    }
+    return true;
+}, {
+    message: "District is required for Abuja city.",
+    path: ["areaDistrict"],
 });
 
 // Helper function to convert Firestore Timestamps to Date objects
@@ -39,6 +47,14 @@ const convertTimestamps = (docData: any): any => {
     }
   }
   return data;
+};
+
+// Simplified unique code generation
+const generateADC = (state: string, city: string): string => {
+  const stateCode = state.substring(0, 3).toUpperCase();
+  const cityCode = city.substring(0, 3).toUpperCase();
+  const randomPart = Math.random().toString(36).substring(2, 8).toUpperCase();
+  return `ADC-${stateCode}${cityCode}-${randomPart}`;
 };
 
 
@@ -64,7 +80,6 @@ export async function submitAddress({ formData, user }: SubmitAddressParams) {
     lga: formData.get("lga") as string,
     state: formData.get("state") as string,
     zipCode: formData.get("zipCode") as string | undefined,
-    country: formData.get("country") as string, // Country is appended manually
   };
 
   const validation = addressSchema.safeParse(rawFormData);
@@ -86,21 +101,22 @@ export async function submitAddress({ formData, user }: SubmitAddressParams) {
   }
 
   const submittedAddressData = validation.data;
+  const country = "Nigeria";
   const submittedAddressDataForDB = {
-    streetAddress: submittedAddressData.street, // Map back to streetAddress for DB
-    areaDistrict: submittedAddressData.areaDistrict,
+    streetAddress: submittedAddressData.street,
+    areaDistrict: submittedAddressData.areaDistrict || "",
     city: submittedAddressData.city,
     lga: submittedAddressData.lga,
     state: submittedAddressData.state,
     zipCode: submittedAddressData.zipCode,
-    country: rawFormData.country, // Use the manually appended country
+    country: country,
   };
 
 
   try {
-    const userSubmittedString = `${submittedAddressData.street}, ${submittedAddressData.areaDistrict}, ${submittedAddressData.city}, ${submittedAddressData.lga}, ${submittedAddressData.state}, ${submittedAddressData.zipCode ? submittedAddressData.zipCode + ", " : ""}${rawFormData.country}`;
+    const userSubmittedString = `${submittedAddressData.street}, ${submittedAddressData.areaDistrict}, ${submittedAddressData.city}, ${submittedAddressData.lga}, ${submittedAddressData.state}, ${submittedAddressData.zipCode ? submittedAddressData.zipCode + ", " : ""}${country}`;
     
-    const googleMapsAddress = await fetchGoogleMapsAddress({ ...submittedAddressData, country: rawFormData.country });
+    const googleMapsAddress = await fetchGoogleMapsAddress({ ...submittedAddressData, country: country });
 
     const aiResult = await flagAddressDiscrepancies({
       address: userSubmittedString,
@@ -109,12 +125,14 @@ export async function submitAddress({ formData, user }: SubmitAddressParams) {
 
     let status: AddressSubmission['status'] = "pending_review";
     let aiFlaggedReason: string | undefined = undefined;
+    let adc: string | null = null;
 
     if (aiResult.isDiscrepant) {
       status = "pending_review";
       aiFlaggedReason = aiResult.reason;
     } else {
       status = "approved"; 
+      adc = generateADC(submittedAddressData.state, submittedAddressData.city);
     }
     
     const newSubmissionData: Omit<AddressSubmission, 'id' | 'submittedAt' | 'reviewedAt'> & { submittedAt: any, reviewedAt: any } = {
@@ -122,13 +140,14 @@ export async function submitAddress({ formData, user }: SubmitAddressParams) {
       userName: user.name || "User",
       userEmail: user.email || "user@example.com",
       submittedAddress: submittedAddressDataForDB,
+      adc: adc,
       googleMapsSuggestion: googleMapsAddress,
       status: status,
       aiFlaggedReason: aiFlaggedReason,
       submittedAt: serverTimestamp(), 
-      reviewedAt: null, 
-      reviewerId: null,
-      reviewNotes: undefined, 
+      reviewedAt: status === 'approved' ? serverTimestamp() : null,
+      reviewerId: status === 'approved' ? 'system-ai' : null,
+      reviewNotes: status === 'approved' ? 'Auto-approved by AI.' : undefined,
     };
 
     const docRef = await addDoc(collection(db, "addressSubmissions"), newSubmissionData);
@@ -212,6 +231,8 @@ export async function updateAddressStatus(
       return { success: false, message: "Submission not found." };
     }
 
+    const submissionData = docSnap.data() as AddressSubmission;
+
     const updateData: Partial<AddressSubmission> & { reviewedAt: any } = { 
       status: newStatus,
       reviewedAt: serverTimestamp(),
@@ -219,6 +240,12 @@ export async function updateAddressStatus(
     };
 
     if (reviewNotes) updateData.reviewNotes = reviewNotes;
+
+    // Generate ADC on approval if it doesn't exist
+    if (newStatus === "approved" && !submissionData.adc) {
+      updateData.adc = generateADC(submissionData.submittedAddress.state, submissionData.submittedAddress.city);
+    }
+
 
     await updateDoc(submissionRef, updateData);
     
