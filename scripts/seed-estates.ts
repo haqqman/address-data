@@ -1,9 +1,6 @@
-
-// scripts/seed-estates.ts
-
 /* eslint-disable no-console */
 import { initializeApp, getApps } from 'firebase/app';
-import { getFirestore, collection, writeBatch, serverTimestamp } from 'firebase/firestore';
+import { getFirestore, collection, writeBatch, serverTimestamp, doc } from 'firebase/firestore';
 import * as dotenv from 'dotenv';
 
 // Load environment variables from .env.local

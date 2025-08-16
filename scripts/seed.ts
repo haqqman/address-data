@@ -1,6 +1,3 @@
-
-// scripts/seed.ts
-
 /* eslint-disable no-console */
 import { initializeApp, getApps } from 'firebase/app';
 import { getFirestore, collection, doc, setDoc, writeBatch } from 'firebase/firestore';
