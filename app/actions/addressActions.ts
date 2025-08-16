@@ -115,7 +115,7 @@ export async function submitAddress({ formData, user }: SubmitAddressParams) {
 
 
   try {
-    const userSubmittedString = `${submittedAddressData.street}, ${submittedAddressData.areaDistrict}, ${submittedAddressData.city}, ${submittedAddressData.lga}, ${submittedAddressData.state}, ${submittedAddressData.zipCode ? submittedAddressData.zipCode + ", " : ""}${country}`;
+    const userSubmittedString = `${submittedAddressData.street}, ${submittedAddressData.areaDistrict || ''}, ${submittedAddressData.city}, ${submittedAddressData.lga}, ${submittedAddressData.state}, ${submittedAddressData.zipCode ? submittedAddressData.zipCode + ", " : ""}${country}`.replace(/,\s*,/g, ',').trim();
     
     const googleMapsAddress = await fetchGoogleMapsAddress(submittedAddressData);
 
@@ -144,7 +144,7 @@ export async function submitAddress({ formData, user }: SubmitAddressParams) {
       adc: adc,
       googleMapsSuggestion: googleMapsAddress,
       status: status,
-      aiFlaggedReason: aiFlaggedReason,
+      aiFlaggedReason: aiFlaggedReason || undefined,
       submittedAt: serverTimestamp(), 
       reviewedAt: status === 'approved' ? serverTimestamp() : null,
       reviewerId: status === 'approved' ? 'system-ai' : null,
