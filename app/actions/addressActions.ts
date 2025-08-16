@@ -59,8 +59,9 @@ const generateADC = (state: string, city: string): string => {
 
 
 // Simulate fetching Google Maps address - This remains a mock as it's external
-async function fetchGoogleMapsAddress(addressParts: Omit<z.infer<typeof addressSchema>, 'country'> & { country: string }): Promise<string> {
-  const { street, areaDistrict, city, state, country, zipCode } = addressParts;
+async function fetchGoogleMapsAddress(addressParts: Omit<z.infer<typeof addressSchema>, 'country'>): Promise<string> {
+  const { street, areaDistrict, city, state, zipCode } = addressParts;
+  const country = "Nigeria"; // Country is constant
   if (street.toLowerCase().includes("test discrepancy")) {
      return `${street.replace(", Test Discrepancy Layout", "")}, ${areaDistrict}, ${city}, ${state} ${zipCode || ''}, ${country}`.replace(/,\s*,/g, ',').trim();
   }
@@ -116,7 +117,7 @@ export async function submitAddress({ formData, user }: SubmitAddressParams) {
   try {
     const userSubmittedString = `${submittedAddressData.street}, ${submittedAddressData.areaDistrict}, ${submittedAddressData.city}, ${submittedAddressData.lga}, ${submittedAddressData.state}, ${submittedAddressData.zipCode ? submittedAddressData.zipCode + ", " : ""}${country}`;
     
-    const googleMapsAddress = await fetchGoogleMapsAddress({ ...submittedAddressData, country: country });
+    const googleMapsAddress = await fetchGoogleMapsAddress(submittedAddressData);
 
     const aiResult = await flagAddressDiscrepancies({
       address: userSubmittedString,
