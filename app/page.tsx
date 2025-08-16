@@ -3,8 +3,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Button as NextUIButton, Card as NextUICard, CardHeader as NextUICardHeader, CardBody as NextUICardBody } from "@nextui-org/react";
-import { CheckCircle, DatabaseZap, SearchCheck, KeyRound, MapPin, ShieldCheck, Gauge, Layers } from "lucide-react"; // Added Layers
+import { Button as NextUIButton, Card as NextUICard, CardHeader as NextUICardHeader, CardBody as NextUICardBody, Input as NextUIInput } from "@nextui-org/react";
+import { CheckCircle, DatabaseZap, SearchCheck, KeyRound, MapPin, ShieldCheck, Gauge, Layers, Search } from "lucide-react"; 
 import { PublicHeader } from "@/components/layout/PublicHeader";
 
 export default function HomePage() {
@@ -87,27 +87,28 @@ export default function HomePage() {
             <p className="mt-6 text-lg md:text-xl text-foreground/80 max-w-3xl mx-auto"> 
               Address Data provides developers, businesses, and operations with tools to validate, store, and retrieve Nigerian address data efficiently and accurately.
             </p>
-            <div className="mt-10 flex justify-center space-x-4">
-              <NextUIButton 
-                size="lg" 
-                color="warning" 
-                as={Link} 
-                href="/login" 
-                radius="md"
-                className="text-primary shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out" 
-              >
-                Get Started
-              </NextUIButton>
-              <NextUIButton 
-                size="lg" 
-                variant="bordered" 
-                as={Link} 
-                href="#features" 
-                radius="md"
-                className="shadow-sm hover:shadow-md hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out"
-              >
-                Learn More
-              </NextUIButton>
+            <div className="mt-10 max-w-xl mx-auto">
+              <form onSubmit={(e) => { e.preventDefault(); alert('Search functionality coming soon!'); }} className="flex gap-2">
+                <NextUIInput
+                  aria-label="Search by Address Code"
+                  placeholder="Enter an Address Data Code (e.g., ADC123XYZ)"
+                  variant="bordered"
+                  size="lg"
+                  classNames={{
+                    inputWrapper: "bg-background/80 backdrop-blur-sm"
+                  }}
+                />
+                <NextUIButton 
+                  isIconOnly
+                  type="submit"
+                  size="lg" 
+                  color="warning"
+                  aria-label="Search"
+                  className="text-primary"
+                >
+                  <Search className="h-5 w-5" />
+                </NextUIButton>
+              </form>
             </div>
           </div>
         </section>
