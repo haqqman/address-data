@@ -1,3 +1,4 @@
+
 /* eslint-disable no-console */
 import { initializeApp, getApps } from 'firebase/app';
 import { getFirestore, doc, setDoc, serverTimestamp } from 'firebase/firestore';
@@ -26,13 +27,9 @@ if (!getApps().length) {
 const db = getFirestore(app);
 
 // --- IMPORTANT ---
-// 1. Go to your Firebase Console -> Authentication -> Users tab.
-// 2. Find the user with the email "webmanager@haqqman.com".
-// 3. Copy the "User UID" for that user.
-// 4. Paste the UID here, replacing "REPLACE_WITH_ACTUAL_UID_FROM_FIREBASE_AUTH".
+// This UID should correspond to the user "webmanager@haqqman.com" created in Firebase Authentication
 const ctoUserUid = "DOUKechRV9NoSkNpgGL2jNCp6Sz2"; 
 // --- IMPORTANT ---
-
 
 const ctoUserData = {
   email: "webmanager@haqqman.com",
@@ -41,26 +38,26 @@ const ctoUserData = {
   name: "Abdulhaqq Sule",
   role: "cto",
   phoneNumber: "+2347011568196",
-  authProvider: "password", // or the provider they used, e.g., 'google.com'
+  authProvider: "password", 
   createdAt: serverTimestamp(),
   lastLogin: serverTimestamp(),
 };
 
-
 const seedConsoleUser = async () => {
     if (ctoUserUid === "REPLACE_WITH_ACTUAL_UID_FROM_FIREBASE_AUTH") {
-        console.error("\n\n❌ ERROR: Please replace the placeholder UID in the scripts/seed-console-user.ts file with the actual User UID from your Firebase Authentication console.\n\n");
+        console.error("\n\n❌ ERROR: Please replace the placeholder UID in the scripts/seed-console-user.ts file with the actual User UID from your Firebase Authentication console for 'webmanager@haqqman.com'.\n\n");
         return;
     }
 
     console.log(`Starting to seed the console user profile for ${ctoUserData.email}...`);
     
-    const userDocRef = doc(db, "users", ctoUserUid);
+    // Seed into the 'consoleUsers' collection
+    const userDocRef = doc(db, "consoleUsers", ctoUserUid);
 
     try {
         await setDoc(userDocRef, ctoUserData);
         console.log(`\n--- Seeding Complete! ---`);
-        console.log(`Successfully created Firestore profile for user UID: ${ctoUserUid}`);
+        console.log(`Successfully created Firestore profile in 'consoleUsers' for user UID: ${ctoUserUid}`);
     } catch (error) {
         console.error("An error occurred during the console user seeding process:", error);
     }

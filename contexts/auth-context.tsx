@@ -1,3 +1,4 @@
+
 "use client";
 
 import type { ReactNode} from 'react';
@@ -41,13 +42,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (email.endsWith('@haqqman.com')) return 'administrator';
     return 'user';
   };
+  
+  const isConsoleRole = (role: User['role']) => ['cto', 'administrator', 'manager'].includes(role);
 
   const syncUserWithFirestore = async (firebaseUser: FirebaseUser, determinedRole: User['role']): Promise<User> => {
     if (!db) {
       console.error("Firestore (db) is not initialized. Cannot sync user.");
       throw new Error("Firestore not available. User sync failed.");
     }
-    const userDocRef = doc(db, "users", firebaseUser.uid);
+    
+    const useConsoleCollection = isConsoleRole(determinedRole);
+    const collectionName = useConsoleCollection ? 'consoleUsers' : 'users';
+    const userDocRef = doc(db, collectionName, firebaseUser.uid);
     const userDocSnap = await getDoc(userDocRef);
 
     let finalRole = determinedRole;
@@ -67,19 +73,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (userDocSnap.exists()) {
         const existingData = userDocSnap.data() as User;
         
-        const consoleRoles: User['role'][] = ['cto', 'manager', 'administrator'];
-        // Role protection: if existing role is a console role, don't downgrade it unless new role is also console.
-        // Prefer existing console role if current determinedRole is just 'user'.
-        // Allow upgrade to higher console roles (cto > manager > admin).
-        if (existingData.role && consoleRoles.includes(existingData.role)) {
+        // Role protection for console users. Don't downgrade a CTO to manager, etc.
+        if (useConsoleCollection && existingData.role) {
             if (determinedRole === 'cto') finalRole = 'cto';
             else if (determinedRole === 'manager' && existingData.role !== 'cto') finalRole = 'manager';
             else if (determinedRole === 'administrator' && existingData.role !== 'cto' && existingData.role !== 'manager') finalRole = 'administrator';
             else finalRole = existingData.role; // Keep existing console role
         } else {
-            finalRole = determinedRole; // Set to new role if existing isn't console or no existing role
+            finalRole = determinedRole; 
         }
-
 
         const finalFirstName = existingData.firstName || baseDataFromAuth.firstName;
         const finalLastName = existingData.lastName || baseDataFromAuth.lastName;
@@ -109,6 +111,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         } as User;
 
     } else { 
+        // This is a new user for this collection
+        if (useConsoleCollection && firebaseUser.providerData[0]?.providerId !== 'password') {
+            // Prevent social logins from creating console user profiles directly
+            throw new Error("Social logins are not permitted for initial console access.");
+        }
+
         const dataToSet: Partial<User> & { createdAt: any, lastLogin: any } = {
             ...baseDataFromAuth,
             role: finalRole, 
@@ -134,7 +142,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.error("Firebase auth or db service is not initialized. AuthProvider cannot function.");
       setUser(null);
       setLoading(false);
-      return; // Exit if Firebase services are not available
+      return; 
     }
 
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser: FirebaseUser | null) => {
@@ -142,11 +150,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (firebaseUser) {
         const determinedRole = determineUserRole(firebaseUser.email);
         try {
-          const appUser = await syncUserWithFirestore(firebaseUser, determinedRole);
-          setUser(appUser);
+          // Attempt to find user in the appropriate collection based on role.
+          const collectionName = isConsoleRole(determinedRole) ? 'consoleUsers' : 'users';
+          const userDocRef = doc(db, collectionName, firebaseUser.uid);
+          const userDocSnap = await getDoc(userDocRef);
+
+          if (userDocSnap.exists()) {
+             const appUser = { id: firebaseUser.uid, ...userDocSnap.data() } as User;
+             // Ensure timestamps are JS Dates
+             if(appUser.createdAt && appUser.createdAt instanceof Timestamp) appUser.createdAt = appUser.createdAt.toDate();
+             if(appUser.lastLogin && appUser.lastLogin instanceof Timestamp) appUser.lastLogin = appUser.lastLogin.toDate();
+             setUser(appUser);
+          } else {
+             // This can happen if a console user signs in via a social provider for the first time
+             // Or if their doc was deleted but auth record remains.
+             // We'll treat them as not logged in to our app context and sign them out.
+             console.warn(`User ${firebaseUser.uid} authenticated but not found in ${collectionName} collection.`);
+             setUser(null);
+             await firebaseSignOut(auth);
+          }
         } catch (error) {
-          console.error("Error in onAuthStateChanged > syncUserWithFirestore:", error);
-          setUser(null); 
+          console.error("Error in onAuthStateChanged > user sync:", error);
+          setUser(null);
+          await firebaseSignOut(auth);
         }
       } else {
         setUser(null);
@@ -160,23 +186,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const handleSuccessfulLogin = async (firebaseUser: FirebaseUser, isConsole: boolean = false) => {
     setLoading(true);
     const determinedRole = determineUserRole(firebaseUser.email);
+    
+    if (isConsole && !isConsoleRole(determinedRole)) {
+        await firebaseSignOut(auth);
+        setUser(null);
+        setLoading(false);
+        const authError = new Error("Access Denied. Not a valid console user role.");
+        (authError as any).code = 'auth/unauthorized-console-role';
+        throw authError;
+    }
+
     const appUser = await syncUserWithFirestore(firebaseUser, determinedRole);
     setUser(appUser);
     setLoading(false);
 
-    const consoleRoles: User['role'][] = ['cto', 'administrator', 'manager'];
     if (isConsole) {
-      if (appUser.role && consoleRoles.includes(appUser.role)) {
         router.push('/console/dashboard');
-      } else {
-        await firebaseSignOut(auth); // Sign out if not an authorized console role
-        setUser(null);
-        const authError = new Error("Access Denied. Not a valid console user role.");
-        (authError as any).code = 'auth/unauthorized-console-role';
-        throw authError;
-      }
     } else {
-      router.push('/dashboard');
+        router.push('/dashboard');
     }
     return firebaseUser;
   };
@@ -187,7 +214,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
-      return await handleSuccessfulLogin(result.user);
+      // Social sign-in is only for the portal, so isConsole is false.
+      return await handleSuccessfulLogin(result.user, false);
     } catch (error) {
       console.error("Error signing in with Google:", error);
       setLoading(false);
@@ -201,7 +229,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const provider = new GithubAuthProvider();
       const result = await signInWithPopup(auth, provider);
-      return await handleSuccessfulLogin(result.user);
+      // Social sign-in is only for the portal, so isConsole is false.
+      return await handleSuccessfulLogin(result.user, false);
     } catch (error) {
       console.error("Error signing in with GitHub:", error);
       setLoading(false);
@@ -213,15 +242,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!auth) throw new Error("Firebase auth not initialized.");
     setLoading(true);
     try {
-      const determinedRole = determineUserRole(email);
-      const consoleRoles: User['role'][] = ['cto', 'administrator', 'manager'];
-      if (isConsole && !consoleRoles.includes(determinedRole)) {
-         setLoading(false);
-         const authError = new Error("Access restricted. This email is not authorized for console access.");
-         (authError as any).code = 'auth/unauthorized-console-access'; 
-         throw authError;
-      }
-
       const userCredential = await signInWithEmailAndPassword(auth, email, pass);
       return await handleSuccessfulLogin(userCredential.user, isConsole);
     } catch (error) {
@@ -234,7 +254,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signOut = async (isConsole: boolean = false) => {
     if (!auth) {
       console.error("Firebase auth not initialized. Cannot sign out.");
-      // Attempt to clear local state and redirect anyway
       setUser(null);
       setLoading(false);
       router.push(isConsole ? '/console' : '/login');
@@ -247,7 +266,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       router.push(isConsole ? '/console' : '/login');
     } catch (error) {
       console.error("Error signing out:", error);
-      // Still try to clear local state and redirect
       setUser(null);
       router.push(isConsole ? '/console' : '/login');
       throw error;
