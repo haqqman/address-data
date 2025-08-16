@@ -84,9 +84,6 @@ export default function HomePage() {
             <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-primary"> 
               The Future of Nigerian Address Data
             </h1>
-            <p className="mt-6 text-lg md:text-xl text-foreground/80 max-w-3xl mx-auto"> 
-              Address Data provides developers, businesses, and operations with tools to validate, store, and retrieve Nigerian address data efficiently and accurately.
-            </p>
             <div className="mt-10 max-w-xl mx-auto">
               <form onSubmit={(e) => { e.preventDefault(); alert('Search functionality coming soon!'); }} className="flex gap-2">
                 <NextUIInput
@@ -110,6 +107,9 @@ export default function HomePage() {
                 </NextUIButton>
               </form>
             </div>
+            <p className="mt-6 text-lg md:text-xl text-foreground/80 max-w-3xl mx-auto"> 
+              Address Data provides developers, businesses, and operations with tools to validate, store, and retrieve Nigerian address data efficiently and accurately.
+            </p>
           </div>
         </section>
 
