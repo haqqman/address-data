@@ -3,7 +3,7 @@
 
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { Card as NextUICard, CardHeader as NextUICardHeader, CardBody as NextUICardBody, Snippet, Link as NextUILink, Divider as NextUIDivider } from "@nextui-org/react";
-import { BookOpen, Code2, Zap, ShieldCheck, MapPinned, HelpCircle, Layers, AlertTriangle, Tag, Building } from "lucide-react";
+import { BookOpen, Code2, Zap, ShieldCheck, MapPinned, HelpCircle, Layers, AlertTriangle, Tag, Building, Map as MapIcon } from "lucide-react";
 import Image from "next/image";
 
 const API_BASE_URL = "https://api.addressdata.ng/v1";
@@ -311,7 +311,7 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
               
               <section id="geography-endpoints">
                 <h2 className="text-2xl font-semibold mb-6 flex items-center text-primary">
-                  <Map className="mr-2 h-6 w-6 text-secondary" /> Geography Endpoints
+                  <MapIcon className="mr-2 h-6 w-6 text-secondary" /> Geography Endpoints
                 </h2>
                 <div className="space-y-8">
                   {/* Get States Endpoint */}
