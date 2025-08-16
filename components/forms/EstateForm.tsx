@@ -179,7 +179,7 @@ export function EstateForm({ onSubmissionSuccess }: EstateFormProps) {
     <>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         {submissionStatus && (
-          <NextUICard 
+          <NextUICard
             className={`mb-6 ${submissionStatus.type === 'success' ? 'bg-success-50 border-success-200' : submissionStatus.type === 'error' ? 'bg-danger-50 border-danger-200' : 'bg-secondary-50 border-secondary-200'}`}
           >
             <NextUICardBody className="p-4">
@@ -188,7 +188,7 @@ export function EstateForm({ onSubmissionSuccess }: EstateFormProps) {
                 {submissionStatus.type === 'error' && <AlertTriangle className="h-5 w-5 text-danger mr-3" />}
                 {submissionStatus.type === 'info' && <Info className="h-5 w-5 text-secondary mr-3" />}
                 <div>
-                  <p className={`font-semibold ${submissionStatus.type === 'success' ? 'text-success-700' : 'text-danger-700' : 'text-secondary-700'}`}>
+                  <p className={`font-semibold ${submissionStatus.type === 'success' ? 'text-success-700' : submissionStatus.type === 'error' ? 'text-danger-700' : 'text-secondary-700'}`}>
                     {submissionStatus.type === 'success' ? 'Success' : 'Error'}
                   </p>
                   <p className={`text-sm ${submissionStatus.type === 'success' ? 'text-success-600' : 'text-danger-600'}`}>
