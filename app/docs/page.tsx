@@ -3,7 +3,7 @@
 
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { Card as NextUICard, CardHeader as NextUICardHeader, CardBody as NextUICardBody, Snippet, Link as NextUILink, Divider as NextUIDivider } from "@nextui-org/react";
-import { BookOpen, Code2, Zap, ShieldCheck, MapPinned, HelpCircle, Layers, AlertTriangle, Tag } from "lucide-react";
+import { BookOpen, Code2, Zap, ShieldCheck, MapPinned, HelpCircle, Layers, AlertTriangle, Tag, Building } from "lucide-react";
 import Image from "next/image";
 
 const API_BASE_URL = "https://api.addressdata.ng/v1";
@@ -22,6 +22,18 @@ export default function DocsPage() {
   "longitude": 3.3792,
   "status": "verified",
   "googleMapsSuggestion": "123 Main St, Ikeja GRA, Ikeja, Lagos 100001, Nigeria"
+}`;
+
+  const estateObjectStructure = `{
+  "estateCode": "LAG-ETI-BNN01", // Unique Estate Code
+  "name": "Banana Island Estate",
+  "location": {
+    "state": "Lagos",
+    "lga": "Eti Osa",
+    "area": "Ikoyi"
+  },
+  "googleMapLink": "https://maps.app.goo.gl/u5B1gY8Jz9W7xXaP7",
+  "status": "approved"
 }`;
 
   const authExample = `// Example: Fetching data with authentication headers
@@ -51,6 +63,18 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
 ]`;
 
   const lookupByCodeRequest = `${API_BASE_URL}/lookup-by-code/ADC789ABC`;
+
+  const listEstatesRequest = `${API_BASE_URL}/estates`;
+  const listEstatesResponse = `[
+  { 
+    "estateCode": "LAG-ETI-BNN01", 
+    "name": "Banana Island Estate",
+    "location": { "state": "Lagos", "lga": "Eti Osa" }
+  },
+  // ... other estates
+]`;
+  const lookupEstateByCodeRequest = `${API_BASE_URL}/estates/LAG-ETI-PRV02`;
+
 
   const statesRequest = `${API_BASE_URL}/states`;
   const statesResponse = `[
@@ -106,8 +130,8 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
                 </h2>
                 <p>
                   Welcome to the Address Data API. Our RESTful API provides robust endpoints for Nigerian address validation,
-                  lookup, autocompletion, and access to structured geographical data. Empower your applications with accurate
-                  and verified address information.
+                  lookup, autocompletion, and access to structured geographical and real estate data. Empower your applications with accurate
+                  and verified information.
                 </p>
                 <p className="mt-2">
                   All API requests must be authenticated. Please refer to the Authentication section below.
@@ -181,9 +205,9 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
 
               <NextUIDivider />
 
-              <section id="endpoints">
+              <section id="address-endpoints">
                 <h2 className="text-2xl font-semibold mb-6 flex items-center text-primary">
-                  <MapPinned className="mr-2 h-6 w-6 text-secondary" /> Endpoints
+                  <MapPinned className="mr-2 h-6 w-6 text-secondary" /> Address Endpoints
                 </h2>
                 <div className="space-y-8">
                   
@@ -230,7 +254,66 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
                       {addressObjectStructure}
                     </Snippet>
                   </div>
+                </div>
+              </section>
 
+              <NextUIDivider />
+              
+              <section id="estate-endpoints">
+                <h2 className="text-2xl font-semibold mb-6 flex items-center text-primary">
+                  <Building className="mr-2 h-6 w-6 text-secondary" /> Estates Endpoints
+                </h2>
+                <div className="space-y-8">
+                  
+                  {/* List Estates Endpoint */}
+                  <div>
+                    <h3 className="text-xl font-medium mb-1 text-primary">
+                      <code className="bg-secondary/10 text-secondary px-2 py-1 rounded-md text-lg font-mono">GET /estates</code>
+                    </h3>
+                    <p className="text-muted-foreground text-base mb-2">
+                      Retrieves a list of all approved real estate properties.
+                    </p>
+                    <p className="text-base mb-1"><strong>Example Request:</strong></p>
+                    <Snippet lang="bash" className="text-sm max-w-full" variant="bordered" tooltipProps={{color:"secondary"}}>
+                      {listEstatesRequest}
+                    </Snippet>
+                    <p className="text-base mt-2 mb-1"><strong>Example Success Response (200 OK):</strong></p>
+                    <Snippet lang="json" className="text-sm max-w-full" variant="bordered" tooltipProps={{color:"secondary"}}>
+                      {listEstatesResponse}
+                    </Snippet>
+                  </div>
+
+                  {/* Lookup Estate by Code Endpoint */}
+                  <div>
+                    <h3 className="text-xl font-medium mb-1 text-primary">
+                      <code className="bg-secondary/10 text-secondary px-2 py-1 rounded-md text-lg font-mono">GET /estates/{'{estateCode}'}</code>
+                    </h3>
+                    <p className="text-muted-foreground text-base mb-2">
+                      Fetches a full, verified estate using its unique Estate Code.
+                    </p>
+                     <p className="text-base mb-1"><strong>Path Parameters:</strong></p>
+                    <ul className="list-disc list-inside text-base ml-4 mb-2">
+                      <li><code className="bg-muted px-1.5 py-0.5 rounded-md text-sm font-mono">estateCode</code> (string, required): The unique Estate Code.</li>
+                    </ul>
+                    <p className="text-base mb-1"><strong>Example Request:</strong></p>
+                    <Snippet lang="bash" className="text-sm max-w-full" variant="bordered" tooltipProps={{color:"secondary"}}>
+                      {lookupEstateByCodeRequest}
+                    </Snippet>
+                    <p className="text-base mt-2 mb-1"><strong>Example Success Response (200 OK):</strong></p>
+                    <Snippet lang="json" className="text-sm max-w-full" variant="bordered" tooltipProps={{color:"secondary"}}>
+                      {estateObjectStructure}
+                    </Snippet>
+                  </div>
+                </div>
+              </section>
+
+              <NextUIDivider />
+              
+              <section id="geography-endpoints">
+                <h2 className="text-2xl font-semibold mb-6 flex items-center text-primary">
+                  <Map className="mr-2 h-6 w-6 text-secondary" /> Geography Endpoints
+                </h2>
+                <div className="space-y-8">
                   {/* Get States Endpoint */}
                   <div>
                     <h3 className="text-xl font-medium mb-1 text-primary">
@@ -301,14 +384,19 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
 
               <section id="address-object">
                 <h2 className="text-2xl font-semibold mb-3 flex items-center text-primary">
-                  <Code2 className="mr-2 h-6 w-6 text-secondary" /> Address Object Structure
+                  <Code2 className="mr-2 h-6 w-6 text-secondary" /> Data Object Structures
                 </h2>
                 <p>
-                  Our API returns address data in a structured JSON format. Developers are encouraged to replicate this
+                  Our API returns data in a structured JSON format. Developers are encouraged to replicate this
                   structure for maximum compatibility.
                 </p>
-                <Snippet lang="json" className="mt-4 text-sm max-w-full" variant="bordered" tooltipProps={{color:"secondary"}}>
+                <h4 className="text-lg font-semibold mt-4 mb-2 text-primary">Address Object</h4>
+                <Snippet lang="json" className="text-sm max-w-full" variant="bordered" tooltipProps={{color:"secondary"}}>
                   {addressObjectStructure}
+                </Snippet>
+                <h4 className="text-lg font-semibold mt-4 mb-2 text-primary">Estate Object</h4>
+                <Snippet lang="json" className="text-sm max-w-full" variant="bordered" tooltipProps={{color:"secondary"}}>
+                  {estateObjectStructure}
                 </Snippet>
               </section>
               
@@ -374,5 +462,3 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
     </div>
   );
 }
-
-    
