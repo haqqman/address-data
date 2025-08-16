@@ -8,7 +8,7 @@ import { Skeleton as NextUISkeleton, Card as NextUICard, CardHeader as NextUICar
 import { AlertTriangle, PlusCircle } from "lucide-react";
 import { getAllApiKeys, createApiKey } from "@/app/actions/apiKeyActions";
 import { db } from "@/lib/firebase/config"; 
-import { collection, getDocs } from "firebase/firestore"; 
+import { collection, getDocs, query, where } from "firebase/firestore"; 
 import { useAuth } from "@/contexts/auth-context";
 
 
@@ -18,10 +18,12 @@ interface SimpleUser {
   email?: string | null;
 }
 
-async function fetchAllUsers(): Promise<SimpleUser[]> {
+// Fetch portal users, as API keys are for them.
+async function fetchPortalUsers(): Promise<SimpleUser[]> {
     try {
         const usersCol = collection(db, "users"); 
-        const querySnapshot = await getDocs(usersCol);
+        const q = query(usersCol, where("role", "==", "user"));
+        const querySnapshot = await getDocs(q);
         const users: SimpleUser[] = [];
         querySnapshot.forEach((doc) => {
             const data = doc.data();
@@ -33,7 +35,7 @@ async function fetchAllUsers(): Promise<SimpleUser[]> {
         });
         return users;
     } catch (error) {
-        console.error("Error fetching users for API key assignment:", error);
+        console.error("Error fetching portal users for API key assignment:", error);
         return []; 
     }
 }
@@ -47,7 +49,7 @@ export default function ConsoleApiKeysPage() {
   const [isCreating, setIsCreating] = useState(false);
   const [newKeyName, setNewKeyName] = useState("");
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
-  const [allUsers, setAllUsers] = useState<SimpleUser[]>([]);
+  const [portalUsers, setPortalUsers] = useState<SimpleUser[]>([]);
   const { user: adminUser } = useAuth();
 
 
@@ -66,8 +68,8 @@ export default function ConsoleApiKeysPage() {
   }, []);
 
   const loadUsersForDropdown = useCallback(async () => {
-    const users = await fetchAllUsers();
-    setAllUsers(users);
+    const users = await fetchPortalUsers();
+    setPortalUsers(users);
   }, []);
 
   useEffect(() => {
@@ -76,7 +78,7 @@ export default function ConsoleApiKeysPage() {
   }, [fetchApiKeys, loadUsersForDropdown]);
 
   const handleCreateNewKey = async () => {
-    if (!adminUser || adminUser.role !== 'admin') {
+    if (!adminUser || !['cto', 'administrator'].includes(adminUser.role)) {
         alert("Unauthorized action.");
         return;
     }
@@ -84,7 +86,7 @@ export default function ConsoleApiKeysPage() {
         alert("Please select a user to assign the API key to.");
         return;
     }
-    const targetUser = allUsers.find(u => u.id === selectedUserId);
+    const targetUser = portalUsers.find(u => u.id === selectedUserId);
     if (!targetUser) {
         alert("Selected user not found.");
         return;
@@ -127,7 +129,7 @@ export default function ConsoleApiKeysPage() {
         <div className="flex flex-col space-y-1">
             <h1 className="text-3xl font-bold tracking-tight text-primary">Manage Developer API Keys</h1>
             <p className="text-foreground-500">
-            Oversee, create, and revoke API keys for developers using the platform.
+            Oversee, create, and revoke API keys for portal users.
             </p>
         </div>
         <NextUIButton 
@@ -135,6 +137,7 @@ export default function ConsoleApiKeysPage() {
             color="warning" 
             className="text-primary shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out" 
             startContent={<PlusCircle className="h-4 w-4" />}
+            isDisabled={!adminUser || !['cto', 'administrator'].includes(adminUser.role)}
         >
              Create New API Key
         </NextUIButton>
@@ -185,15 +188,15 @@ export default function ConsoleApiKeysPage() {
             <>
               <ModalHeader className="flex flex-col gap-1 text-primary">Create New API Key</ModalHeader>
               <ModalBody>
-                <p>Assign a new API key to a user. The private key will be shown once upon creation.</p>
+                <p>Assign a new API key to a portal user. The private key will be shown once upon creation.</p>
                 <Autocomplete
-                  label="Select User"
-                  placeholder="Search for a user by name or email"
-                  items={allUsers}
+                  label="Select Portal User"
+                  placeholder="Search by name or email"
+                  items={portalUsers}
                   variant="bordered"
                   onSelectionChange={(key) => setSelectedUserId(key as string)}
                   selectedKey={selectedUserId}
-                  className="max-w-xs"
+                  className="w-full"
                 >
                   {(userItem) => (
                     <AutocompleteItem key={userItem.id} textValue={userItem.name || userItem.email || userItem.id}>

@@ -12,6 +12,16 @@ export interface User {
   phoneNumber?: string | null; // Added from console-user-update page
 }
 
+export type ConsoleUserUpdateFormValues = {
+    uid: string;
+    firstName: string;
+    lastName: string;
+    phoneNumber: string;
+    role: "cto" | "administrator" | "manager";
+    email?: string;
+};
+
+
 export interface Address {
   id: string; 
   physicalAddress?: string; 
@@ -60,6 +70,7 @@ export interface AddressSubmission {
     zipCode?: string;
     country: string;
   };
+  adc: string | null; // Address Data Code, null until approved
   googleMapsSuggestion?: string;
   status: "pending_review" | "approved" | "rejected";
   aiFlaggedReason?: string | null; // Allow null

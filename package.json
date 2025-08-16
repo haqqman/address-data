@@ -13,7 +13,8 @@
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
     "seed": "tsx scripts/seed.ts",
-    "seed:estates": "tsx scripts/seed-estates.ts"
+    "seed:estates": "tsx scripts/seed-estates.ts",
+    "seed:console": "tsx scripts/seed-console-user.ts"
   },
   "dependencies": {
     "@genkit-ai/googleai": "^1.8.0",

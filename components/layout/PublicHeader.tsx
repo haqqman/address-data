@@ -2,9 +2,10 @@
 "use client";
 
 import Link from "next/link";
-import { Navbar, NavbarBrand, NavbarContent, NavbarItem, NavbarMenuToggle, NavbarMenu, NavbarMenuItem, Button as NextUIButton } from "@nextui-org/react"; 
+import { Navbar, NavbarBrand, NavbarContent, NavbarItem, NavbarMenuToggle, NavbarMenu, NavbarMenuItem, Button as NextUIButton, Spinner } from "@nextui-org/react"; 
 import Image from "next/image";
 import { useState } from "react";
+import { useAuth } from "@/contexts/auth-context";
 
 const menuItems = [
   { name: "About", href: "/about" },
@@ -14,13 +15,44 @@ const menuItems = [
 
 export function PublicHeader() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { user, loading } = useAuth();
+
+  const renderAuthButton = () => {
+    if (loading) {
+      return <Spinner size="sm" color="warning" />;
+    }
+    if (user) {
+      return (
+        <NextUIButton 
+          as={Link}
+          href="/dashboard" 
+          color="warning"
+          radius="md"
+          className="text-primary shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out font-semibold"
+        >
+          Go to Dashboard
+        </NextUIButton>
+      );
+    }
+    return (
+      <NextUIButton 
+        as={Link}
+        href="/login" 
+        color="warning"
+        radius="md"
+        className="text-primary shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out font-semibold"
+      >
+        Portal
+      </NextUIButton>
+    );
+  };
 
   return (
     <Navbar 
       onMenuOpenChange={setIsMenuOpen} 
       isMenuOpen={isMenuOpen}
       className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
-      maxWidth="xl" // Changed from 7xl to xl for NextUI's convention, equivalent to max-w-7xl usually
+      maxWidth="xl"
     >
       <NavbarContent justify="start">
         <NavbarBrand as={Link} href="/" className="flex items-center space-x-2">
@@ -53,19 +85,11 @@ export function PublicHeader() {
 
       <NavbarContent justify="end">
         <NavbarItem className="hidden sm:flex">
-          <NextUIButton 
-            as={Link}
-            href="/login" 
-            color="warning"
-            radius="md"
-            className="text-primary shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out font-semibold"
-          >
-            Portal
-          </NextUIButton>
+          {renderAuthButton()}
         </NavbarItem>
         <NavbarMenuToggle
           aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-          className="sm:hidden text-primary" // Ensure toggle is visible and primary colored
+          className="sm:hidden text-primary"
         />
       </NavbarContent>
 
@@ -75,23 +99,16 @@ export function PublicHeader() {
             <Link
               href={item.href}
               className="w-full block py-2 text-foreground hover:text-primary"
-              onClick={() => setIsMenuOpen(false)} // Close menu on item click
+              onClick={() => setIsMenuOpen(false)}
             >
               {item.name}
             </Link>
           </NavbarMenuItem>
         ))}
         <NavbarMenuItem>
-          <NextUIButton 
-            as={Link}
-            href="/login" 
-            color="warning"
-            radius="md"
-            className="w-full text-primary shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out font-semibold mt-4"
-            onClick={() => setIsMenuOpen(false)} // Close menu on item click
-          >
-            Portal
-          </NextUIButton>
+            <div className="mt-4" onClick={() => setIsMenuOpen(false)}>
+              {renderAuthButton()}
+            </div>
         </NavbarMenuItem>
       </NavbarMenu>
     </Navbar>

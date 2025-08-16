@@ -43,6 +43,7 @@ export function UserSubmissionsTable({ submissions }: UserSubmissionsTableProps)
         <NextUITableHeader>
           <NextUITableColumn>USER</NextUITableColumn>
           <NextUITableColumn>SUBMITTED ADDRESS</NextUITableColumn>
+          <NextUITableColumn>ADC</NextUITableColumn>
           <NextUITableColumn>STATUS</NextUITableColumn>
           <NextUITableColumn>SUBMITTED AT</NextUITableColumn>
           <NextUITableColumn>REVIEWED AT</NextUITableColumn>
@@ -62,6 +63,7 @@ export function UserSubmissionsTable({ submissions }: UserSubmissionsTableProps)
                     </div>
                   </Tooltip>
               </NextUITableCell>
+              <NextUITableCell className="font-mono text-xs">{submission.adc || 'N/A'}</NextUITableCell>
               <NextUITableCell>
                 <NextUIChip size="sm" color={getStatusChipColor(submission.status)} variant="flat">
                   {submission.status.replace("_", " ").toUpperCase()}

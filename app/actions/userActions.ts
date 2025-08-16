@@ -1,28 +1,120 @@
+
 "use server";
 
-import { db } from "@/lib/firebase/config";
-import { doc, updateDoc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
+import { auth, db } from "@/lib/firebase/config";
+import { doc, updateDoc, getDoc, setDoc, serverTimestamp, collection, query, getDocs, orderBy, deleteDoc } from "firebase/firestore";
+import { createUserWithEmailAndPassword, deleteUser as deleteAuthUser } from "firebase/auth";
 import { z } from "zod";
 import type { User } from "@/types";
 
+
 const PROTECTED_UIDS = [
-  // These were placeholder UIDs, actual UIDs from Firebase Auth should be used.
-  // "CONSOLE_USER_UID_ABDULHAQQ", 
-  // "CONSOLE_USER_UID_JOSHUA",   
+  // "DOUKechRV9NoSkNpgGL2jNCp6Sz2"
 ];
+
+const consoleUserCreateSchema = z.object({
+  email: z.string().email("Invalid email").refine(email => email.endsWith('@haqqman.com'), "Email must end with @haqqman.com"),
+  password: z.string().min(6, "Password must be at least 6 characters."),
+  firstName: z.string().min(1, "First name is required."),
+  lastName: z.string().min(1, "Last name is required."),
+  phoneNumber: z.string().optional(),
+  role: z.enum(["cto", "administrator", "manager"], { required_error: "Role is required."}),
+});
 
 const consoleUserUpdateSchema = z.object({
   uid: z.string().min(1, "UID is required."),
   firstName: z.string().min(1, "First name is required."),
   lastName: z.string().min(1, "Last name is required."),
-  phoneNumber: z.string().min(1, "Phone number is required."),
+  phoneNumber: z.string().optional(),
   role: z.enum(["cto", "administrator", "manager"], { required_error: "Role is required."}),
-  email: z.string().email("Invalid email").optional(), // Email is optional for update, but required for creation if not exists
 });
 
 export type ConsoleUserUpdateFormValues = z.infer<typeof consoleUserUpdateSchema>;
 
-export async function updateConsoleUserDetails(
+
+const convertUserTimestamps = (docData: any): User => {
+  const data = { ...docData };
+  if (data.createdAt && data.createdAt instanceof serverTimestamp) {
+    data.createdAt = data.createdAt.toDate();
+  }
+   if (data.lastLogin && data.lastLogin instanceof serverTimestamp) {
+    data.lastLogin = data.lastLogin.toDate();
+  }
+  return data as User;
+};
+
+
+export async function getConsoleUsers(): Promise<User[]> {
+  try {
+    const usersCol = collection(db, "consoleUsers");
+    const q = query(
+      usersCol, 
+      orderBy("createdAt", "desc")
+    );
+    
+    const querySnapshot = await getDocs(q);
+    const users: User[] = [];
+    querySnapshot.forEach((docSnap) => {
+      users.push({ id: docSnap.id, ...convertUserTimestamps(docSnap.data()) } as User);
+    });
+    return users;
+  } catch (error) {
+    console.error("Error fetching console users from Firestore:", error);
+    return [];
+  }
+}
+
+export async function createConsoleUser(
+  values: z.infer<typeof consoleUserCreateSchema>
+): Promise<{ success: boolean; message: string; userId?: string }> {
+  try {
+    const validation = consoleUserCreateSchema.safeParse(values);
+    if (!validation.success) {
+      const errorMessages = Object.values(validation.error.flatten().fieldErrors).flat().join(", ");
+      return { success: false, message: `Invalid data: ${errorMessages}` };
+    }
+    
+    const { email, password, firstName, lastName, phoneNumber, role } = validation.data;
+
+    if (!auth) {
+      throw new Error("Firebase Auth is not initialized.");
+    }
+    
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+
+    const userProfile: Omit<User, 'id'> = {
+      email,
+      firstName,
+      lastName,
+      name: `${firstName} ${lastName}`,
+      role,
+      phoneNumber: phoneNumber || null,
+      authProvider: 'password',
+      createdAt: new Date(),
+      lastLogin: new Date(),
+    };
+    
+    const userDocRef = doc(db, "consoleUsers", user.uid);
+    await setDoc(userDocRef, {
+      ...userProfile,
+      createdAt: serverTimestamp(),
+      lastLogin: serverTimestamp(),
+    });
+
+    return { success: true, message: `Successfully created user ${email}.`, userId: user.uid };
+
+  } catch (error: any) {
+    console.error("Error creating console user:", error);
+    const errorMessage = error.code === 'auth/email-already-in-use' 
+      ? "This email is already in use by another account."
+      : (error.message || "An unknown error occurred.");
+    return { success: false, message: `Failed to create user: ${errorMessage}` };
+  }
+}
+
+
+export async function updateConsoleUser(
   values: ConsoleUserUpdateFormValues
 ): Promise<{ success: boolean; message: string }> {
   try {
@@ -33,51 +125,53 @@ export async function updateConsoleUserDetails(
       return { success: false, message: `Invalid data provided: ${errorMessages}` };
     }
 
-    const { uid, firstName, lastName, phoneNumber, role, email } = validation.data;
-
-    // Placeholder UID check might be less relevant if actual UIDs are always used
-    if (PROTECTED_UIDS.includes(uid) && (uid.startsWith("CONSOLE_USER_UID_"))) {
-        return { success: false, message: `Cannot update user with placeholder UID: ${uid}. Please use actual Firestore UID.` };
+    const { uid, firstName, lastName, phoneNumber, role } = validation.data;
+    
+    if (PROTECTED_UIDS.includes(uid)) {
+        return { success: false, message: `This is a protected user account and cannot be modified.` };
     }
 
-    const userRef = doc(db, "users", uid);
+    const userRef = doc(db, "consoleUsers", uid);
     const userDoc = await getDoc(userRef);
 
-    const dataToUpdate: Partial<User> & { name?: string, lastLogin?: any, createdAt?: any, authProvider?: string } = {
+    if (!userDoc.exists()) {
+        return { success: false, message: `User with UID ${uid} not found in consoleUsers collection.` };
+    }
+
+    const dataToUpdate: Partial<User> = {
       firstName: firstName,
       lastName: lastName,
-      name: `${firstName} ${lastName}`, // Combined name
-      phoneNumber: phoneNumber,
+      name: `${firstName} ${lastName}`,
+      phoneNumber: phoneNumber || null,
       role: role,
-      lastLogin: serverTimestamp() 
     };
-    
-    if (email) dataToUpdate.email = email;
-
-
-    if (!userDoc.exists()) {
-      // If user doc doesn't exist, this means we are creating it from the temporary update page.
-      // Ensure all necessary fields are present for creation.
-      if (!email) { // Email is crucial for a new user profile
-         return { success: false, message: `User with UID ${uid} not found. Email is required to create a new user profile.` };
-      }
-      dataToUpdate.email = email; // Ensure email is set
-      dataToUpdate.createdAt = serverTimestamp();
-      dataToUpdate.authProvider = 'password'; // Assuming password for console users initially
-      await setDoc(userRef, dataToUpdate);
-      return { success: true, message: `Successfully created and updated details for ${dataToUpdate.name || `User UID: ${uid}`}.` };
-    }
     
     await updateDoc(userRef, dataToUpdate);
     
-    const updatedUserDoc = await getDoc(userRef); 
-    const updatedName = updatedUserDoc.data()?.name || `User UID: ${uid}`;
-
-    return { success: true, message: `Successfully updated details for ${updatedName}.` };
+    return { success: true, message: `Successfully updated details for ${dataToUpdate.name}.` };
 
   } catch (error) {
     console.error("Error updating console user details:", error);
     const errorMessage = error instanceof Error ? error.message : "An unknown error occurred.";
     return { success: false, message: `Failed to update user details: ${errorMessage}` };
+  }
+}
+
+export async function deleteConsoleUser(uid: string): Promise<{ success: boolean, message: string }> {
+  try {
+    if (PROTECTED_UIDS.includes(uid)) {
+      return { success: false, message: "This is a protected user and cannot be deleted." };
+    }
+
+    // This action ONLY deletes the Firestore record, not the Auth user.
+    // This is a safety measure. Auth user deletion should be a separate, more deliberate action.
+    const userRef = doc(db, "consoleUsers", uid);
+    await deleteDoc(userRef);
+    
+    return { success: true, message: "Console user profile deleted successfully. The authentication record still exists." };
+  } catch (error) {
+    console.error("Error deleting console user from Firestore:", error);
+    const errorMessage = error instanceof Error ? error.message : "An unknown error occurred.";
+    return { success: false, message: `Failed to delete user profile: ${errorMessage}` };
   }
 }
