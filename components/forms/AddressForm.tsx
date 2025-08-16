@@ -4,11 +4,13 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, Controller } from "react-hook-form";
 import * as z from "zod";
-import { Button as NextUIButton, Input as NextUIInput, Card as NextUICard, CardBody as NextUICardBody } from "@nextui-org/react";
+import { Button as NextUIButton, Input as NextUIInput, Card as NextUICard, CardBody as NextUICardBody, Select as NextUISelect, SelectItem as NextUISelectItem } from "@nextui-org/react";
 import { submitAddress } from "@/app/actions/addressActions";
 import { CheckCircle, Loader2, AlertTriangle, Info } from "lucide-react"; 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/auth-context"; 
+import { getStates } from "@/app/actions/geographyActions";
+import type { GeographyState } from "@/types";
 
 const addressSchema = z.object({
   streetAddress: z.string().min(1, "Street address is required"),
@@ -30,6 +32,24 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submissionStatus, setSubmissionStatus] = useState<{ type: "success" | "error" | "info"; message: string } | null>(null);
   const { user } = useAuth(); 
+  const [states, setStates] = useState<GeographyState[]>([]);
+  const [isLoadingStates, setIsLoadingStates] = useState(true);
+
+  useEffect(() => {
+    async function loadStates() {
+      setIsLoadingStates(true);
+      try {
+        const fetchedStates = await getStates();
+        setStates(fetchedStates);
+      } catch (error) {
+        console.error("Failed to load states", error);
+        // Optionally set an error state to show in the UI
+      } finally {
+        setIsLoadingStates(false);
+      }
+    }
+    loadStates();
+  }, []);
 
   const { control, handleSubmit, formState: { errors }, reset } = useForm<AddressFormValues>({
     resolver: zodResolver(addressSchema),
@@ -169,15 +189,23 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
             name="state"
             control={control}
             render={({ field }) => (
-              <NextUIInput
+               <NextUISelect
                 {...field}
                 label="State"
-                placeholder="Lagos, FCT"
+                placeholder="Select a state"
                 variant="bordered"
                 isInvalid={!!errors.state}
                 errorMessage={errors.state?.message}
-                fullWidth
-              />
+                isLoading={isLoadingStates}
+                selectedKeys={field.value ? [field.value] : []}
+                onChange={field.onChange}
+              >
+                {states.map((state) => (
+                  <NextUISelectItem key={state.name} value={state.name}>
+                    {state.name}
+                  </NextUISelectItem>
+                ))}
+              </NextUISelect>
             )}
           />
           <Controller
