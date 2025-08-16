@@ -115,7 +115,7 @@ export default function HomePage() {
 
         {/* Features Section */}
         <section id="features" className="py-16 bg-background"> 
-          <div className="container mx-auto px-4">
+          <div className="max-w-7xl mx-auto px-4">
             <div className="flex flex-col lg:flex-row items-center gap-12">
               <div className="lg:w-1/2">
                 <Image 
@@ -167,7 +167,7 @@ export default function HomePage() {
         
         {/* API Section */}
         <section id="api" className="py-8 bg-primary/5"> 
-          <div className="container mx-auto px-4">
+          <div className="max-w-7xl mx-auto px-4">
             <div className="flex flex-col lg:flex-row items-center gap-12">
               <div className="lg:w-1/2">
                 <h2 className="text-3xl md:text-4xl font-bold text-primary mb-6"> 
@@ -219,7 +219,7 @@ export default function HomePage() {
           style={{ backgroundImage: "url('https://address-data.vercel.app/assets/images/hero-bg-3.jpg')" }}
         >
           <div className="absolute inset-0 bg-primary/80"></div> 
-          <div className="container mx-auto px-4 text-center relative z-10">
+          <div className="max-w-7xl mx-auto px-4 text-center relative z-10">
             <h2 className="text-3xl md:text-4xl font-bold mb-6 text-white"> 
               Ready to Elevate Your Address Handling?
             </h2>
@@ -241,7 +241,7 @@ export default function HomePage() {
 
       {/* Footer */}
       <footer className="py-8 border-t bg-background">
-        <div className="container mx-auto px-4 text-center text-muted-foreground">
+        <div className="max-w-7xl mx-auto px-4 text-center text-muted-foreground">
           <p className="mb-2">
             Built for Nigeria, for developers. Powered by{' '}
             <a

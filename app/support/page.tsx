@@ -150,7 +150,7 @@ export default function SupportPage() {
         </div>
       </main>
       <footer className="py-8 border-t bg-background">
-        <div className="container mx-auto px-4 text-center text-muted-foreground">
+        <div className="max-w-7xl mx-auto px-4 text-center text-muted-foreground">
           <p className="mb-2">
             Built for Nigeria, for developers. Powered by{' '}
             <a
