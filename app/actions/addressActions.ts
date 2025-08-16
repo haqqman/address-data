@@ -65,7 +65,7 @@ async function fetchGoogleMapsAddress(addressParts: Omit<z.infer<typeof addressS
   if (street.toLowerCase().includes("test discrepancy")) {
      return `${street.replace(", Test Discrepancy Layout", "")}, ${areaDistrict}, ${city}, ${state} ${zipCode || ''}, ${country}`.replace(/,\s*,/g, ',').trim();
   }
-  return `${street}, ${areaDistrict}, ${city}, ${state}, ${zipCode || ''}, ${country}`.replace(/,\s*,/g, ',').trim();
+  return `${street}, ${areaDistrict || ''}, ${city}, ${state}, ${zipCode || ''}, ${country}`.replace(/,\s*,/g, ',').trim();
 }
 
 interface SubmitAddressParams {
