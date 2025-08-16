@@ -1,3 +1,4 @@
+
 "use server";
 
 import { db } from "@/lib/firebase/config";
@@ -25,7 +26,9 @@ const convertApiKeyTimestamps = (docData: any): APIKey => {
   if (data.lastUsedAt instanceof Timestamp) {
     data.lastUsedAt = data.lastUsedAt.toDate();
   }
-  if (data.lastUsedAt === undefined) data.lastUsedAt = null;
+  if (data.lastUsedAt === undefined) {
+    data.lastUsedAt = null;
+  }
 
   return data as APIKey;
 };
