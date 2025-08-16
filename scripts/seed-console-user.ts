@@ -30,7 +30,7 @@ const db = getFirestore(app);
 // 2. Find the user with the email "webmanager@haqqman.com".
 // 3. Copy the "User UID" for that user.
 // 4. Paste the UID here, replacing "REPLACE_WITH_ACTUAL_UID_FROM_FIREBASE_AUTH".
-const ctoUserUid = "REPLACE_WITH_ACTUAL_UID_FROM_FIREBASE_AUTH"; 
+const ctoUserUid = "DOUKechRV9NoSkNpgGL2jNCp6Sz2"; 
 // --- IMPORTANT ---
 
 
