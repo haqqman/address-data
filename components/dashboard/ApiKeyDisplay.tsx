@@ -57,7 +57,7 @@ export function ApiKeyDisplay() {
     try {
       const result = await createApiKey({ 
         userId: user.id, 
-        userName: user.name || undefined, 
+        userName: user.displayName || undefined, 
         userEmail: user.email || undefined,
         keyName: keyNameToCreate || undefined 
       });

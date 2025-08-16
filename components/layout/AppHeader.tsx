@@ -103,7 +103,7 @@ export function AppHeader() {
                 <DropdownSection showDivider>
                     <DropdownItem isReadOnly key="profile" className="h-14 gap-2 opacity-100 cursor-default">
                         <NextUIUser
-                            name={user.name || user.email?.split('@')[0]}
+                            name={user.displayName || user.email?.split('@')[0]}
                             description={user.email}
                             avatarProps={{
                                 icon: <UserCircle className="text-primary" />,

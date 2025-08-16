@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -98,7 +99,7 @@ export function ConsoleHeader() {
                  <DropdownSection showDivider>
                     <DropdownItem isReadOnly key="profile" className="h-14 gap-2 opacity-100 cursor-default">
                         <NextUIUser
-                            name={user.name || "Console User"}
+                            name={user.displayName || "Console User"}
                             description={user.email}
                              avatarProps={{
                                 icon: <UserCircle className="text-primary"/>, 

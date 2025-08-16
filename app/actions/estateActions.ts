@@ -49,7 +49,7 @@ const generateEstateCode = (state: string, lga: string): string => {
 
 interface SubmitEstateParams {
   formData: FormData;
-  user: Pick<User, 'id' | 'name' | 'email'>;
+  user: Pick<User, 'id' | 'displayName' | 'email'>;
 }
 
 export async function submitEstate({ formData, user }: SubmitEstateParams) {

@@ -87,7 +87,7 @@ export async function createConsoleUser(
       email,
       firstName,
       lastName,
-      name: `${firstName} ${lastName}`,
+      displayName: `${firstName} ${lastName}`,
       role,
       phoneNumber: phoneNumber || null,
       authProvider: 'password',
@@ -141,14 +141,14 @@ export async function updateConsoleUser(
     const dataToUpdate: Partial<User> = {
       firstName: firstName,
       lastName: lastName,
-      name: `${firstName} ${lastName}`,
+      displayName: `${firstName} ${lastName}`,
       phoneNumber: phoneNumber || null,
       role: role,
     };
     
     await updateDoc(userRef, dataToUpdate);
     
-    return { success: true, message: `Successfully updated details for ${dataToUpdate.name}.` };
+    return { success: true, message: `Successfully updated details for ${dataToUpdate.displayName}.` };
 
   } catch (error) {
     console.error("Error updating console user details:", error);

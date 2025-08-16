@@ -71,7 +71,7 @@ async function fetchGoogleMapsAddress(addressParts: z.infer<typeof addressSchema
 
 interface SubmitAddressParams {
   formData: FormData;
-  user: Pick<User, 'id' | 'name' | 'email'> | null;
+  user: Pick<User, 'id' | 'displayName' | 'email'> | null;
 }
 
 export async function submitAddress({ formData, user }: SubmitAddressParams) {
@@ -147,7 +147,7 @@ export async function submitAddress({ formData, user }: SubmitAddressParams) {
 
     const newSubmissionData: Omit<AddressSubmission, 'id' | 'submittedAt' | 'reviewedAt'> & { submittedAt: any, reviewedAt: any } = {
       userId: user.id,
-      userName: user.name || "User",
+      userName: user.displayName || "User",
       userEmail: user.email || "user@example.com",
       submittedAddress: submittedAddressDataForDB,
       adc: adc,

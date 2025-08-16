@@ -204,7 +204,7 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
 
     const result = await submitAddress({ 
         formData, 
-        user: { id: user.id, name: user.name, email: user.email } 
+        user: { id: user.id, displayName: user.displayName, email: user.email } 
     });
     setIsSubmitting(false);
 
@@ -375,5 +375,3 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
     </>
   );
 }
-
-    

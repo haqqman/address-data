@@ -154,7 +154,7 @@ export function EstateForm({ onSubmissionSuccess }: EstateFormProps) {
     
     const result = await submitEstate({ 
         formData, 
-        user: { id: user.id, name: user.name, email: user.email } 
+        user: { id: user.id, displayName: user.displayName, email: user.email } 
     });
     setIsSubmitting(false);
 

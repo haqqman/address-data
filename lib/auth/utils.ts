@@ -1,3 +1,4 @@
+
 import { auth, db } from '@/lib/firebase/config'; // Added db
 import type { User as FirebaseUser } from 'firebase/auth';
 import type { User } from '@/types';
@@ -33,7 +34,7 @@ export async function getCurrentUser(): Promise<User | null> {
         const appUser: User = {
           id: firebaseUser.uid,
           email: firebaseUser.email,
-          name: firebaseUser.displayName,
+          displayName: firebaseUser.displayName,
           role: role,
         };
         resolve(appUser);

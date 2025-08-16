@@ -223,11 +223,11 @@ export default function TeamManagementPage() {
                     <TableBody items={consoleUsers} emptyContent="No console users found.">
                         {(item) => (
                             <TableRow key={item.id}>
-                                <TableCell className="font-semibold">{item.name}</TableCell>
+                                <TableCell className="font-semibold">{item.displayName}</TableCell>
                                 <TableCell>{item.email}</TableCell>
                                 <TableCell>
                                     <Chip size="sm" variant="flat" color={item.role === 'cto' ? 'secondary' : item.role === 'administrator' ? 'primary' : 'default'}>
-                                        {item.role}
+                                        {item.role?.toUpperCase()}
                                     </Chip>
                                 </TableCell>
                                 <TableCell>
@@ -240,7 +240,7 @@ export default function TeamManagementPage() {
                                                 <Edit className="h-4 w-4" />
                                             </NextUIButton>
                                         </Tooltip>
-                                        <Tooltip content="Delete User">
+                                        <Tooltip content={user?.id === item.id ? "Cannot delete yourself" : "Delete User Profile"}>
                                             <NextUIButton isIconOnly size="sm" variant="light" color="danger" onPress={() => handleOpenDeleteModal(item)} isDisabled={user?.id === item.id}>
                                                 <Trash2 className="h-4 w-4" />
                                             </NextUIButton>
@@ -416,7 +416,7 @@ export default function TeamManagementPage() {
                 <>
                     <ModalHeader className="flex flex-col gap-1 text-primary">Delete Console User?</ModalHeader>
                     <ModalBody>
-                        <p>Are you sure you want to delete the user <span className="font-semibold">{deletingUser?.name}</span> ({deletingUser?.email})?</p>
+                        <p>Are you sure you want to delete the user <span className="font-semibold">{deletingUser?.displayName}</span> ({deletingUser?.email})?</p>
                         <p className="text-sm text-danger">This will remove their profile from the console database but will <span className="font-bold">NOT</span> delete their account from Firebase Authentication.</p>
                     </ModalBody>
                     <ModalFooter>

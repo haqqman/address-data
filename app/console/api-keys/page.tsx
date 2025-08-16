@@ -14,7 +14,7 @@ import { useAuth } from "@/contexts/auth-context";
 
 interface SimpleUser {
   id: string;
-  name?: string | null;
+  displayName?: string | null;
   email?: string | null;
 }
 
@@ -29,7 +29,7 @@ async function fetchPortalUsers(): Promise<SimpleUser[]> {
             const data = doc.data();
             users.push({
                 id: doc.id, 
-                name: data.name || data.displayName || "Unnamed User",
+                displayName: data.displayName || "Unnamed User",
                 email: data.email
             });
         });
@@ -97,7 +97,7 @@ export default function ConsoleApiKeysPage() {
     try {
       const result = await createApiKey({
         userId: targetUser.id,
-        userName: targetUser.name || undefined,
+        userName: targetUser.displayName || undefined,
         userEmail: targetUser.email || undefined,
         keyName: newKeyName || undefined,
       });
@@ -199,9 +199,9 @@ export default function ConsoleApiKeysPage() {
                   className="w-full"
                 >
                   {(userItem) => (
-                    <AutocompleteItem key={userItem.id} textValue={userItem.name || userItem.email || userItem.id}>
+                    <AutocompleteItem key={userItem.id} textValue={userItem.displayName || userItem.email || userItem.id}>
                       <div className="flex flex-col">
-                        <span className="text-primary">{userItem.name || "Unnamed User"}</span>
+                        <span className="text-primary">{userItem.displayName || "Unnamed User"}</span>
                         <span className="text-xs text-default-500">{userItem.email || userItem.id}</span>
                       </div>
                     </AutocompleteItem>
