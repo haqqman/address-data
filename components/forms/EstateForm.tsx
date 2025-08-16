@@ -206,7 +206,7 @@ export function EstateForm({ onSubmissionSuccess }: EstateFormProps) {
             <NextUIInput
               {...field}
               label="Estate Name"
-              placeholder="e.g., Banana Island Estate"
+              placeholder="Banana Island Estate"
               variant="bordered"
               isInvalid={!!errors.name}
               errorMessage={errors.name?.message}
@@ -238,8 +238,8 @@ export function EstateForm({ onSubmissionSuccess }: EstateFormProps) {
                 render={({ field }) => (
                     <NextUIInput
                     {...field}
-                    label="City / Town"
-                    placeholder={watchedStateName === 'FCT' ? 'Abuja' : 'e.g., Ikeja, Port Harcourt'}
+                    label="City"
+                    placeholder={watchedStateName === 'FCT' ? 'Abuja' : 'Ikeja, Port Harcourt'}
                     variant="bordered"
                     isInvalid={!!errors.lga}
                     errorMessage={errors.lga?.message}

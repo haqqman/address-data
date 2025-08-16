@@ -88,7 +88,7 @@ export default function HomePage() {
               <form onSubmit={(e) => { e.preventDefault(); alert('Search functionality coming soon!'); }} className="flex gap-2">
                 <NextUIInput
                   aria-label="Search by Address Code"
-                  placeholder="Enter an Address Data Code (e.g., ADC123XYZ)"
+                  placeholder="Enter an Address Data Code"
                   variant="bordered"
                   size="lg"
                   classNames={{
