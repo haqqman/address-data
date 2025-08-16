@@ -13,7 +13,7 @@ import { getStates, getLgasForState, getCitiesForLga } from "@/app/actions/geogr
 import type { GeographyState, GeographyLGA, GeographyCity } from "@/types";
 
 const addressSchema = z.object({
-  streetAddress: z.string().min(1, "Street address is required"),
+  street: z.string().min(1, "Street is required"),
   areaDistrict: z.string().min(1, "District is required"),
   city: z.string().min(1, "City is required"),
   lga: z.string().min(1, "LGA is required"),
@@ -47,7 +47,7 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
   const { control, handleSubmit, formState: { errors }, reset, setValue, watch, trigger } = useForm<AddressFormValues>({
     resolver: zodResolver(addressSchema),
     defaultValues: {
-      streetAddress: "",
+      street: "",
       areaDistrict: "",
       city: "",
       lga: "",
@@ -210,16 +210,16 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
         )}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <Controller
-            name="streetAddress"
+            name="street"
             control={control}
             render={({ field }) => (
               <NextUIInput
                 {...field}
-                label="Street Address"
+                label="Street"
                 placeholder="123 Main Street, XYZ Layout"
                 variant="bordered"
-                isInvalid={!!errors.streetAddress}
-                errorMessage={errors.streetAddress?.message}
+                isInvalid={!!errors.street}
+                errorMessage={errors.street?.message}
                 className="md:col-span-2"
                 fullWidth
               />

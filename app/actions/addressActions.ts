@@ -1,3 +1,4 @@
+
 "use server";
 
 import { z } from "zod";
@@ -19,7 +20,7 @@ import {
 } from "firebase/firestore";
 
 const addressSchema = z.object({
-  streetAddress: z.string().min(1, "Street address is required"),
+  street: z.string().min(1, "Street is required"),
   areaDistrict: z.string().min(1, "District is required"),
   city: z.string().min(1, "City is required"),
   lga: z.string().min(1, "LGA is required"),
@@ -44,11 +45,11 @@ const convertTimestamps = (docData: any): any => {
 
 // Simulate fetching Google Maps address - This remains a mock as it's external
 async function fetchGoogleMapsAddress(addressParts: z.infer<typeof addressSchema>): Promise<string> {
-  const { streetAddress, areaDistrict, city, state, country, zipCode } = addressParts;
-  if (streetAddress.toLowerCase().includes("test discrepancy")) {
-     return `${streetAddress.replace(", Test Discrepancy Layout", "")}, ${areaDistrict}, ${city}, ${state} ${zipCode || ''}, ${country}`.replace(/,\s*,/g, ',').trim();
+  const { street, areaDistrict, city, state, country, zipCode } = addressParts;
+  if (street.toLowerCase().includes("test discrepancy")) {
+     return `${street.replace(", Test Discrepancy Layout", "")}, ${areaDistrict}, ${city}, ${state} ${zipCode || ''}, ${country}`.replace(/,\s*,/g, ',').trim();
   }
-  return `${streetAddress}, ${areaDistrict}, ${city}, ${state}, ${zipCode || ''}, ${country}`.replace(/,\s*,/g, ',').trim();
+  return `${street}, ${areaDistrict}, ${city}, ${state}, ${zipCode || ''}, ${country}`.replace(/,\s*,/g, ',').trim();
 }
 
 interface SubmitAddressParams {
@@ -58,7 +59,7 @@ interface SubmitAddressParams {
 
 export async function submitAddress({ formData, user }: SubmitAddressParams) {
   const rawFormData = {
-    streetAddress: formData.get("streetAddress") as string,
+    street: formData.get("street") as string,
     areaDistrict: formData.get("areaDistrict") as string,
     city: formData.get("city") as string,
     lga: formData.get("lga") as string,
@@ -86,9 +87,19 @@ export async function submitAddress({ formData, user }: SubmitAddressParams) {
   }
 
   const submittedAddressData = validation.data;
+  const submittedAddressDataForDB = {
+    streetAddress: submittedAddressData.street, // Map back to streetAddress for DB
+    areaDistrict: submittedAddressData.areaDistrict,
+    city: submittedAddressData.city,
+    lga: submittedAddressData.lga,
+    state: submittedAddressData.state,
+    zipCode: submittedAddressData.zipCode,
+    country: submittedAddressData.country,
+  };
+
 
   try {
-    const userSubmittedString = `${submittedAddressData.streetAddress}, ${submittedAddressData.areaDistrict}, ${submittedAddressData.city}, ${submittedAddressData.lga}, ${submittedAddressData.state}, ${submittedAddressData.zipCode ? submittedAddressData.zipCode + ", " : ""}${submittedAddressData.country}`;
+    const userSubmittedString = `${submittedAddressData.street}, ${submittedAddressData.areaDistrict}, ${submittedAddressData.city}, ${submittedAddressData.lga}, ${submittedAddressData.state}, ${submittedAddressData.zipCode ? submittedAddressData.zipCode + ", " : ""}${submittedAddressData.country}`;
     
     const googleMapsAddress = await fetchGoogleMapsAddress(submittedAddressData);
 
@@ -111,7 +122,7 @@ export async function submitAddress({ formData, user }: SubmitAddressParams) {
       userId: user.id,
       userName: user.name || "User",
       userEmail: user.email || "user@example.com",
-      submittedAddress: submittedAddressData,
+      submittedAddress: submittedAddressDataForDB,
       googleMapsSuggestion: googleMapsAddress,
       status: status,
       aiFlaggedReason: aiFlaggedReason,
