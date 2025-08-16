@@ -26,14 +26,6 @@ const addressSchema = z.object({
   lga: z.string().min(1, "LGA is required"),
   state: z.string().min(1, "State is required"),
   zipCode: z.string().optional(),
-}).refine(data => {
-    if (data.city === 'Abuja') {
-        return !!data.areaDistrict && data.areaDistrict.length > 0;
-    }
-    return true;
-}, {
-    message: "District is required for Abuja city.",
-    path: ["areaDistrict"],
 });
 
 // Helper function to convert Firestore Timestamps to Date objects
@@ -59,9 +51,8 @@ const generateADC = (state: string, city: string): string => {
 
 
 // Simulate fetching Google Maps address - This remains a mock as it's external
-async function fetchGoogleMapsAddress(addressParts: Omit<z.infer<typeof addressSchema>, 'country'>): Promise<string> {
-  const { street, areaDistrict, city, state, zipCode } = addressParts;
-  const country = "Nigeria"; // Country is constant
+async function fetchGoogleMapsAddress(addressParts: Omit<z.infer<typeof addressSchema>, 'country'> & {country: string}): Promise<string> {
+  const { street, areaDistrict, city, state, zipCode, country } = addressParts;
   if (street.toLowerCase().includes("test discrepancy")) {
      return `${street.replace(", Test Discrepancy Layout", "")}, ${areaDistrict}, ${city}, ${state} ${zipCode || ''}, ${country}`.replace(/,\s*,/g, ',').trim();
   }
@@ -117,7 +108,7 @@ export async function submitAddress({ formData, user }: SubmitAddressParams) {
   try {
     const userSubmittedString = `${submittedAddressData.street}, ${submittedAddressData.areaDistrict || ''}, ${submittedAddressData.city}, ${submittedAddressData.lga}, ${submittedAddressData.state}, ${submittedAddressData.zipCode ? submittedAddressData.zipCode + ", " : ""}${country}`.replace(/,\s*,/g, ',').trim();
     
-    const googleMapsAddress = await fetchGoogleMapsAddress(submittedAddressData);
+    const googleMapsAddress = await fetchGoogleMapsAddress({...submittedAddressData, country});
 
     const aiResult = await flagAddressDiscrepancies({
       address: userSubmittedString,
