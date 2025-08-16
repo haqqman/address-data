@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
@@ -27,7 +28,7 @@ import {
 } from "@/app/actions/geographyActions";
 import type { GeographyState, GeographyLGA, GeographyCity } from "@/types";
 
-type GeoEntityType = "State" | "LGA" | "City";
+type GeoEntityType = "State" | "LGA" | "City" | "District";
 interface EditableGeoEntity {
   id: string;
   name: string;
@@ -72,6 +73,8 @@ export default function GeographyManagementPage() {
   const [deletingEntity, setDeletingEntity] = useState<EditableGeoEntity | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeGeoTab, setActiveGeoTab] = useState<string | number>("states");
+  
+  const isManagingFCTDistricts = states.find(s => s.id === selectedStateIdForCities)?.name === 'FCT' && lgas.find(l => l.id === selectedLgaIdForCities)?.name === 'Municipal Area Council';
 
 
   const fetchStates = useCallback(async () => {
@@ -124,16 +127,24 @@ export default function GeographyManagementPage() {
   }, [selectedStateIdForCities, selectedLgaIdForCities, fetchCities]);
 
   useEffect(() => {
-    if (entityTypeToAdd === "City" && selectedStateForNewCity) {
+    if ((entityTypeToAdd === "City" || entityTypeToAdd === "District") && selectedStateForNewCity) {
       const fetchLgasForDropdown = async () => {
         const fetchedLgas = await getLgasForState(selectedStateForNewCity);
         setLgasForCityDropdown(fetchedLgas);
+        // If FCT is selected, auto-select AMAC
+        const fctState = states.find(s => s.id === selectedStateForNewCity && s.name === 'FCT');
+        if (fctState) {
+            const amacLga = fetchedLgas.find(l => l.name === 'Municipal Area Council');
+            if (amacLga) {
+                setSelectedLgaForNewCity(amacLga.id);
+            }
+        }
       };
       fetchLgasForDropdown();
     } else {
       setLgasForCityDropdown([]);
     }
-  }, [entityTypeToAdd, selectedStateForNewCity]);
+  }, [entityTypeToAdd, selectedStateForNewCity, states]);
 
 
   const handleAddEntity = async () => {
@@ -159,9 +170,9 @@ export default function GeographyManagementPage() {
         setNewLgaName("");
         setSelectedStateForNewLga("");
         if(selectedStateIdForLgas === selectedStateForNewLga) fetchLgas(selectedStateForNewLga);
-      } else if (entityTypeToAdd === "City") {
+      } else if (entityTypeToAdd === "City" || entityTypeToAdd === "District") {
          if (!newCityName.trim() || !selectedStateForNewCity || !selectedLgaForNewCity) {
-          alert("City name, parent state, and parent LGA are required.");
+          alert("Name, parent state, and parent LGA are required.");
           setIsSubmitting(false);
           return;
         }
@@ -184,7 +195,7 @@ export default function GeographyManagementPage() {
     let parentId, grandParentId;
     if (type === "LGA") {
         parentId = (entity as GeographyLGA).stateId;
-    } else if (type === "City") {
+    } else if (type === "City" || type === "District") {
         grandParentId = (entity as GeographyCity).stateId;
         parentId = (entity as GeographyCity).lgaId;
     }
@@ -212,7 +223,7 @@ export default function GeographyManagementPage() {
       } else if (editingEntity.type === "LGA" && editingEntity.parentId) {
         await updateLga(editingEntity.parentId, editingEntity.id, { name: editedName });
         if(selectedStateIdForLgas === editingEntity.parentId) fetchLgas(editingEntity.parentId);
-      } else if (editingEntity.type === "City" && editingEntity.grandParentId && editingEntity.parentId) {
+      } else if ((editingEntity.type === "City" || editingEntity.type === "District") && editingEntity.grandParentId && editingEntity.parentId) {
         await updateCity(editingEntity.grandParentId, editingEntity.parentId, editingEntity.id, { name: editedName });
         if(selectedStateIdForCities === editingEntity.grandParentId && selectedLgaIdForCities === editingEntity.parentId) fetchCities(editingEntity.grandParentId, editingEntity.parentId);
       }
@@ -230,7 +241,7 @@ export default function GeographyManagementPage() {
     let parentId, grandParentId;
     if (type === "LGA") {
         parentId = (entity as GeographyLGA).stateId;
-    } else if (type === "City") {
+    } else if (type === "City" || type === "District") {
         grandParentId = (entity as GeographyCity).stateId;
         parentId = (entity as GeographyCity).lgaId;
     }
@@ -257,14 +268,14 @@ export default function GeographyManagementPage() {
         await deleteLga(deletingEntity.parentId, deletingEntity.id);
         if(selectedStateIdForLgas === deletingEntity.parentId) fetchLgas(deletingEntity.parentId);
         if (selectedLgaIdForCities === deletingEntity.id) setSelectedLgaIdForCities(null);
-      } else if (deletingEntity.type === "City" && deletingEntity.grandParentId && deletingEntity.parentId) {
+      } else if ((deletingEntity.type === "City" || deletingEntity.type === "District") && deletingEntity.grandParentId && deletingEntity.parentId) {
         await deleteCity(deletingEntity.grandParentId, deletingEntity.parentId, deletingEntity.id);
          if(selectedStateIdForCities === deletingEntity.grandParentId && selectedLgaIdForCities === deletingEntity.parentId) fetchCities(deletingEntity.grandParentId, deletingEntity.parentId);
       }
       onDeleteModalClose();
     } catch (error) {
       console.error("Error deleting entity:", error);
-      alert(`Failed to delete ${deletingEntity.type}. It might have child elements (LGAs or Cities) that need to be removed first.`);
+      alert(`Failed to delete ${deletingEntity.type}. It might have child elements that need to be removed first.`);
     } finally {
       setIsSubmitting(false);
       setDeletingEntity(null);
@@ -279,7 +290,7 @@ export default function GeographyManagementPage() {
         <div className="flex flex-col space-y-1">
           <h1 className="text-3xl font-bold tracking-tight text-primary">Geography Management</h1>
           <p className="text-foreground-500">
-            Manage States, Local Government Areas (LGAs), and Cities.
+            Manage States, Local Government Areas (LGAs), and Cities/Districts.
           </p>
         </div>
         <NextUIButton 
@@ -397,7 +408,7 @@ export default function GeographyManagementPage() {
           title={
             <span className="flex items-center">
               <MapPin className={`mr-2 h-5 w-5 ${activeGeoTab === 'cities' ? 'text-warning' : 'text-secondary'}`} />
-              Cities
+              Cities & Districts
             </span>
           }
         >
@@ -405,8 +416,8 @@ export default function GeographyManagementPage() {
             <NextUICardHeader className="px-6 pt-6 pb-2">
               <div className="flex justify-between items-start w-full mb-4"> 
                 <div className="flex flex-col space-y-0.5">
-                  <h2 className="text-xl font-semibold text-primary">Manage Cities</h2>
-                  <p className="text-sm text-foreground-500">Select a state and LGA to manage cities.</p>
+                  <h2 className="text-xl font-semibold text-primary">Manage Cities & Districts</h2>
+                  <p className="text-sm text-foreground-500">Select a state and LGA to manage its cities or districts.</p>
                 </div>
                 <div className="flex gap-4">
                   <NextUISelect
@@ -435,9 +446,10 @@ export default function GeographyManagementPage() {
                     selectedKeys={selectedLgaIdForCities ? [selectedLgaIdForCities] : []}
                     onSelectionChange={(keys) => setSelectedLgaIdForCities(Array.from(keys)[0] as string)}
                     className="max-w-xs"
-                    isDisabled={!selectedStateIdForCities || lgas.length === 0}
+                    isDisabled={!selectedStateIdForCities || isLoadingLgas}
                     variant="bordered"
                     color="secondary"
+                    isLoading={isLoadingLgas}
                   >
                     {lgas
                       .filter(lga => lga.stateId === selectedStateIdForCities) 
@@ -452,7 +464,7 @@ export default function GeographyManagementPage() {
             </NextUICardHeader>
             <NextUICardBody className="p-2 md:p-4">
               {isLoadingCities ? renderLoading() : !selectedLgaIdForCities ? <p className="text-foreground-500">Please select a state and LGA.</p> :
-                cities.length === 0 && selectedLgaIdForCities ? <p className="text-foreground-500">No cities found for the selected LGA.</p> :
+                cities.length === 0 && selectedLgaIdForCities ? <p className="text-foreground-500">No {isManagingFCTDistricts ? "districts" : "cities"} found for the selected LGA.</p> :
                 <ul className="space-y-2">
                   {cities.map(city => (
                     <li key={city.id} className="p-3 border rounded-lg flex justify-between items-center hover:bg-default-100">
@@ -461,8 +473,8 @@ export default function GeographyManagementPage() {
                            <p className="text-xs text-foreground-400">ID: {city.id}</p>
                       </div>
                       <div className="space-x-1">
-                          <NextUIButton isIconOnly size="sm" variant="light" color="secondary" aria-label="Edit City" onPress={() => openEditModal(city, "City")}><Edit3 className="h-4 w-4"/></NextUIButton>
-                          <NextUIButton isIconOnly size="sm" variant="light" color="danger" aria-label="Delete City" onPress={() => openDeleteModal(city, "City")}><Trash2 className="h-4 w-4"/></NextUIButton>
+                          <NextUIButton isIconOnly size="sm" variant="light" color="secondary" aria-label="Edit" onPress={() => openEditModal(city, isManagingFCTDistricts ? "District" : "City")}><Edit3 className="h-4 w-4"/></NextUIButton>
+                          <NextUIButton isIconOnly size="sm" variant="light" color="danger" aria-label="Delete" onPress={() => openDeleteModal(city, isManagingFCTDistricts ? "District" : "City")}><Trash2 className="h-4 w-4"/></NextUIButton>
                       </div>
                     </li>
                   ))}
@@ -489,6 +501,7 @@ export default function GeographyManagementPage() {
                   <NextUISelectItem key="State" value="State">State</NextUISelectItem>
                   <NextUISelectItem key="LGA" value="LGA">LGA</NextUISelectItem>
                   <NextUISelectItem key="City" value="City">City</NextUISelectItem>
+                  <NextUISelectItem key="District" value="District">Abuja District</NextUISelectItem>
                 </NextUISelect>
 
                 {entityTypeToAdd === "State" && (
@@ -512,7 +525,7 @@ export default function GeographyManagementPage() {
                     <NextUIInput label="LGA Name" placeholder="Enter LGA name" value={newLgaName} onValueChange={setNewLgaName} variant="bordered" />
                   </>
                 )}
-                {entityTypeToAdd === "City" && (
+                {(entityTypeToAdd === "City" || entityTypeToAdd === "District") && (
                   <>
                      <NextUISelect
                         label="Parent State"
@@ -533,13 +546,18 @@ export default function GeographyManagementPage() {
                         placeholder="Select an LGA"
                         selectedKeys={selectedLgaForNewCity ? [selectedLgaForNewCity] : []}
                         onSelectionChange={(keys) => setSelectedLgaForNewCity(Array.from(keys)[0] as string)}
-                        isDisabled={!selectedStateForNewCity || lgasForCityDropdown.length === 0}
+                        isDisabled={!selectedStateForNewCity || lgasForCityDropdown.length === 0 || states.find(s => s.id === selectedStateForNewCity)?.name === 'FCT'}
                         variant="bordered"
                         color="secondary"
                     >
                         {lgasForCityDropdown.map(lga => <NextUISelectItem key={lga.id} value={lga.id} textValue={lga.name}>{lga.name}</NextUISelectItem>)}
                     </NextUISelect>
-                    <NextUIInput label="City Name" placeholder="Enter city name" value={newCityName} onValueChange={setNewCityName} variant="bordered" />
+                    <NextUIInput 
+                        label={entityTypeToAdd === 'District' ? "District Name" : "City Name"} 
+                        placeholder={entityTypeToAdd === 'District' ? "e.g. Maitama" : "Enter city name"}
+                        value={newCityName} 
+                        onValueChange={setNewCityName} 
+                        variant="bordered" />
                   </>
                 )}
               </ModalBody>
@@ -609,4 +627,3 @@ export default function GeographyManagementPage() {
     </div>
   );
 }
-
