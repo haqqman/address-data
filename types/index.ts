@@ -97,3 +97,20 @@ export interface GeographyCity extends Omit<FirestoreGeographyCityData, 'stateId
   stateId: string; 
   lgaId: string;   
 }
+
+export interface Estate {
+  id: string; // The document ID in Firestore
+  estateCode: string; // Format: [StateCode]-[LGACode]-[EstateNumber]
+  name: string;
+  location: {
+    state: string;
+    lga: string;
+    area?: string; // Optional broader area
+  };
+  googleMapLink?: string; // Optional
+  source: string; // "Address Data", "Platform", or user-specified
+  createdBy: string; // User ID of the creator
+  lastUpdatedBy: string; // User ID of the last person to update
+  createdAt: Date;
+  updatedAt: Date;
+}

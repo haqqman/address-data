@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Button as NextUIButton, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, DropdownSection, User as NextUIUser } from "@nextui-org/react";
-import { LayoutDashboard, KeyRound, LogOut, UserCircle, PlusCircle } from "lucide-react";
+import { LayoutDashboard, KeyRound, LogOut, UserCircle, PlusCircle, Building } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/auth-context"; 
@@ -12,6 +12,7 @@ const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: <LayoutDashboard className="mr-2 h-4 w-4" /> },
   { href: "/submit-address", label: "Submit Address", icon: <PlusCircle className="mr-2 h-4 w-4" /> },
   { href: "/api-keys", label: "API Keys", icon: <KeyRound className="mr-2 h-4 w-4" /> },
+  { href: "/estates", label: "Estates", icon: <Building className="mr-2 h-4 w-4" /> },
 ];
 
 export function AppHeader() {
