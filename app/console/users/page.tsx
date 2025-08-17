@@ -4,7 +4,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { UserSubmissionsTable } from "@/components/console/UserSubmissionsTable";
 import { getAddressSubmissions } from "@/app/actions/addressActions"; 
-import type { AddressSubmission } from "@/types";
+import type { AddressSubmission, User } from "@/types";
 import { Skeleton as NextUISkeleton, Card as NextUICard, CardHeader as NextUICardHeader, CardBody as NextUICardBody } from "@nextui-org/react";
 import { AlertTriangle } from "lucide-react"; 
 import { useAuth } from "@/contexts/auth-context";
@@ -17,7 +17,8 @@ export default function ConsoleUserSubmissionsPage() {
 
 
   const fetchAllSubmissions = useCallback(async () => {
-    if (!user || user.role !== 'admin') {
+    const consoleRoles: Array<User['role']> = ['cto', 'administrator', 'manager'];
+    if (!user || !consoleRoles.includes(user.role)) {
       setIsLoading(false);
        if (!authLoading) {
         setAllSubmissions([]);

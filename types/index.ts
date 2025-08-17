@@ -6,8 +6,8 @@ export interface User {
   lastName?: string | null;
   displayName?: string | null; 
   role: "user" | "cto" | "administrator" | "manager";
-  createdAt?: Date;
-  lastLogin?: Date;
+  createdAt: Date;
+  lastLogin: Date;
   authProvider?: string;
   phoneNumber?: string | null;
 }
