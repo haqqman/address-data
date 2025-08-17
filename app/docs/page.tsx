@@ -2,7 +2,7 @@
 "use client";
 
 import { PublicHeader } from "@/components/layout/PublicHeader";
-import { Card as NextUICard, CardHeader as NextUICardHeader, CardBody as NextUICardBody, Snippet, Link as NextUILink, Divider as NextUIDivider } from "@nextui-org/react";
+import { Card as NextUICard, CardHeader as NextUICardHeader, CardBody as NextUICardBody, Snippet, Link as NextUILink, Divider as NextUIDivider, Code } from "@nextui-org/react";
 import { BookOpen, Code2, Zap, ShieldCheck, MapPinned, HelpCircle, Layers, AlertTriangle, Tag, Building, Map as MapIcon } from "lucide-react";
 import Image from "next/image";
 
@@ -145,8 +145,8 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
                   <ShieldCheck className="mr-2 h-6 w-6 text-secondary" /> Authentication
                 </h2>
                 <p>
-                  To authenticate your API requests, include your Public Key in the <code className="bg-muted px-1.5 py-0.5 rounded-md text-sm font-mono">X-Public-Key</code> header
-                  and your Private Key in the <code className="bg-muted px-1.5 py-0.5 rounded-md text-sm font-mono">X-Private-Key</code> header.
+                  To authenticate your API requests, include your Public Key in the <Code>X-Public-Key</Code> header
+                  and your Private Key in the <Code>X-Private-Key</Code> header.
                   You can generate your API keys from the developer portal.
                 </p>
                 <p className="text-base mt-4 mb-1"><strong>Authentication Example:</strong></p>
@@ -155,7 +155,7 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
                   className="text-sm max-w-full" 
                   symbol="" 
                   variant="bordered"
-                  tooltipProps={{color:"secondary"}} // Use secondary for tooltip
+                  tooltipProps={{color:"secondary"}} 
                   copyButtonProps={{variant:"light"}}
                 >
                   {authExample}
@@ -170,17 +170,16 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
                 </h2>
                 <p>
                   Get started with <strong className="text-secondary">500 free address lookups per day</strong>. This daily limit applies to endpoints like 
-                  <code className="bg-muted px-1.5 py-0.5 rounded-md text-sm font-mono">/autocomplete</code> and 
-                  <code className="bg-muted px-1.5 py-0.5 rounded-md text-sm font-mono">/lookup-by-code</code>.
+                  <Code>/autocomplete</Code> and <Code>/lookup-by-code</Code>.
                 </p>
                 <p className="mt-2">
                   Our standard pricing plan is designed to be simple and scalable:
                 </p>
                 <ul className="list-disc list-inside mt-2 space-y-1">
                     <li><strong className="text-secondary">₦20 per verified lookup</strong> after your free daily limit.</li>
-                    <li>Access to geographical data endpoints (<code className="bg-muted px-1.5 py-0.5 rounded-md text-sm font-mono">/states</code>, etc.) is generally not counted towards lookup limits but may be subject to fair use policies.</li>
+                    <li>Access to geographical data endpoints (<Code>/states</Code>, etc.) is generally not counted towards lookup limits but may be subject to fair use policies.</li>
                 </ul>
-                <p className="mt-3 p-3 bg-warning/10 text-warning-foreground rounded-lg text-base"> {/* Use warning color from theme */}
+                <p className="mt-3 p-3 bg-warning/10 text-warning-foreground rounded-lg text-base">
                   <strong>Note:</strong> Detailed standard pricing plans and billing information will be available soon.
                 </p>
               </section>
@@ -196,7 +195,7 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
                   className="mt-2 text-base max-w-full" 
                   symbol="" 
                   variant="flat"
-                  color="secondary" // Use secondary for snippet bg
+                  color="secondary"
                   copyButtonProps={{variant:"light"}}
                 >
                   {API_BASE_URL}
@@ -214,14 +213,14 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
                   {/* Autocomplete Endpoint */}
                   <div>
                     <h3 className="text-xl font-medium mb-1 text-primary">
-                      <code className="bg-secondary/10 text-secondary px-2 py-1 rounded-md text-lg font-mono">GET /autocomplete</code>
+                      <Code color="secondary" className="text-lg">GET /autocomplete</Code>
                     </h3>
                     <p className="text-muted-foreground text-base mb-2">
                       Suggests verified Nigerian addresses based on partial user input. Ideal for checkout forms and registrations.
                     </p>
                     <p className="text-base mb-1"><strong>Query Parameters:</strong></p>
                     <ul className="list-disc list-inside text-base ml-4 mb-2">
-                      <li><code className="bg-muted px-1.5 py-0.5 rounded-md text-sm font-mono">query</code> (string, required): The partial address string to search for.</li>
+                      <li><Code>query</Code> (string, required): The partial address string to search for.</li>
                     </ul>
                     <p className="text-base mb-1"><strong>Example Request:</strong></p>
                     <Snippet lang="bash" className="text-sm max-w-full" variant="bordered" tooltipProps={{color:"secondary"}}>
@@ -236,14 +235,14 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
                   {/* Lookup by Code Endpoint */}
                   <div>
                     <h3 className="text-xl font-medium mb-1 text-primary">
-                      <code className="bg-secondary/10 text-secondary px-2 py-1 rounded-md text-lg font-mono">GET /lookup-by-code/{'{adc}'}</code>
+                      <Code color="secondary" className="text-lg">GET /lookup-by-code/{'{adc}'}</Code>
                     </h3>
                     <p className="text-muted-foreground text-base mb-2">
                       Fetches a full, verified address using its unique Address Data Code (ADC).
                     </p>
                      <p className="text-base mb-1"><strong>Path Parameters:</strong></p>
                     <ul className="list-disc list-inside text-base ml-4 mb-2">
-                      <li><code className="bg-muted px-1.5 py-0.5 rounded-md text-sm font-mono">adc</code> (string, required): The Address Data Code.</li>
+                      <li><Code>adc</Code> (string, required): The Address Data Code.</li>
                     </ul>
                     <p className="text-base mb-1"><strong>Example Request:</strong></p>
                     <Snippet lang="bash" className="text-sm max-w-full" variant="bordered" tooltipProps={{color:"secondary"}}>
@@ -268,7 +267,7 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
                   {/* List Estates Endpoint */}
                   <div>
                     <h3 className="text-xl font-medium mb-1 text-primary">
-                      <code className="bg-secondary/10 text-secondary px-2 py-1 rounded-md text-lg font-mono">GET /estates</code>
+                      <Code color="secondary" className="text-lg">GET /estates</Code>
                     </h3>
                     <p className="text-muted-foreground text-base mb-2">
                       Retrieves a list of all approved real estate properties.
@@ -286,14 +285,14 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
                   {/* Lookup Estate by Code Endpoint */}
                   <div>
                     <h3 className="text-xl font-medium mb-1 text-primary">
-                      <code className="bg-secondary/10 text-secondary px-2 py-1 rounded-md text-lg font-mono">GET /estates/{'{estateCode}'}</code>
+                      <Code color="secondary" className="text-lg">GET /estates/{'{estateCode}'}</Code>
                     </h3>
                     <p className="text-muted-foreground text-base mb-2">
                       Fetches a full, verified estate using its unique Estate Code.
                     </p>
                      <p className="text-base mb-1"><strong>Path Parameters:</strong></p>
                     <ul className="list-disc list-inside text-base ml-4 mb-2">
-                      <li><code className="bg-muted px-1.5 py-0.5 rounded-md text-sm font-mono">estateCode</code> (string, required): The unique Estate Code.</li>
+                        <li><Code>estateCode</Code> (string, required): The unique Estate Code.</li>
                     </ul>
                     <p className="text-base mb-1"><strong>Example Request:</strong></p>
                     <Snippet lang="bash" className="text-sm max-w-full" variant="bordered" tooltipProps={{color:"secondary"}}>
@@ -317,7 +316,7 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
                   {/* Get States Endpoint */}
                   <div>
                     <h3 className="text-xl font-medium mb-1 text-primary">
-                      <code className="bg-secondary/10 text-secondary px-2 py-1 rounded-md text-lg font-mono">GET /states</code>
+                      <Code color="secondary" className="text-lg">GET /states</Code>
                     </h3>
                     <p className="text-muted-foreground text-base mb-2">
                       Lists all Nigerian states.
@@ -335,14 +334,14 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
                   {/* Get LGAs by State Endpoint */}
                   <div>
                     <h3 className="text-xl font-medium mb-1 text-primary">
-                      <code className="bg-secondary/10 text-secondary px-2 py-1 rounded-md text-lg font-mono">GET /states/{'{stateName}'}/lgas</code>
+                      <Code color="secondary" className="text-lg">GET /states/{'{stateName}'}/lgas</Code>
                     </h3>
                     <p className="text-muted-foreground text-base mb-2">
                       Lists all Local Government Areas (LGAs) for a specified Nigerian state.
                     </p>
                     <p className="text-base mb-1"><strong>Path Parameters:</strong></p>
                     <ul className="list-disc list-inside text-base ml-4 mb-2">
-                        <li><code className="bg-muted px-1.5 py-0.5 rounded-md text-sm font-mono">stateName</code> (string, required): The name of the state (e.g., "Lagos"). Case-insensitive.</li>
+                        <li><Code>stateName</Code> (string, required): The name of the state (e.g., "Lagos"). Case-insensitive.</li>
                     </ul>
                     <p className="text-base mb-1"><strong>Example Request:</strong></p>
                     <Snippet lang="bash" className="text-sm max-w-full" variant="bordered" tooltipProps={{color:"secondary"}}>
@@ -357,15 +356,15 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
                   {/* Get Cities by LGA Endpoint */}
                   <div>
                     <h3 className="text-xl font-medium mb-1 text-primary">
-                      <code className="bg-secondary/10 text-secondary px-2 py-1 rounded-md text-lg font-mono">GET /states/{'{stateName}'}/lga/{'{lgaName}'}/cities</code>
+                      <Code color="secondary" className="text-lg">GET /states/{'{stateName}'}/lga/{'{lgaName}'}/cities</Code>
                     </h3>
                     <p className="text-muted-foreground text-base mb-2">
                       Lists prominent cities/towns within a specified LGA of a state. (Note: City data granularity may vary).
                     </p>
                      <p className="text-base mb-1"><strong>Path Parameters:</strong></p>
                     <ul className="list-disc list-inside text-base ml-4 mb-2">
-                        <li><code className="bg-muted px-1.5 py-0.5 rounded-md text-sm font-mono">stateName</code> (string, required): The name of the state.</li>
-                        <li><code className="bg-muted px-1.5 py-0.5 rounded-md text-sm font-mono">lgaName</code> (string, required): The name of the LGA.</li>
+                        <li><Code>stateName</Code> (string, required): The name of the state.</li>
+                        <li><Code>lgaName</Code> (string, required): The name of the LGA.</li>
                     </ul>
                     <p className="text-base mb-1"><strong>Example Request:</strong></p>
                     <Snippet lang="bash" className="text-sm max-w-full" variant="bordered" tooltipProps={{color:"secondary"}}>
@@ -410,16 +409,16 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
                   The API uses standard HTTP status codes to indicate the success or failure of a request.
                 </p>
                 <ul className="list-disc list-inside mt-2 space-y-1 text-base">
-                  <li><code className="bg-muted px-1.5 py-0.5 rounded-md text-sm font-mono">200 OK</code>: Request was successful.</li>
-                  <li><code className="bg-muted px-1.5 py-0.5 rounded-md text-sm font-mono">400 Bad Request</code>: The request was malformed (e.g., missing required parameters). The response body may contain more details.</li>
-                  <li><code className="bg-muted px-1.5 py-0.5 rounded-md text-sm font-mono">401 Unauthorized</code>: API key is missing or invalid.</li>
-                  <li><code className="bg-muted px-1.5 py-0.5 rounded-md text-sm font-mono">403 Forbidden</code>: API key is valid but does not have permission for the requested resource.</li>
-                  <li><code className="bg-muted px-1.5 py-0.5 rounded-md text-sm font-mono">404 Not Found</code>: The requested resource does not exist.</li>
-                  <li><code className="bg-muted px-1.5 py-0.5 rounded-md text-sm font-mono">429 Too Many Requests</code>: You have exceeded your rate limit.</li>
-                  <li><code className="bg-muted px-1.5 py-0.5 rounded-md text-sm font-mono">500 Internal Server Error</code>: Something went wrong on our end. Please try again later.</li>
+                  <li><Code>200 OK</Code>: Request was successful.</li>
+                  <li><Code>400 Bad Request</Code>: The request was malformed (e.g., missing required parameters). The response body may contain more details.</li>
+                  <li><Code>401 Unauthorized</Code>: API key is missing or invalid.</li>
+                  <li><Code>403 Forbidden</Code>: API key is valid but does not have permission for the requested resource.</li>
+                  <li><Code>404 Not Found</Code>: The requested resource does not exist.</li>
+                  <li><Code>429 Too Many Requests</Code>: You have exceeded your rate limit.</li>
+                  <li><Code>500 Internal Server Error</Code>: Something went wrong on our end. Please try again later.</li>
                 </ul>
                  <p className="mt-2 text-base">
-                  Error responses will typically include a JSON body with a <code className="bg-muted px-1.5 py-0.5 rounded-md text-sm font-mono">message</code> field explaining the error.
+                  Error responses will typically include a JSON body with a <Code>message</Code> field explaining the error.
                 </p>
               </section>
               
@@ -461,4 +460,5 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
       </footer>
     </div>
   );
-}
+
+    
