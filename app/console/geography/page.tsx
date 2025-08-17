@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
@@ -369,7 +370,7 @@ export default function GeographyManagementPage() {
                   placeholder="Choose a state"
                   selectedKeys={selectedStateIdForLgas ? [selectedStateIdForLgas] : []}
                   onSelectionChange={(keys) => setSelectedStateIdForLgas(Array.from(keys)[0] as string)}
-                  className="max-w-xs"
+                  className="min-w-64"
                   variant="bordered"
                   color="secondary"
                 >
@@ -430,7 +431,7 @@ export default function GeographyManagementPage() {
                       setSelectedLgaIdForCities(null); 
                       fetchLgas(stateId); 
                     }}
-                    className="max-w-xs"
+                    className="min-w-64"
                     variant="bordered"
                     color="secondary"
                   >
@@ -445,7 +446,7 @@ export default function GeographyManagementPage() {
                     placeholder="Choose an LGA"
                     selectedKeys={selectedLgaIdForCities ? [selectedLgaIdForCities] : []}
                     onSelectionChange={(keys) => setSelectedLgaIdForCities(Array.from(keys)[0] as string)}
-                    className="max-w-xs"
+                    className="min-w-64"
                     isDisabled={!selectedStateIdForCities || isLoadingLgas}
                     variant="bordered"
                     color="secondary"
