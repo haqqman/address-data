@@ -1108,7 +1108,8 @@ const seedDatabase = async () => {
                 batch.set(lgaRef, lgaDocData);
                 lgaCount++;
                 
-                if (lgaData.cities && lgaData.cities.length > 0) {
+                // Handle LGAs with 'cities', 'towns', or 'city' (for AMAC in FCT)
+                if ('cities' in lgaData && Array.isArray(lgaData.cities) && lgaData.cities.length > 0) {
                     for (const cityName of lgaData.cities) {
                         const cityId = cityName.toLowerCase().replace(/\s+/g, "-").replace(/[^\w-]+/g, '');
                         const cityRef = doc(lgaRef, CITIES_SUBCOLLECTION, cityId);
@@ -1120,6 +1121,46 @@ const seedDatabase = async () => {
                         };
                         batch.set(cityRef, cityDocData);
                         cityCount++;
+                    }
+                } else if ('towns' in lgaData && Array.isArray(lgaData.towns) && lgaData.towns.length > 0) {
+                    for (const townName of lgaData.towns) {
+                        const townId = townName.toLowerCase().replace(/\s+/g, "-").replace(/[^\w-]+/g, '');
+                        const townRef = doc(lgaRef, CITIES_SUBCOLLECTION, townId);
+
+                        const townDocData = {
+                            name: townName,
+                            stateId: stateId,
+                            lgaId: lgaId
+                        };
+                        batch.set(townRef, townDocData);
+                        cityCount++;
+                    }
+                } else if ('city' in lgaData && lgaData.city && Array.isArray(lgaData.city.districts)) {
+                    // For AMAC in FCT, add the city and its districts
+                    const cityName = lgaData.city.name;
+                    const cityId = cityName.toLowerCase().replace(/\s+/g, "-").replace(/[^\w-]+/g, '');
+                    const cityRef = doc(lgaRef, CITIES_SUBCOLLECTION, cityId);
+
+                    const cityDocData = {
+                        name: cityName,
+                        stateId: stateId,
+                        lgaId: lgaId
+                    };
+                    batch.set(cityRef, cityDocData);
+                    cityCount++;
+
+                    for (const districtName of lgaData.city.districts) {
+                        const districtId = districtName.toLowerCase().replace(/\s+/g, "-").replace(/[^\w-]+/g, '');
+                        const districtRef = doc(cityRef, "districts", districtId);
+
+                        const districtDocData = {
+                            name: districtName,
+                            stateId: stateId,
+                            lgaId: lgaId,
+                            cityId: cityId
+                        };
+                        batch.set(districtRef, districtDocData);
+                        // Optionally increment cityCount or another counter if you want to track districts
                     }
                 }
             }

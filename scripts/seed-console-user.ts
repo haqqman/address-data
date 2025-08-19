@@ -28,14 +28,14 @@ const db = getFirestore(app);
 
 // --- IMPORTANT ---
 // This UID should correspond to the user "webmanager@haqqman.com" created in Firebase Authentication
-const ctoUserUid = "DOUKechRV9NoSkNpgGL2jNCp6Sz2"; 
+const ctoUserUid: string = "DOUKechRV9NoSkNpgGL2jNCp6Sz2"; 
 // --- IMPORTANT ---
 
 const ctoUserData = {
   email: "webmanager@haqqman.com",
   firstName: "Abdulhaqq",
   lastName: "Sule",
-  name: "Abdulhaqq Sule",
+  displaName: "Abdulhaqq Sule",
   role: "cto",
   phoneNumber: "+2347011568196",
   authProvider: "password", 
