@@ -460,5 +460,4 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
       </footer>
     </div>
   );
-
-    
+}
