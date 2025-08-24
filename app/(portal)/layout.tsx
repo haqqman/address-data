@@ -1,3 +1,4 @@
+
 "use client";
 
 import type { ReactNode } from 'react';
@@ -26,21 +27,11 @@ export default function PortalLayout({
     }
   }, [user, loading, router]);
 
-  if (loading) {
+  if (loading || !user) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <Spinner label="Loading Portal..." color="primary" labelColor="warning" />
+        <Spinner label={loading ? "Loading Portal..." : "Initializing Session..."} color="primary" labelColor="warning" />
       </div>
-    );
-  }
-
-  if (!user) {
-    // This will be brief as the useEffect above will redirect.
-    // Or, you can show a message or a simpler layout here if preferred.
-    return (
-        <div className="flex items-center justify-center min-h-screen">
-            <p>Redirecting to login...</p>
-        </div>
     );
   }
 
