@@ -78,6 +78,7 @@ export function ConsoleLogInForm() {
             errorMessage={errors.email?.message}
             fullWidth
             onValueChange={(value) => {
+              if(errorMessage) setErrorMessage(null); // Clear server error on new input
               const transformedValue = value.toLowerCase().replace(/\s+/g, '');
               field.onChange(transformedValue); 
             }}
@@ -97,6 +98,10 @@ export function ConsoleLogInForm() {
             isInvalid={!!errors.password || !!errorMessage} 
             errorMessage={errors.password?.message}
             fullWidth
+             onValueChange={(value) => {
+              if(errorMessage) setErrorMessage(null); // Clear server error on new input
+              field.onChange(value);
+            }}
           />
         )}
       />

@@ -15,7 +15,7 @@ import {
 import { auth, db } from '@/lib/firebase/config';
 import type { User } from '@/types';
 import { useRouter } from 'next/navigation';
-import { doc, getDoc, setDoc, serverTimestamp, Timestamp } from 'firebase/firestore';
+import { doc, getDoc, setDoc, serverTimestamp, Timestamp, updateDoc } from 'firebase/firestore';
 
 interface AuthContextType {
   user: User | null;
@@ -35,104 +35,68 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const determineUserRole = (email: string | null | undefined): User['role'] => {
     if (!email) return 'user';
-    // Specific emails for CTO and manager roles
     if (email === "webmanager@haqqman.com") return 'cto';
-    if (email === "joshua+sandbox@haqqman.com") return 'manager';
-    // General rule for other @haqqman.com emails
-    if (email.endsWith('@haqqman.com')) return 'administrator';
+    if (email.endsWith('@haqqman.com')) return 'administrator'; // Simplified default for haqqman emails
     return 'user';
   };
   
   const isConsoleRole = (role: User['role']) => ['cto', 'administrator', 'manager'].includes(role);
 
-  const syncUserWithFirestore = async (firebaseUser: FirebaseUser, determinedRole: User['role']): Promise<User> => {
-    if (!db) {
-      console.error("Firestore (db) is not initialized. Cannot sync user.");
-      throw new Error("Firestore not available. User sync failed.");
-    }
+  const syncUserWithFirestore = async (firebaseUser: FirebaseUser): Promise<User> => {
+    if (!db) throw new Error("Firestore not available. User sync failed.");
     
+    const determinedRole = determineUserRole(firebaseUser.email);
     const useConsoleCollection = isConsoleRole(determinedRole);
     const collectionName = useConsoleCollection ? 'consoleUsers' : 'users';
     const userDocRef = doc(db, collectionName, firebaseUser.uid);
     const userDocSnap = await getDoc(userDocRef);
 
-    let finalRole = determinedRole;
-    let userFirstName = firebaseUser.displayName?.split(' ')[0] || firebaseUser.email?.split('@')[0] || 'User';
-    let userLastName = firebaseUser.displayName?.split(' ').slice(1).join(' ') || '';
-    
-    const baseDataFromAuth: Partial<User> = {
+    if (userDocSnap.exists()) {
+      // User exists, update their last login and return their profile
+      const existingData = userDocSnap.data() as User;
+      await updateDoc(userDocRef, { lastLogin: serverTimestamp() });
+      
+      // Ensure local user object has JS Dates, not Firestore Timestamps
+      const appUser: User = {
+        ...existingData,
+        id: firebaseUser.uid,
+        lastLogin: new Date(), // Set to now
+        createdAt: existingData.createdAt instanceof Timestamp 
+          ? existingData.createdAt.toDate() 
+          : existingData.createdAt || new Date(),
+      };
+      return appUser;
+
+    } else {
+      // New user registration
+      if (useConsoleCollection) {
+        // Prevent social logins from creating a console user profile directly
+        throw new Error("Social logins are not permitted for initial console access. Please use email/password.");
+      }
+
+      const userFirstName = firebaseUser.displayName?.split(' ')[0] || firebaseUser.email?.split('@')[0] || 'User';
+      const userLastName = firebaseUser.displayName?.split(' ').slice(1).join(' ') || '';
+
+      const newUserProfile: Omit<User, 'id'> & { createdAt: any, lastLogin: any } = {
         email: firebaseUser.email,
         firstName: userFirstName,
         lastName: userLastName,
-        displayName: firebaseUser.displayName || `${userFirstName} ${userLastName}`.trim() || 'Anonymous User',
-        role: determinedRole,
-        authProvider: firebaseUser.providerData[0]?.providerId || 'password',
-        phoneNumber: firebaseUser.phoneNumber || null, 
-    };
+        displayName: firebaseUser.displayName || `${userFirstName} ${userLastName}`.trim(),
+        role: 'user', // New social sign-ups are always 'user' role
+        authProvider: firebaseUser.providerData[0]?.providerId || 'unknown',
+        phoneNumber: firebaseUser.phoneNumber || null,
+        createdAt: serverTimestamp(),
+        lastLogin: serverTimestamp(),
+      };
+      
+      await setDoc(userDocRef, newUserProfile);
 
-    if (userDocSnap.exists()) {
-        const existingData = userDocSnap.data() as User;
-        
-        // Role protection for console users. Don't downgrade a CTO to manager, etc.
-        if (useConsoleCollection && existingData.role) {
-            if (determinedRole === 'cto') finalRole = 'cto';
-            else if (determinedRole === 'manager' && existingData.role !== 'cto') finalRole = 'manager';
-            else if (determinedRole === 'administrator' && existingData.role !== 'cto' && existingData.role !== 'manager') finalRole = 'administrator';
-            else finalRole = existingData.role; // Keep existing console role
-        } else {
-            finalRole = determinedRole; 
-        }
-
-        const finalFirstName = existingData.firstName || baseDataFromAuth.firstName;
-        const finalLastName = existingData.lastName || baseDataFromAuth.lastName;
-        
-        const dataToUpdate: Partial<User> & { lastLogin: any } = {
-            email: baseDataFromAuth.email,
-            firstName: finalFirstName,
-            lastName: finalLastName,
-            displayName: existingData.displayName || `${finalFirstName} ${finalLastName}`.trim(),
-            role: finalRole,
-            phoneNumber: existingData.phoneNumber !== undefined ? existingData.phoneNumber : (baseDataFromAuth.phoneNumber ?? null),
-            lastLogin: serverTimestamp(),
-            authProvider: baseDataFromAuth.authProvider,
-        };
-        
-        if (dataToUpdate.phoneNumber === undefined) {
-            dataToUpdate.phoneNumber = null;
-        }
-
-        await setDoc(userDocRef, dataToUpdate, { merge: true });
-
-        return {
-            id: firebaseUser.uid,
-            ...dataToUpdate,
-            createdAt: existingData.createdAt instanceof Timestamp ? existingData.createdAt.toDate() : (existingData.createdAt || new Date()), // Ensure createdAt is a Date
-            lastLogin: new Date(), 
-        } as User;
-
-    } else { 
-        // This is a new user for this collection
-        if (useConsoleCollection && firebaseUser.providerData[0]?.providerId !== 'password') {
-            // Prevent social logins from creating console user profiles directly
-            throw new Error("Social logins are not permitted for initial console access.");
-        }
-
-        const dataToSet: Partial<User> & { createdAt: any, lastLogin: any } = {
-            ...baseDataFromAuth,
-            role: finalRole, 
-            createdAt: serverTimestamp(),
-            lastLogin: serverTimestamp(),
-            phoneNumber: baseDataFromAuth.phoneNumber ?? null,
-        };
-
-        await setDoc(userDocRef, dataToSet);
-        
-        return {
-            id: firebaseUser.uid,
-            ...dataToSet,
-            createdAt: new Date(), 
-            lastLogin: new Date(),
-        } as User;
+      return {
+        id: firebaseUser.uid,
+        ...newUserProfile,
+        createdAt: new Date(),
+        lastLogin: new Date(),
+      } as User;
     }
   };
 
@@ -148,24 +112,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser: FirebaseUser | null) => {
       setLoading(true);
       if (firebaseUser) {
-        const determinedRole = determineUserRole(firebaseUser.email);
         try {
-          // Attempt to find user in the appropriate collection based on role.
-          const collectionName = isConsoleRole(determinedRole) ? 'consoleUsers' : 'users';
-          const userDocRef = doc(db, collectionName, firebaseUser.uid);
-          const userDocSnap = await getDoc(userDocRef);
+          // Check both collections to find where the user profile is stored.
+          const consoleDocRef = doc(db, 'consoleUsers', firebaseUser.uid);
+          const portalDocRef = doc(db, 'users', firebaseUser.uid);
+          
+          const consoleDocSnap = await getDoc(consoleDocRef);
+          const portalDocSnap = await getDoc(portalDocRef);
 
-          if (userDocSnap.exists()) {
+          let userDocSnap;
+          if (consoleDocSnap.exists()) {
+            userDocSnap = consoleDocSnap;
+          } else if (portalDocSnap.exists()) {
+            userDocSnap = portalDocSnap;
+          }
+
+          if (userDocSnap?.exists()) {
              const appUser = { id: firebaseUser.uid, ...userDocSnap.data() } as User;
              // Ensure timestamps are JS Dates
              if(appUser.createdAt && appUser.createdAt instanceof Timestamp) appUser.createdAt = appUser.createdAt.toDate();
              if(appUser.lastLogin && appUser.lastLogin instanceof Timestamp) appUser.lastLogin = appUser.lastLogin.toDate();
              setUser(appUser);
           } else {
-             // This can happen if a console user signs in via a social provider for the first time
-             // Or if their doc was deleted but auth record remains.
-             // We'll treat them as not logged in to our app context and sign them out.
-             console.warn(`User ${firebaseUser.uid} authenticated but not found in ${collectionName} collection.`);
+             // This can happen if auth record exists but Firestore doc was deleted.
+             console.warn(`User ${firebaseUser.uid} authenticated but not found in any user collection.`);
              setUser(null);
              await firebaseSignOut(auth);
           }
@@ -180,32 +150,39 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setLoading(false);
     });
     return () => unsubscribe();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); 
 
-  const handleSuccessfulLogin = async (firebaseUser: FirebaseUser, isConsole: boolean = false) => {
+  const handleSuccessfulLogin = async (firebaseUser: FirebaseUser, isConsoleAttempt: boolean = false) => {
     setLoading(true);
-    const determinedRole = determineUserRole(firebaseUser.email);
     
-    if (isConsole && !isConsoleRole(determinedRole)) {
+    // Check for user in Firestore collections
+    const consoleDocRef = doc(db, 'consoleUsers', firebaseUser.uid);
+    const portalDocRef = doc(db, 'users', firebaseUser.uid);
+    const consoleDocSnap = await getDoc(consoleDocRef);
+    const portalDocSnap = await getDoc(portalDocRef);
+
+    // If it's a console login attempt, the user MUST exist in `consoleUsers`.
+    if (isConsoleAttempt && !consoleDocSnap.exists()) {
         await firebaseSignOut(auth);
         setUser(null);
         setLoading(false);
-        const authError = new Error("Access Denied. Not a valid console user role.");
-        (authError as any).code = 'auth/unauthorized-console-role';
+        const authError = new Error("Access Denied. Not a valid console user.");
+        (authError as any).code = 'auth/unauthorized-console-user';
         throw authError;
     }
 
-    const appUser = await syncUserWithFirestore(firebaseUser, determinedRole);
-    setUser(appUser);
-    setLoading(false);
-
-    if (isConsole) {
-        router.push('/console/dashboard');
-    } else {
-        router.push('/dashboard');
+    try {
+        const appUser = await syncUserWithFirestore(firebaseUser);
+        setUser(appUser);
+        setLoading(false);
+        router.push(isConsoleRole(appUser.role) ? '/console/dashboard' : '/dashboard');
+        return firebaseUser;
+    } catch (e) {
+        await firebaseSignOut(auth);
+        setUser(null);
+        setLoading(false);
+        throw e;
     }
-    return firebaseUser;
   };
 
   const signInWithGoogle = async (): Promise<FirebaseUser | null> => {
@@ -214,7 +191,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
-      // Social sign-in is only for the portal, so isConsole is false.
       return await handleSuccessfulLogin(result.user, false);
     } catch (error) {
       console.error("Error signing in with Google:", error);
@@ -229,7 +205,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const provider = new GithubAuthProvider();
       const result = await signInWithPopup(auth, provider);
-      // Social sign-in is only for the portal, so isConsole is false.
       return await handleSuccessfulLogin(result.user, false);
     } catch (error) {
       console.error("Error signing in with GitHub:", error);
