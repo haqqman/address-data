@@ -15,20 +15,19 @@ import type { GeographyState, GeographyLGA } from "@/types";
 const estateSchema = z.object({
   name: z.string().min(3, "Estate name must be at least 3 characters long."),
   state: z.string().min(1, "State is required."),
-  lga: z.string().min(1, "LGA is required."), // In Abuja, LGA is the City
-  district: z.string().optional(), // Now explicitly 'district'
+  lga: z.string().min(1, "LGA is required."),
+  area: z.string().optional(),
   googleMapLink: z.string().url("Must be a valid URL").optional().or(z.literal('')),
 }).refine(data => {
-    // If state is FCT, district is required
+    // If state is FCT, area (used as district) is required
     if (data.state === 'FCT') {
-        return !!data.district && data.district.length > 0;
+        return !!data.area && data.area.length > 0;
     }
     return true;
 }, {
     message: "District is required for Abuja (FCT).",
-    path: ["district"], // a specific path to show error
+    path: ["area"], 
 });
-
 
 type EstateFormValues = z.infer<typeof estateSchema>;
 
@@ -43,7 +42,7 @@ export function EstateForm({ onSubmissionSuccess }: EstateFormProps) {
   
   const [states, setStates] = useState<GeographyState[]>([]);
   const [lgas, setLgas] = useState<GeographyLGA[]>([]);
-  const [districts, setDistricts] = useState<GeographyLGA[]>([]); // For Abuja's districts/LGAs
+  const [districts, setDistricts] = useState<GeographyLGA[]>([]);
   const [isLoadingStates, setIsLoadingStates] = useState(true);
   const [isLoadingLgas, setIsLoadingLgas] = useState(false);
   const [isLoadingDistricts, setIsLoadingDistricts] = useState(false);
@@ -55,7 +54,7 @@ export function EstateForm({ onSubmissionSuccess }: EstateFormProps) {
       name: "",
       state: "",
       lga: "",
-      district: "",
+      area: "",
       googleMapLink: "",
     },
   });
@@ -109,7 +108,7 @@ export function EstateForm({ onSubmissionSuccess }: EstateFormProps) {
   const handleStateChange = (selectedName: string) => {
     setValue("state", selectedName, { shouldValidate: true });
     setValue("lga", "", { shouldValidate: true });
-    setValue("district", "", { shouldValidate: true });
+    setValue("area", "", { shouldValidate: true });
     
     const state = states.find(s => s.name === selectedName);
     if (state) {
@@ -129,15 +128,6 @@ export function EstateForm({ onSubmissionSuccess }: EstateFormProps) {
   };
 
   async function onSubmit(values: EstateFormValues) {
-    // We rename 'district' to 'area' for the backend action for consistency with the database schema.
-    const submissionValues = {
-        name: values.name,
-        state: values.state,
-        lga: values.lga,
-        area: values.district, // map district to area
-        googleMapLink: values.googleMapLink
-    }
-
     if (!user) {
       setSubmissionStatus({ type: "error", message: "User not authenticated. Please log in."});
       return;
@@ -146,7 +136,7 @@ export function EstateForm({ onSubmissionSuccess }: EstateFormProps) {
     setIsSubmitting(true);
     setSubmissionStatus(null);
     const formData = new FormData();
-    Object.entries(submissionValues).forEach(([key, value]) => {
+    Object.entries(values).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
         formData.append(key, value as string);
       }
@@ -188,7 +178,7 @@ export function EstateForm({ onSubmissionSuccess }: EstateFormProps) {
                 {submissionStatus.type === 'error' && <AlertTriangle className="h-5 w-5 text-danger mr-3" />}
                 {submissionStatus.type === 'info' && <Info className="h-5 w-5 text-secondary mr-3" />}
                 <div>
-                  <p className={`font-semibold ${submissionStatus.type === 'success' ? 'text-success-700' : submissionStatus.type === 'error' ? 'text-danger-700' : 'text-secondary-700'}`}>
+                  <p className={`font-semibold ${submissionStatus.type === 'success' ? 'text-success-700' : 'text-danger-700'}`}>
                     {submissionStatus.type === 'success' ? 'Success' : 'Error'}
                   </p>
                   <p className={`text-sm ${submissionStatus.type === 'success' ? 'text-success-600' : 'text-danger-600'}`}>
@@ -232,42 +222,76 @@ export function EstateForm({ onSubmissionSuccess }: EstateFormProps) {
                 ))}
             </NextUISelect>
           
-            <Controller
-                name="lga"
-                control={control}
-                render={({ field }) => (
-                    <NextUIInput
-                    {...field}
-                    label="City"
-                    placeholder={watchedStateName === 'FCT' ? 'Abuja' : 'Ikeja, Port Harcourt'}
+            {watchedStateName === 'FCT' ? (
+                <Controller
+                    name="lga"
+                    control={control}
+                    render={({ field }) => (
+                        <NextUIInput
+                            {...field}
+                            label="City"
+                            value="Abuja"
+                            isReadOnly
+                            variant="bordered"
+                        />
+                    )}
+                />
+            ) : (
+                <NextUISelect
+                    label="LGA (Local Government Area)"
+                    placeholder="Select an LGA"
                     variant="bordered"
                     isInvalid={!!errors.lga}
                     errorMessage={errors.lga?.message}
-                    isDisabled={watchedStateName === 'FCT'}
-                    fullWidth
-                    />
-                )}
-            />
+                    isLoading={isLoadingLgas}
+                    isDisabled={!watchedStateName || lgas.length === 0}
+                    selectedKeys={watch("lga") ? [watch("lga")] : []}
+                    onChange={(e) => setValue("lga", e.target.value, { shouldValidate: true })}
+                >
+                    {lgas.map((lga) => (
+                    <NextUISelectItem key={lga.name} value={lga.name}>
+                        {lga.name}
+                    </NextUISelectItem>
+                    ))}
+                </NextUISelect>
+            )}
         </div>
 
-        {watchedStateName === 'FCT' && (
-            <NextUISelect
-                label="District"
-                placeholder="Select a district in Abuja"
-                variant="bordered"
-                isInvalid={!!errors.district}
-                errorMessage={errors.district?.message}
-                isLoading={isLoadingDistricts}
-                selectedKeys={watch("district") ? [watch("district")] : []}
-                onChange={(e) => setValue("district", e.target.value, { shouldValidate: true })}
-            >
-                {districts.map((district) => (
-                <NextUISelectItem key={district.name} value={district.name}>
-                    {district.name}
-                </NextUISelectItem>
-                ))}
-            </NextUISelect>
-        )}
+        <Controller
+            name="area"
+            control={control}
+            render={({ field }) => (
+                watchedStateName === 'FCT' ? (
+                    <NextUISelect
+                        {...field}
+                        label="District"
+                        placeholder="Select a district in Abuja"
+                        variant="bordered"
+                        isInvalid={!!errors.area}
+                        errorMessage={errors.area?.message}
+                        isLoading={isLoadingDistricts}
+                        selectedKeys={field.value ? [field.value] : []}
+                        onChange={(e) => field.onChange(e.target.value)}
+                    >
+                        {districts.map((district) => (
+                            <NextUISelectItem key={district.name} value={district.name}>
+                                {district.name}
+                            </NextUISelectItem>
+                        ))}
+                    </NextUISelect>
+                ) : (
+                    <NextUIInput
+                        {...field}
+                        label="Area / District / Neighborhood (Optional)"
+                        placeholder="e.g. Ikoyi, Maitama, GRA"
+                        variant="bordered"
+                        isInvalid={!!errors.area}
+                        errorMessage={errors.area?.message}
+                        fullWidth
+                    />
+                )
+            )}
+        />
 
         <Controller
           name="googleMapLink"

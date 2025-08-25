@@ -1,3 +1,4 @@
+
 /* eslint-disable no-console */
 import { initializeApp, getApps } from 'firebase/app';
 import { getFirestore, collection, writeBatch, serverTimestamp, doc } from 'firebase/firestore';
@@ -171,11 +172,15 @@ const seedEstates = async () => {
             name: estate.name,
             location: estate.location,
             googleMapLink: estate.googleMapLink || "",
+            status: "approved", // <-- ADDED THIS LINE
             source: "Address Data", // As these are seeded
             createdBy: "system-seed",
             lastUpdatedBy: "system-seed",
             createdAt: serverTimestamp(),
             updatedAt: serverTimestamp(),
+            reviewedBy: "system-seed",
+            reviewedAt: serverTimestamp(),
+            reviewNotes: "Automatically approved during system seeding."
         };
 
         batch.set(docRef, newEstateData);
@@ -186,6 +191,7 @@ const seedEstates = async () => {
         await batch.commit();
         console.log(`\n--- Seeding Complete! ---`);
         console.log(`Successfully seeded ${count} estates into the database.`);
+        console.log("NOTE: If estates already existed, this script creates duplicates. You may need to clear the collection in Firebase Console before re-running for a clean seed.");
     } catch (error) {
         console.error("An error occurred during the estate seeding process:", error);
     }
