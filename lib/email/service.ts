@@ -3,8 +3,6 @@
 
 import { ServerClient } from 'postmark';
 
-const postmarkClient = new ServerClient(process.env.POSTMARK_SERVER_TOKEN || "");
-
 const MAIL_FROM_NAME = process.env.MAIL_FROM_NAME || "Address Data";
 const MAIL_FROM_ADDRESS = process.env.MAIL_FROM_ADDRESS || "noreply@addressdata.ng";
 
@@ -57,10 +55,13 @@ const welcomeEmailTemplate = ({ name }: { name: string }) => `
 `;
 
 export async function sendWelcomeEmail({ name, email }: WelcomeEmailParams) {
-    if (!process.env.POSTMARK_SERVER_TOKEN) {
+    const token = process.env.POSTMARK_SERVER_TOKEN;
+    if (!token) {
         console.warn("POSTMARK_SERVER_TOKEN is not set. Skipping welcome email.");
         return;
     }
+
+    const postmarkClient = new ServerClient(token);
 
     try {
         await postmarkClient.sendEmail({
