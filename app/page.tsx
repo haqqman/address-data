@@ -1,3 +1,4 @@
+
 'use client'
 
 import Image from 'next/image'
@@ -117,8 +118,8 @@ export default function HomePage() {
                 className='flex gap-2'
               >
                 <NextUIInput
-                  aria-label="Search by Address Code"
-                  placeholder="Enter an Address Data Code"
+                  aria-label="Search by Address or Estate Code"
+                  placeholder="Enter address or estate code"
                   variant="bordered"
                   size="lg"
                   classNames={{
