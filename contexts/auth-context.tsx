@@ -16,7 +16,7 @@ import { auth, db } from '@/lib/firebase/config';
 import type { User } from '@/types';
 import { useRouter } from 'next/navigation';
 import { doc, getDoc, setDoc, serverTimestamp, Timestamp, updateDoc } from 'firebase/firestore';
-import { sendWelcomeEmail } from '@/lib/email/service';
+import { sendWelcomeEmail } from '@/services/email.service';
 
 interface AuthContextType {
   user: User | null;
