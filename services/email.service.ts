@@ -20,6 +20,7 @@ const welcomeEmailTemplate = ({ name }: { name: string }) => `
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; margin: 0; padding: 0; background-color: #f4f4f7; }
         .container { max-width: 600px; margin: 40px auto; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; }
         .header { background-color: #0C213A; color: #ffffff; padding: 40px; text-align: center; }
+        .header img { margin-bottom: 20px; }
         .header h1 { margin: 0; font-size: 28px; }
         .content { padding: 40px; color: #1F2937; line-height: 1.6; }
         .content h2 { color: #0C213A; margin-top: 0; }
@@ -33,6 +34,7 @@ const welcomeEmailTemplate = ({ name }: { name: string }) => `
 <body>
     <div class="container">
         <div class="header">
+            <img src="https://res.cloudinary.com/seapane-cloud/seapane-bucket/address-data/meta/address-data-logomark.png" alt="Address Data Logo" width="60">
             <h1>Welcome to Address Data!</h1>
         </div>
         <div class="content">
