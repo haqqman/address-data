@@ -1,3 +1,4 @@
+
 "use client";
 
 import { Button as NextUIButton } from "@nextui-org/react";
@@ -7,7 +8,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export function LogInButtons() {
-  const { signInWithGoogle, signInWithGitHub } = useAuth();
+  const { signInWithGoogle, signInWithGitHub, loading: authLoading } = useAuth();
   const router = useRouter();
   const [isLoadingGoogle, setIsLoadingGoogle] = useState(false);
   const [isLoadingGitHub, setIsLoadingGitHub] = useState(false);
@@ -33,7 +34,8 @@ export function LogInButtons() {
     try {
       const user = await logInFunction();
       if (user) {
-        router.push('/dashboard');
+        // The redirect is handled within the auth context, but we keep the button disabled
+        // using the global authLoading state until the redirect is complete.
       }
     } catch (error: any) {
       console.error(`Log In Failed with ${provider}:`, error.message);
@@ -54,23 +56,23 @@ export function LogInButtons() {
         variant="bordered" 
         fullWidth
         onClick={() => handleLogIn("google")}
-        disabled={isLoadingGoogle || isLoadingGitHub}
-        isLoading={isLoadingGoogle}
-        startContent={!isLoadingGoogle ? <Chrome className="h-5 w-5" /> : null}
+        disabled={isLoadingGoogle || isLoadingGitHub || authLoading}
+        isLoading={isLoadingGoogle || authLoading}
+        startContent={!isLoadingGoogle && !authLoading ? <Chrome className="h-5 w-5" /> : null}
         className="shadow-sm hover:shadow-md hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out"
       >
-        {isLoadingGoogle ? "Logging in..." : "Log in with Google"}
+        {isLoadingGoogle || authLoading ? "Authenticating..." : "Log in with Google"}
       </NextUIButton>
       <NextUIButton
         variant="bordered" 
         fullWidth
         onClick={() => handleLogIn("github")}
-        disabled={isLoadingGoogle || isLoadingGitHub}
-        isLoading={isLoadingGitHub}
-        startContent={!isLoadingGitHub ? <Github className="h-5 w-5" /> : null}
+        disabled={isLoadingGoogle || isLoadingGitHub || authLoading}
+        isLoading={isLoadingGitHub || authLoading}
+        startContent={!isLoadingGitHub && !authLoading ? <Github className="h-5 w-5" /> : null}
         className="shadow-sm hover:shadow-md hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out"
       >
-        {isLoadingGitHub ? "Logging in..." : "Log in with GitHub"}
+        {isLoadingGitHub || authLoading ? "Authenticating..." : "Log in with GitHub"}
       </NextUIButton>
     </div>
   );
