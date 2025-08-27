@@ -23,7 +23,7 @@ const estateSchema = z.object({
   state: z.string().min(1, "State is required."),
   lga: z.string().min(1, "LGA is required."),
   city: z.string().optional(),
-  area: z.string().optional(), // Now used primarily for FCT districts
+  area: z.string().optional(), // Used for FCT districts, or optional area for other states
   googleMapLink: z.string().url("Must be a valid URL").optional().or(z.literal('')),
 }).refine(data => {
     // If state is FCT, 'area' (which we use for district) is required.

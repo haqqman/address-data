@@ -4,7 +4,7 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import type { Estate } from "@/types";
 import { getEstates } from "@/app/actions/estateActions";
-import { Card, CardHeader, CardBody, Skeleton, Button, Input, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Link as NextUILink } from "@nextui-org/react";
+import { Card, CardHeader, CardBody, Skeleton, Button, Input, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Link as NextUILink, Chip } from "@nextui-org/react";
 import { AlertTriangle, PlusCircle, Search } from "lucide-react";
 import Link from "next/link";
 
@@ -18,7 +18,8 @@ export default function EstatesPage() {
     setIsLoading(true);
     setError(null);
     try {
-      const data = await getEstates("approved"); 
+      // Fetch all estates regardless of status for the portal view
+      const data = await getEstates(); 
       setEstates(data);
     } catch (err) {
       setError("Failed to load estates.");
@@ -60,9 +61,22 @@ export default function EstatesPage() {
 
   const formatLocation = (location: Estate['location']) => {
     const { city, area, lga, state } = location;
-    // Use city if available, otherwise use area (for FCT districts, etc.)
-    const primaryLocation = city || area;
+    // For FCT, area is district. For others, city is primary.
+    const primaryLocation = location.state === 'FCT' ? area : city;
     return `${primaryLocation || ''}, ${lga}, ${state}`.replace(/^, /g, ''); // Clean leading comma
+  };
+
+  const getStatusChipColor = (status: Estate['status']): "success" | "warning" | "danger" | "default" => {
+    switch (status) {
+      case "approved":
+        return "success";
+      case "pending_review":
+        return "warning";
+      case "rejected":
+        return "danger";
+      default:
+        return "default";
+    }
   };
 
 
@@ -124,14 +138,20 @@ export default function EstatesPage() {
                         <TableColumn>CODE</TableColumn>
                         <TableColumn>NAME</TableColumn>
                         <TableColumn>CITY/DISTRICT</TableColumn>
+                        <TableColumn>STATUS</TableColumn>
                         <TableColumn>ACTIONS</TableColumn>
                     </TableHeader>
-                    <TableBody items={filteredItems} emptyContent={"No approved estates found."}>
+                    <TableBody items={filteredItems} emptyContent={"No estates found."}>
                         {(item) => (
                             <TableRow key={item.id}>
                                 <TableCell className="font-mono text-xs">{item.estateCode || 'N/A'}</TableCell>
                                 <TableCell className="font-semibold">{item.name}</TableCell>
                                 <TableCell>{formatLocation(item.location)}</TableCell>
+                                <TableCell>
+                                  <Chip size="sm" variant="flat" color={getStatusChipColor(item.status)}>
+                                    {item.status.replace("_", " ").toUpperCase()}
+                                  </Chip>
+                                </TableCell>
                                 <TableCell>
                                     <Button as={NextUILink} href={`/estates/${item.id}`} size="sm" variant="light" color="secondary">
                                         Manage
