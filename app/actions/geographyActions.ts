@@ -169,27 +169,6 @@ export async function getCitiesForLga(stateId: string, lgaId: string): Promise<G
   }
 }
 
-// Special function to get Abuja Districts, which are stored as cities under AMAC
-export async function getAbujaDistricts(): Promise<GeographyCity[]> {
-    const stateId = "fct";
-    const lgaId = "municipal-area-council";
-    try {
-        const citiesCol = collection(db, GEOGRAPHY_COLLECTION, stateId, LGAS_SUBCOLLECTION, lgaId, CITIES_SUBCOLLECTION);
-        const q = query(citiesCol, orderBy("name"));
-        const querySnapshot = await getDocs(q);
-        return querySnapshot.docs.map(docSnap => ({
-            id: docSnap.id,
-            stateId: stateId,
-            lgaId: lgaId,
-            name: docSnap.data().name
-        }));
-    } catch (error) {
-        console.error("Error fetching Abuja districts:", error);
-        return [];
-    }
-}
-
-
 export async function updateCity(stateId: string, lgaId: string, cityId: string, dataToUpdate: Partial<Omit<FirestoreGeographyCityData, 'id' | 'stateId' | 'lgaId'>>): Promise<void> {
   try {
     const cityRef = doc(db, GEOGRAPHY_COLLECTION, stateId, LGAS_SUBCOLLECTION, lgaId, CITIES_SUBCOLLECTION, cityId);
@@ -208,5 +187,3 @@ export async function deleteCity(stateId: string, lgaId: string, cityId: string)
     throw new Error("Failed to delete City.");
   }
 }
-
-    

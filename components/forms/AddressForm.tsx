@@ -6,10 +6,10 @@ import { useForm, Controller } from "react-hook-form";
 import * as z from "zod";
 import { Button as NextUIButton, Input as NextUIInput, Card as NextUICard, CardBody as NextUICardBody, Select as NextUISelect, SelectItem as NextUISelectItem } from "@nextui-org/react";
 import { submitAddress } from "@/app/actions/addressActions";
-import { CheckCircle, Loader2, AlertTriangle, Info } from "lucide-react"; 
+import { CheckCircle, AlertTriangle, Info } from "lucide-react"; 
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/contexts/auth-context"; 
-import { getStates, getLgasForState, getCitiesForLga, getAbujaDistricts } from "@/app/actions/geographyActions";
+import { getStates, getLgasForState, getCitiesForLga } from "@/app/actions/geographyActions";
 import type { GeographyState, GeographyLGA, GeographyCity } from "@/types";
 
 const addressSchema = z.object({
@@ -20,14 +20,16 @@ const addressSchema = z.object({
   state: z.string().min(1, "State is required"),
   zipCode: z.string().optional(),
 }).refine(data => {
-    if (data.city === 'Abuja') {
+    // If state is FCT, the district field becomes required.
+    if (data.state === 'FCT') {
         return !!data.areaDistrict && data.areaDistrict.length > 0;
     }
     return true;
 }, {
-    message: "District is required for Abuja city.",
+    message: "District is required for FCT.",
     path: ["areaDistrict"],
 });
+
 
 type AddressFormValues = z.infer<typeof addressSchema>;
 
@@ -42,16 +44,11 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
   
   const [states, setStates] = useState<GeographyState[]>([]);
   const [lgas, setLgas] = useState<GeographyLGA[]>([]);
-  const [cities, setCities] = useState<GeographyCity[]>([]);
-  const [districts, setDistricts] = useState<GeographyCity[]>([]); 
+  const [cities, setCities] = useState<GeographyCity[]>([]); // Will also hold districts
 
   const [isLoadingStates, setIsLoadingStates] = useState(true);
   const [isLoadingLgas, setIsLoadingLgas] = useState(false);
-  const [isLoadingCities, setIsLoadingCities] = useState(false);
-  const [isLoadingDistricts, setIsLoadingDistricts] = useState(false);
-
-  const [selectedStateId, setSelectedStateId] = useState<string | null>(null);
-  const [selectedLgaId, setSelectedLgaId] = useState<string | null>(null);
+  const [isLoadingCities, setIsLoadingCities] = useState(false); // Used for cities/districts
 
   const { control, handleSubmit, formState: { errors }, reset, setValue, watch, trigger } = useForm<AddressFormValues>({
     resolver: zodResolver(addressSchema),
@@ -67,7 +64,6 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
 
   const watchedStateName = watch("state");
   const watchedLgaName = watch("lga");
-  const watchedCityName = watch("city");
 
   const loadStates = useCallback(async () => {
     setIsLoadingStates(true);
@@ -99,91 +95,54 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
     }
   }, []);
 
-  const loadCities = useCallback(async (stateId: string, lgaId: string) => {
+  const loadCitiesOrDistricts = useCallback(async (stateId: string, lgaId: string) => {
     setIsLoadingCities(true);
     setCities([]);
     try {
       const fetchedCities = await getCitiesForLga(stateId, lgaId);
       setCities(fetchedCities);
     } catch (error) {
-      console.error("Failed to load cities", error);
+      console.error("Failed to load cities/districts", error);
     } finally {
       setIsLoadingCities(false);
-    }
-  }, []);
-  
-  const loadDistricts = useCallback(async () => {
-    setIsLoadingDistricts(true);
-    setDistricts([]);
-    try {
-        const fetchedDistricts = await getAbujaDistricts();
-        setDistricts(fetchedDistricts);
-    } catch(e) {
-        console.error("Failed to load FCT Districts", e);
-    } finally {
-        setIsLoadingDistricts(false);
     }
   }, []);
 
   const handleStateChange = (selectedName: string) => {
     setValue("state", selectedName, { shouldValidate: true });
-    setValue("lga", "", { shouldValidate: true });
-    setValue("city", "", { shouldValidate: true });
-    setValue("areaDistrict", "", { shouldValidate: true });
-    
+    setValue("lga", "", { shouldValidate: false });
+    setValue("city", "", { shouldValidate: false });
+    setValue("areaDistrict", "", { shouldValidate: false });
+    setLgas([]);
+    setCities([]);
+
     const state = states.find(s => s.name === selectedName);
     if (state) {
-      setSelectedStateId(state.id);
       loadLgas(state.id);
       if (state.name === 'FCT') {
-        loadDistricts();
-        setValue("city", "Abuja", { shouldValidate: true });
-        setCities([]); // No other cities to choose from
-      } else {
-        setDistricts([]);
+        setValue("city", "Abuja", { shouldValidate: true }); 
       }
-    } else {
-      setSelectedStateId(null);
-      setLgas([]);
-      setCities([]);
-      setDistricts([]);
     }
-    setSelectedLgaId(null);
   };
   
   const handleLgaChange = (selectedName: string) => {
     setValue("lga", selectedName, { shouldValidate: true });
-    setValue("city", "", { shouldValidate: true });
-    setValue("areaDistrict", "", { shouldValidate: true });
-
-    const lga = lgas.find(l => l.name === selectedName);
-    if (lga && selectedStateId) {
-      setSelectedLgaId(lga.id);
-      if (watchedStateName === 'FCT') {
-         setValue("city", "Abuja", { shouldValidate: true });
-         setCities([]);
-      } else {
-        loadCities(selectedStateId, lga.id);
-      }
-    } else {
-      setSelectedLgaId(null);
-      setCities([]);
-    }
-  };
-
-  const handleCityChange = (selectedName: string) => {
-    setValue("city", selectedName, { shouldValidate: true });
+    setValue("city", watchedStateName === 'FCT' ? 'Abuja' : '', { shouldValidate: true });
     setValue("areaDistrict", "", { shouldValidate: false });
-  };
-  
-  const handleDistrictChange = (selectedName: string) => {
-    setValue("areaDistrict", selectedName, { shouldValidate: true });
+    setCities([]);
+
+    const selectedState = states.find(s => s.name === watchedStateName);
+    const selectedLga = lgas.find(l => l.name === selectedName);
+
+    if (selectedState && selectedLga) {
+       loadCitiesOrDistricts(selectedState.id, selectedLga.id);
+    }
   };
 
   async function onSubmit(values: AddressFormValues) {
     const isValid = await trigger();
     if (!isValid) {
-      setSubmissionStatus({ type: "error", message: "Please fill out all required fields."});
+      setSubmissionStatus({ type: "error", message: "Please fill out all required fields correctly."});
       return;
     }
     
@@ -200,7 +159,6 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
         formData.append(key, value as string);
       }
     });
-     formData.append("country", "Nigeria");
 
     const result = await submitAddress({ 
         formData, 
@@ -211,11 +169,8 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
     if (result.success) {
       setSubmissionStatus({ type: "success", message: result.message || "Address submitted successfully!" });
       reset();
-      setSelectedStateId(null);
-      setSelectedLgaId(null);
       setLgas([]);
       setCities([]);
-      setDistricts([]);
       if (onSubmissionSuccess) {
         setTimeout(() => { 
             onSubmissionSuccess();
@@ -308,6 +263,9 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
                 value="Abuja"
                 isReadOnly
                 variant="bordered"
+                classNames={{
+                    inputWrapper: "bg-default-100",
+                }}
               />
             ) : (
               <Controller
@@ -316,15 +274,15 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
                 render={({field}) => (
                   <NextUISelect
                     {...field}
-                    label="City"
-                    placeholder="Select a city"
+                    label="City / Town"
+                    placeholder="Select a city or town"
                     variant="bordered"
                     isInvalid={!!errors.city}
                     errorMessage={errors.city?.message}
                     isLoading={isLoadingCities}
                     isDisabled={!watchedLgaName || cities.length === 0}
                     selectedKeys={field.value ? [field.value] : []}
-                    onChange={(e) => handleCityChange(e.target.value)}
+                    onChange={(e) => field.onChange(e.target.value)}
                   >
                     {cities.map((city) => (
                       <NextUISelectItem key={city.name} value={city.name}>
@@ -342,16 +300,17 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
               <NextUISelect
                 {...field}
                 label="District"
-                placeholder="Available for Abuja City Only"
+                placeholder="Select a district"
                 variant="bordered"
                 isInvalid={!!errors.areaDistrict}
                 errorMessage={errors.areaDistrict?.message}
-                isLoading={isLoadingDistricts}
-                isDisabled={watchedCityName !== 'Abuja' || districts.length === 0}
+                isLoading={isLoadingCities}
+                isDisabled={watchedStateName !== 'FCT' || !watchedLgaName || cities.length === 0}
                 selectedKeys={field.value ? [field.value] : []}
-                onChange={(e) => handleDistrictChange(e.target.value)}
+                onChange={(e) => field.onChange(e.target.value)}
+                description={watchedStateName !== 'FCT' ? "Only available for FCT" : ""}
               >
-                {districts.map((district) => (
+                {cities.map((district) => (
                     <NextUISelectItem key={district.name} value={district.name}>
                         {district.name}
                     </NextUISelectItem>

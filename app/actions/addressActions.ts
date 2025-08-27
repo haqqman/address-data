@@ -27,14 +27,14 @@ const addressSchema = z.object({
   state: z.string().min(1, "State is required"),
   zipCode: z.string().optional(),
 }).refine(data => {
-    // If city is Abuja (which is in FCT state), the district field becomes required.
-    if (data.city === 'Abuja') {
+    // If state is FCT, the district field becomes required.
+    if (data.state === 'FCT') {
         return !!data.areaDistrict && data.areaDistrict.length > 0;
     }
     return true;
 }, {
-    message: "District is required for Abuja city.",
-    path: ["areaDistrict"], // This path should match the form field name for the error message to attach correctly.
+    message: "District is required for FCT.",
+    path: ["areaDistrict"], 
 });
 
 

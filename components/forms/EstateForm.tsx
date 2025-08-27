@@ -9,7 +9,7 @@ import { submitEstate } from "@/app/actions/estateActions";
 import { CheckCircle, AlertTriangle, Info } from "lucide-react"; 
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/contexts/auth-context"; 
-import { getStates, getLgasForState, getCitiesForLga, getAbujaDistricts } from "@/app/actions/geographyActions";
+import { getStates, getLgasForState, getCitiesForLga } from "@/app/actions/geographyActions";
 import type { GeographyState, GeographyLGA, GeographyCity } from "@/types";
 
 const estateSchema = z.object({
@@ -25,7 +25,7 @@ const estateSchema = z.object({
     }
     return !!data.city && data.city.length > 0;
 }, {
-    message: "City or District is required.",
+    message: "City or District is required based on the selected State.",
     path: ["city"], 
 });
 
@@ -43,18 +43,13 @@ export function EstateForm({ onSubmissionSuccess }: EstateFormProps) {
   
   const [states, setStates] = useState<GeographyState[]>([]);
   const [lgas, setLgas] = useState<GeographyLGA[]>([]);
-  const [cities, setCities] = useState<GeographyCity[]>([]);
-  const [districts, setDistricts] = useState<GeographyCity[]>([]); 
+  const [cities, setCities] = useState<GeographyCity[]>([]); // Also holds districts
 
   const [isLoadingStates, setIsLoadingStates] = useState(true);
   const [isLoadingLgas, setIsLoadingLgas] = useState(false);
-  const [isLoadingCities, setIsLoadingCities] = useState(false);
-  const [isLoadingDistricts, setIsLoadingDistricts] = useState(false);
+  const [isLoadingCities, setIsLoadingCities] = useState(false); // Used for cities/districts
 
-  const [selectedStateId, setSelectedStateId] = useState<string | null>(null);
-  const [selectedLgaId, setSelectedLgaId] = useState<string | null>(null);
-
-  const { control, handleSubmit, formState: { errors }, reset, setValue, watch } = useForm<EstateFormValues>({
+  const { control, handleSubmit, formState: { errors }, reset, setValue, watch, trigger } = useForm<EstateFormValues>({
     resolver: zodResolver(estateSchema),
     defaultValues: {
       name: "",
@@ -99,79 +94,55 @@ export function EstateForm({ onSubmissionSuccess }: EstateFormProps) {
     }
   }, []);
 
-  const loadCities = useCallback(async (stateId: string, lgaId: string) => {
+  const loadCitiesOrDistricts = useCallback(async (stateId: string, lgaId: string) => {
     setIsLoadingCities(true);
     setCities([]);
     try {
       const fetchedCities = await getCitiesForLga(stateId, lgaId);
       setCities(fetchedCities);
     } catch (error) {
-      console.error("Failed to load cities", error);
+      console.error("Failed to load cities/districts", error);
     } finally {
       setIsLoadingCities(false);
-    }
-  }, []);
-  
-  const loadDistricts = useCallback(async () => {
-    setIsLoadingDistricts(true);
-    setDistricts([]);
-    try {
-        const fetchedDistricts = await getAbujaDistricts();
-        setDistricts(fetchedDistricts);
-    } catch(e) {
-        console.error("Failed to load FCT Districts", e);
-    } finally {
-        setIsLoadingDistricts(false);
     }
   }, []);
 
   const handleStateChange = (selectedName: string) => {
     setValue("state", selectedName, { shouldValidate: true });
-    setValue("lga", "", { shouldValidate: true });
-    setValue("city", "", { shouldValidate: true });
-    setValue("district", "", { shouldValidate: true });
-    
+    setValue("lga", "", { shouldValidate: false });
+    setValue("city", "", { shouldValidate: false });
+    setValue("district", "", { shouldValidate: false });
+    setLgas([]);
+    setCities([]);
+
     const state = states.find(s => s.name === selectedName);
     if (state) {
-      setSelectedStateId(state.id);
       loadLgas(state.id);
-      if (state.name === 'FCT') {
-        loadDistricts();
-        setValue("lga", "Municipal Area Council", { shouldValidate: true });
-        // Auto-select the LGA in the background
-        const amacLga = lgas.find(l => l.name === 'Municipal Area Council');
-        if (amacLga) setSelectedLgaId(amacLga.id);
-      } else {
-        setDistricts([]);
-      }
-    } else {
-      setSelectedStateId(null);
-      setLgas([]);
-      setCities([]);
-      setDistricts([]);
     }
-    setSelectedLgaId(null);
   };
   
   const handleLgaChange = (selectedName: string) => {
     setValue("lga", selectedName, { shouldValidate: true });
-    setValue("city", "", { shouldValidate: true });
-    setValue("district", "", { shouldValidate: true });
+    setValue("city", "", { shouldValidate: false });
+    setValue("district", "", { shouldValidate: false });
+    setCities([]);
 
-    const lga = lgas.find(l => l.name === selectedName);
-    if (lga && selectedStateId) {
-      setSelectedLgaId(lga.id);
-      if (watchedStateName !== 'FCT') {
-        loadCities(selectedStateId, lga.id);
-      }
-    } else {
-      setSelectedLgaId(null);
-      setCities([]);
+    const selectedState = states.find(s => s.name === watchedStateName);
+    const selectedLga = lgas.find(l => l.name === selectedName);
+
+    if (selectedState && selectedLga) {
+       loadCitiesOrDistricts(selectedState.id, selectedLga.id);
     }
   };
 
 
   async function onSubmit(values: EstateFormValues) {
+    const isValid = await trigger();
+    if(!isValid) {
+        setSubmissionStatus({ type: "error", message: "Please fill out all required fields correctly." });
+        return;
+    }
+
     if (!user) {
       setSubmissionStatus({ type: "error", message: "User not authenticated. Please log in."});
       return;
@@ -195,10 +166,8 @@ export function EstateForm({ onSubmissionSuccess }: EstateFormProps) {
     if (result.success) {
       setSubmissionStatus({ type: "success", message: result.message || "Estate submitted successfully for review!" });
       reset();
-      setSelectedStateId(null);
       setLgas([]);
       setCities([]);
-      setDistricts([]);
       if (onSubmissionSuccess) {
         setTimeout(() => { 
             onSubmissionSuccess();
@@ -274,10 +243,9 @@ export function EstateForm({ onSubmissionSuccess }: EstateFormProps) {
                 isInvalid={!!errors.lga}
                 errorMessage={errors.lga?.message}
                 isLoading={isLoadingLgas}
-                isDisabled={!watchedStateName || lgas.length === 0 || watchedStateName === 'FCT'}
+                isDisabled={!watchedStateName || lgas.length === 0}
                 selectedKeys={watchedLgaName ? [watchedLgaName] : []}
                 onChange={(e) => handleLgaChange(e.target.value)}
-                description={watchedStateName === 'FCT' ? 'Set to Municipal Area Council' : ''}
             >
                 {lgas.map((lga) => (
                 <NextUISelectItem key={lga.name} value={lga.name}>
@@ -298,14 +266,14 @@ export function EstateForm({ onSubmissionSuccess }: EstateFormProps) {
                             label="District"
                             placeholder="Select a district"
                             variant="bordered"
-                            isInvalid={!!errors.district}
-                            errorMessage={errors.district?.message}
-                            isLoading={isLoadingDistricts}
-                            isDisabled={districts.length === 0}
+                            isInvalid={!!errors.district || !!errors.city}
+                            errorMessage={errors.district?.message || errors.city?.message}
+                            isLoading={isLoadingCities}
+                            isDisabled={!watchedLgaName || cities.length === 0}
                             selectedKeys={field.value ? [field.value] : []}
                             onChange={(e) => field.onChange(e.target.value)}
                         >
-                            {districts.map((district) => (
+                            {cities.map((district) => (
                                 <NextUISelectItem key={district.name} value={district.name}>
                                     {district.name}
                                 </NextUISelectItem>
@@ -320,11 +288,11 @@ export function EstateForm({ onSubmissionSuccess }: EstateFormProps) {
                     render={({ field }) => (
                         <NextUISelect
                             {...field}
-                            label="City"
-                            placeholder="Select a city"
+                            label="City / Town"
+                            placeholder="Select a city or town"
                             variant="bordered"
-                            isInvalid={!!errors.city}
-                            errorMessage={errors.city?.message}
+                            isInvalid={!!errors.city || !!errors.district}
+                            errorMessage={errors.city?.message || errors.district?.message}
                             isLoading={isLoadingCities}
                             isDisabled={!watchedLgaName || cities.length === 0}
                             selectedKeys={field.value ? [field.value] : []}
