@@ -60,10 +60,11 @@ export default function EstatesPage() {
 
   const formatLocation = (location: Estate['location']) => {
     const { city, area, lga, state } = location;
-    // For FCT, area is district. For others, city is primary.
-    const primaryLocation = state === 'FCT' ? area : city;
-    return `${primaryLocation || ''}, ${lga}, ${state}`.replace(/^, /g, ''); // Clean leading comma if primary is missing
+    // Use city if available, otherwise use area (for FCT districts, etc.)
+    const primaryLocation = city || area;
+    return `${primaryLocation || ''}, ${lga}, ${state}`.replace(/^, /g, ''); // Clean leading comma
   };
+
 
   return (
     <div className="space-y-8">
@@ -122,7 +123,7 @@ export default function EstatesPage() {
                     <TableHeader>
                         <TableColumn>CODE</TableColumn>
                         <TableColumn>NAME</TableColumn>
-                        <TableColumn>LOCATION</TableColumn>
+                        <TableColumn>CITY/DISTRICT</TableColumn>
                         <TableColumn>ACTIONS</TableColumn>
                     </TableHeader>
                     <TableBody items={filteredItems} emptyContent={"No approved estates found."}>
