@@ -14,7 +14,7 @@ export default function SupportPage() {
   return (
     <div className="flex flex-col min-h-screen">
       <PublicHeader />
-      <main className="flex-grow container mx-auto px-4 py-12">
+      <main className="flex-grow max-w-7xl mx-auto px-4 py-12">
         <div className="max-w-3xl mx-auto">
           <NextUICard className="shadow-xl rounded-xl p-2 bg-background">
             <NextUICardHeader className="flex flex-col items-center text-center pt-6 pb-2">
