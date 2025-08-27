@@ -175,7 +175,7 @@ export default function EstatesPage() {
                             <TableRow key={item.id}>
                                 <TableCell className="font-mono text-xs">{item.estateCode || 'N/A'}</TableCell>
                                 <TableCell className="font-semibold">{item.name}</TableCell>
-                                <TableCell>{item.location.state === 'FCT' ? item.location.area : item.location.city}</TableCell>
+                                <TableCell>{item.location.city || item.location.district}</TableCell>
                                 <TableCell>
                                   <Chip size="sm" variant="flat" color={getStatusChipColor(item.status)}>
                                     {item.status.replace("_", " ").toUpperCase()}
@@ -196,5 +196,3 @@ export default function EstatesPage() {
     </div>
   );
 }
-
-    

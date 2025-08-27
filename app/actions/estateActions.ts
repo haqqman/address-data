@@ -23,18 +23,18 @@ const estateSchema = z.object({
   state: z.string().min(1, "State is required."),
   lga: z.string().min(1, "LGA is required."),
   city: z.string().optional(),
-  area: z.string().optional(), // Used for FCT districts, or optional area for other states
+  district: z.string().optional(), // For FCT districts
   googleMapLink: z.string().url("Must be a valid URL").optional().or(z.literal('')),
 }).refine(data => {
-    // If state is FCT, 'area' (which we use for district) is required.
+    // If state is FCT, 'district' is required.
     if (data.state === 'FCT') {
-        return !!data.area && data.area.length > 0;
+        return !!data.district && data.district.length > 0;
     }
     // For other states, 'city' is required.
     return !!data.city && data.city.length > 0;
 }, {
     message: "City or District is required.",
-    path: ["city"], // Attach error to city field as a general location indicator
+    path: ["city"], // Attach error to a common field
 });
 
 
@@ -75,18 +75,14 @@ export async function submitEstate({ formData, user }: SubmitEstateParams) {
         return { success: false, message: "User not authenticated." };
     }
 
-    const { name, state, lga, area, city, googleMapLink } = validation.data;
+    const { name, state, lga, city, district, googleMapLink } = validation.data;
 
     try {
-        // Construct location object based on state
         const location: Estate['location'] = { state, lga };
         if (state === 'FCT') {
-            location.area = area || ""; // For FCT, 'area' is the district
+            location.district = district;
         } else {
-            location.city = city || "";
-            if (area) { // If user provides an area for non-FCT states
-              location.area = area;
-            }
+            location.city = city;
         }
         
         const newEstateData: Omit<Estate, 'id' | 'createdAt' | 'updatedAt' | 'lastUpdatedBy' | 'estateCode'> & { createdAt: any, updatedAt: any, lastUpdatedBy: any } = {

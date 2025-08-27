@@ -48,6 +48,15 @@ export default function ManageEstatePage() {
   useEffect(() => {
     fetchEstate();
   }, [fetchEstate]);
+  
+  const formatLocation = (location: Estate['location']) => {
+    const parts = [];
+    if (location.district) parts.push(location.district);
+    else if (location.city) parts.push(location.city);
+    parts.push(location.lga, location.state);
+    return parts.filter(Boolean).join(', ');
+  }
+
 
   const handleUpdate = async () => {
     if (!estate || !user) return;
@@ -182,7 +191,7 @@ export default function ManageEstatePage() {
                 <div className="space-y-3">
                     <div className="flex items-center">
                         <MapPin className="h-5 w-5 text-secondary mr-3"/>
-                        <span>{`${estate.location.area ? estate.location.area + ', ' : ''}${estate.location.lga}, ${estate.location.state}`}</span>
+                        <span>{formatLocation(estate.location)}</span>
                     </div>
                     {estate.googleMapLink && (
                         <div className="flex items-center">

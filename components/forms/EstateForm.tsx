@@ -17,18 +17,16 @@ const estateSchema = z.object({
   state: z.string().min(1, "State is required."),
   lga: z.string().min(1, "LGA is required."),
   city: z.string().optional(),
-  area: z.string().optional(), // Used for FCT districts, or optional area for other states
+  district: z.string().optional(),
   googleMapLink: z.string().url("Must be a valid URL").optional().or(z.literal('')),
 }).refine(data => {
-    // If state is FCT, 'area' (which we use for district) is required.
     if (data.state === 'FCT') {
-        return !!data.area && data.area.length > 0;
+        return !!data.district && data.district.length > 0;
     }
-    // For other states, 'city' is required.
     return !!data.city && data.city.length > 0;
 }, {
     message: "City or District is required.",
-    path: ["city"], // Attach error to city field as a general location indicator
+    path: ["city"], 
 });
 
 
@@ -63,7 +61,7 @@ export function EstateForm({ onSubmissionSuccess }: EstateFormProps) {
       state: "",
       lga: "",
       city: "",
-      area: "",
+      district: "",
       googleMapLink: "",
     },
   });
@@ -131,7 +129,7 @@ export function EstateForm({ onSubmissionSuccess }: EstateFormProps) {
     setValue("state", selectedName, { shouldValidate: true });
     setValue("lga", "", { shouldValidate: true });
     setValue("city", "", { shouldValidate: true });
-    setValue("area", "", { shouldValidate: true });
+    setValue("district", "", { shouldValidate: true });
     
     const state = states.find(s => s.name === selectedName);
     if (state) {
@@ -140,7 +138,9 @@ export function EstateForm({ onSubmissionSuccess }: EstateFormProps) {
       if (state.name === 'FCT') {
         loadDistricts();
         setValue("lga", "Municipal Area Council", { shouldValidate: true });
-        setCities([]);
+        // Auto-select the LGA in the background
+        const amacLga = lgas.find(l => l.name === 'Municipal Area Council');
+        if (amacLga) setSelectedLgaId(amacLga.id);
       } else {
         setDistricts([]);
       }
@@ -156,7 +156,7 @@ export function EstateForm({ onSubmissionSuccess }: EstateFormProps) {
   const handleLgaChange = (selectedName: string) => {
     setValue("lga", selectedName, { shouldValidate: true });
     setValue("city", "", { shouldValidate: true });
-    setValue("area", "", { shouldValidate: true });
+    setValue("district", "", { shouldValidate: true });
 
     const lga = lgas.find(l => l.name === selectedName);
     if (lga && selectedStateId) {
@@ -267,39 +267,30 @@ export function EstateForm({ onSubmissionSuccess }: EstateFormProps) {
                 ))}
             </NextUISelect>
           
-            {watchedStateName === 'FCT' ? (
-                <NextUIInput
-                    label="City"
-                    value="Abuja"
-                    isReadOnly
-                    variant="bordered"
-                    description="LGA is Municipal Area Council"
-                />
-            ) : (
-                <NextUISelect
-                    label={"LGA (Local Government Area)"}
-                    placeholder={"Select an LGA"}
-                    variant="bordered"
-                    isInvalid={!!errors.lga}
-                    errorMessage={errors.lga?.message}
-                    isLoading={isLoadingLgas}
-                    isDisabled={!watchedStateName || lgas.length === 0}
-                    selectedKeys={watchedLgaName ? [watchedLgaName] : []}
-                    onChange={(e) => handleLgaChange(e.target.value)}
-                >
-                    {lgas.map((lga) => (
-                    <NextUISelectItem key={lga.name} value={lga.name}>
-                        {lga.name}
-                    </NextUISelectItem>
-                    ))}
-                </NextUISelect>
-            )}
+            <NextUISelect
+                label={"LGA (Local Government Area)"}
+                placeholder={"Select an LGA"}
+                variant="bordered"
+                isInvalid={!!errors.lga}
+                errorMessage={errors.lga?.message}
+                isLoading={isLoadingLgas}
+                isDisabled={!watchedStateName || lgas.length === 0 || watchedStateName === 'FCT'}
+                selectedKeys={watchedLgaName ? [watchedLgaName] : []}
+                onChange={(e) => handleLgaChange(e.target.value)}
+                description={watchedStateName === 'FCT' ? 'Set to Municipal Area Council' : ''}
+            >
+                {lgas.map((lga) => (
+                <NextUISelectItem key={lga.name} value={lga.name}>
+                    {lga.name}
+                </NextUISelectItem>
+                ))}
+            </NextUISelect>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
             {watchedStateName === 'FCT' ? (
                  <Controller
-                    name="area"
+                    name="district"
                     control={control}
                     render={({ field }) => (
                          <NextUISelect
@@ -307,8 +298,8 @@ export function EstateForm({ onSubmissionSuccess }: EstateFormProps) {
                             label="District"
                             placeholder="Select a district"
                             variant="bordered"
-                            isInvalid={!!errors.area}
-                            errorMessage={errors.area?.message}
+                            isInvalid={!!errors.district}
+                            errorMessage={errors.district?.message}
                             isLoading={isLoadingDistricts}
                             isDisabled={districts.length === 0}
                             selectedKeys={field.value ? [field.value] : []}
@@ -348,23 +339,6 @@ export function EstateForm({ onSubmissionSuccess }: EstateFormProps) {
                     )}
                 />
             )}
-             <Controller
-                name="area"
-                control={control}
-                render={({ field }) => (
-                    <NextUIInput
-                        {...field}
-                        label="Neighborhood (Optional)"
-                        placeholder="e.g. GRA, Phase 2"
-                        variant="bordered"
-                        isInvalid={!!errors.area}
-                        errorMessage={errors.area?.message}
-                        fullWidth
-                        // Hide this field if FCT is selected as we use it for District
-                        className={watchedStateName === 'FCT' ? 'hidden' : ''}
-                    />
-                )}
-            />
         </div>
 
 

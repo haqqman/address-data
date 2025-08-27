@@ -117,8 +117,8 @@ export interface Estate {
   location: {
     state: string;
     lga: string;
-    city?: string; // Optional city for most states
-    area?: string; // Used for FCT districts or general neighborhood
+    city?: string;
+    district?: string; // Used for FCT districts or other specific areas
   };
   googleMapLink?: string; // Optional
   source: string; // "Address Data", "Platform", or user-specified
