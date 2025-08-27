@@ -27,6 +27,7 @@ export default function AddressesPage() {
     setIsLoading(true);
     setError(null);
     try {
+      // Always fetch all submissions if the view is 'all', otherwise fetch for the user.
       const userIdToFetch = activeFilter === "my_contributions" ? user?.id : undefined;
       const data = await getAddressSubmissions(userIdToFetch);
       setSubmissions(data);
@@ -50,6 +51,10 @@ export default function AddressesPage() {
     }
     return submissions;
   }, [submissions, activeFilter, user]);
+
+  const listTitle = useMemo(() => {
+    return activeFilter === 'my_contributions' ? "My Contributions" : "All Contributions";
+  }, [activeFilter]);
 
   return (
     <div className="space-y-8">
@@ -105,7 +110,7 @@ export default function AddressesPage() {
         </Card>
       )}
 
-      {!isLoading && !authLoading && !error && <AddressList addresses={filteredSubmissions} />}
+      {!isLoading && !authLoading && !error && <AddressList title={listTitle} addresses={filteredSubmissions} />}
     </div>
   );
 }

@@ -8,9 +8,10 @@ import { useIsMobile } from "@/hooks/use-mobile";
 
 interface AddressListProps {
   addresses: AddressSubmission[];
+  title: string;
 }
 
-export function AddressList({ addresses }: AddressListProps) {
+export function AddressList({ addresses, title }: AddressListProps) {
   const isMobile = useIsMobile();
   
   const getStatusChipColor = (status: AddressSubmission['status']): "primary" | "secondary" | "danger" | "default" | "success" | "warning" => {
@@ -39,7 +40,7 @@ export function AddressList({ addresses }: AddressListProps) {
       <NextUICard className="shadow-lg rounded-xl mt-8">
         <NextUICardHeader className="px-6 pt-6 pb-2">
           <div className="flex flex-col space-y-0.5">
-            <h2 className="text-xl font-semibold text-primary">My Contributions</h2>
+            <h2 className="text-xl font-semibold text-primary">{title}</h2>
           </div>
         </NextUICardHeader>
         <NextUICardBody className="p-6">
@@ -53,7 +54,7 @@ export function AddressList({ addresses }: AddressListProps) {
     <NextUICard className="shadow-lg rounded-xl mt-8">
       <NextUICardHeader className="px-6 pt-6 pb-2">
         <div className="flex flex-col space-y-0.5">
-          <h2 className="text-xl font-semibold text-primary">My Contributions</h2>
+          <h2 className="text-xl font-semibold text-primary">{title}</h2>
           <p className="text-sm text-foreground-500">View the status of your address contributions.</p>
         </div>
       </NextUICardHeader>
