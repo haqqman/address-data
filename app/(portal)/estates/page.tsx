@@ -4,7 +4,7 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import type { Estate } from "@/types";
 import { getEstates } from "@/app/actions/estateActions";
-import { Card, CardHeader, CardBody, Skeleton, Button, Input, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Link as NextUILink, Chip } from "@nextui-org/react";
+import { Card, CardHeader, CardBody, Skeleton, Button, Input, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Link as NextUILink, Chip, Select, SelectItem, type Selection } from "@nextui-org/react";
 import { AlertTriangle, PlusCircle, Search } from "lucide-react";
 import Link from "next/link";
 
@@ -13,6 +13,8 @@ export default function EstatesPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [filterValue, setFilterValue] = useState("");
+  const [cityFilter, setCityFilter] = useState<Selection>(new Set([]));
+
 
   const fetchEstates = useCallback(async () => {
     setIsLoading(true);
@@ -34,6 +36,19 @@ export default function EstatesPage() {
   }, [fetchEstates]);
 
   const hasSearchFilter = Boolean(filterValue);
+  
+  const citiesAndDistricts = useMemo(() => {
+    const locations = new Set<string>();
+    estates.forEach(estate => {
+        if (estate.location.city) {
+            locations.add(estate.location.city);
+        } else if (estate.location.area) { // For FCT districts
+            locations.add(estate.location.area);
+        }
+    });
+    return Array.from(locations).sort();
+  }, [estates]);
+
 
   const filteredItems = useMemo(() => {
     let filteredEstates = [...estates];
@@ -44,8 +59,17 @@ export default function EstatesPage() {
         estate.estateCode?.toLowerCase().includes(filterValue.toLowerCase())
       );
     }
+    
+    const selectedCity = Array.from(cityFilter).join("");
+    if (selectedCity) {
+         filteredEstates = filteredEstates.filter((estate) => {
+            const locationName = estate.location.city || estate.location.area;
+            return locationName === selectedCity;
+         });
+    }
+
     return filteredEstates;
-  }, [estates, filterValue, hasSearchFilter]);
+  }, [estates, filterValue, hasSearchFilter, cityFilter]);
   
   const onSearchChange = useCallback((value?: string) => {
     if (value) {
@@ -61,7 +85,7 @@ export default function EstatesPage() {
 
   const formatLocation = (location: Estate['location']) => {
     const { city, area, lga, state } = location;
-    // For FCT, area is district. For others, city is primary.
+    // For FCT, area is district. For other states, city is primary.
     const primaryLocation = location.state === 'FCT' ? area : city;
     return `${primaryLocation || ''}, ${lga}, ${state}`.replace(/^, /g, ''); // Clean leading comma
   };
@@ -99,17 +123,34 @@ export default function EstatesPage() {
       </div>
       
       <Card className="shadow-lg rounded-xl bg-background">
-        <CardHeader className="p-6 flex justify-between items-center">
-            <h2 className="text-xl font-semibold text-primary">Estate Directory</h2>
-            <Input
-                isClearable
-                placeholder="Search by name or code..."
-                startContent={<Search className="h-4 w-4 text-default-400" />}
-                className="max-w-xs"
-                value={filterValue}
-                onClear={onClear}
-                onValueChange={onSearchChange}
-            />
+        <CardHeader className="p-6 flex flex-col md:flex-row justify-between items-center gap-4">
+            <h2 className="text-xl font-semibold text-primary w-full md:w-auto">Estate Directory</h2>
+            <div className="w-full md:w-auto md:flex-grow md:max-w-2xl flex flex-col md:flex-row gap-4">
+              <Select
+                label="Filter by City/District"
+                placeholder="All Locations"
+                size="sm"
+                selectedKeys={cityFilter}
+                onSelectionChange={setCityFilter}
+                className="w-full md:max-w-xs"
+              >
+                {citiesAndDistricts.map((location) => (
+                  <SelectItem key={location} value={location}>
+                    {location}
+                  </SelectItem>
+                ))}
+              </Select>
+              <Input
+                  isClearable
+                  placeholder="Search by name or code..."
+                  startContent={<Search className="h-4 w-4 text-default-400" />}
+                  className="w-full md:max-w-xs"
+                  value={filterValue}
+                  size="sm"
+                  onClear={onClear}
+                  onValueChange={onSearchChange}
+              />
+            </div>
         </CardHeader>
         <CardBody className="p-2 md:p-4">
             {isLoading && (
@@ -141,12 +182,12 @@ export default function EstatesPage() {
                         <TableColumn>STATUS</TableColumn>
                         <TableColumn>ACTIONS</TableColumn>
                     </TableHeader>
-                    <TableBody items={filteredItems} emptyContent={"No estates found."}>
+                    <TableBody items={filteredItems} emptyContent={"No estates match the current filters."}>
                         {(item) => (
                             <TableRow key={item.id}>
                                 <TableCell className="font-mono text-xs">{item.estateCode || 'N/A'}</TableCell>
                                 <TableCell className="font-semibold">{item.name}</TableCell>
-                                <TableCell>{formatLocation(item.location)}</TableCell>
+                                <TableCell>{item.location.city || item.location.area}</TableCell>
                                 <TableCell>
                                   <Chip size="sm" variant="flat" color={getStatusChipColor(item.status)}>
                                     {item.status.replace("_", " ").toUpperCase()}
