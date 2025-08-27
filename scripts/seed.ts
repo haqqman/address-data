@@ -21,6 +21,23 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 }
 
+// Validate environment variables
+const requiredEnvVars = [
+  'NEXT_PUBLIC_FIREBASE_API_KEY',
+  'NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN',
+  'NEXT_PUBLIC_FIREBASE_PROJECT_ID',
+  'NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET',
+  'NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID',
+  'NEXT_PUBLIC_FIREBASE_APP_ID',
+]
+
+for (const envVar of requiredEnvVars) {
+  if (!process.env[envVar]) {
+    console.error(`Missing environment variable: ${envVar}`)
+    process.exit(1)
+  }
+}
+
 // Initialize Firebase
 let app
 if (!getApps().length) {
@@ -34,6 +51,7 @@ const db = getFirestore(app)
 const GEOGRAPHY_COLLECTION = 'nigerianGeography'
 const LGAS_SUBCOLLECTION = 'lgas'
 const CITIES_SUBCOLLECTION = 'cities'
+const DISTRICTS_SUBCOLLECTION = 'districts'
 
 const nigerianStates = [
   {
@@ -1083,140 +1101,134 @@ const seedDatabase = async () => {
   console.log('Starting to seed the database with Nigerian geography data...')
   console.log('This might take a few minutes. Please wait.')
 
-  let stateCount = 0
-  let lgaCount = 0
-  let cityCount = 0
+  let totalStateCount = 0
+  let totalLgaCount = 0
+  let totalCityCount = 0
+  let totalDistrictCount = 0
 
-  for (const stateData of nigerianStates) {
-    const stateId = stateData.state
-      .toLowerCase()
-      .replace(/\s+/g, '-')
-      .replace(/[^\w-]+/g, '')
-    const stateRef = doc(db, GEOGRAPHY_COLLECTION, stateId)
+  try {
+    for (const stateData of nigerianStates) {
+      const stateId = stateData.state
+        .toLowerCase()
+        .replace(/\s+/g, '-')
+        .replace(/[^\w-]+/g, '')
+      const stateRef = doc(db, GEOGRAPHY_COLLECTION, stateId)
 
-    const stateDocData = {
-      name: stateData.state,
-      capital: stateData.capital,
-    }
+      const stateDocData = {
+        name: stateData.state,
+        capital: stateData.capital,
+      }
 
-    const batch = writeBatch(db)
-    batch.set(stateRef, stateDocData)
-    stateCount++
+      const batch = writeBatch(db)
+      batch.set(stateRef, stateDocData)
+      totalStateCount++
 
-    console.log(`Processing State: ${stateData.state}`)
+      console.log(`Processing State: ${stateData.state}`)
 
-    if (stateData.lgas && stateData.lgas.length > 0) {
-      for (const lgaData of stateData.lgas) {
-        const lgaId = lgaData.name
-          .toLowerCase()
-          .replace(/\s+/g, '-')
-          .replace(/[^\w-]+/g, '')
-        const lgaRef = doc(stateRef, LGAS_SUBCOLLECTION, lgaId)
+      let stateLgaCount = 0
+      let stateCityCount = 0
+      let stateDistrictCount = 0
 
-        const lgaDocData = {
-          name: lgaData.name,
-          stateId: stateId,
-        }
-        batch.set(lgaRef, lgaDocData)
-        lgaCount++
-
-        // Handle LGAs with 'cities', 'towns', or 'city' (for AMAC in FCT)
-        if (
-          'cities' in lgaData &&
-          Array.isArray(lgaData.cities) &&
-          lgaData.cities.length > 0
-        ) {
-          for (const cityName of lgaData.cities) {
-            const cityId = cityName
-              .toLowerCase()
-              .replace(/\s+/g, '-')
-              .replace(/[^\w-]+/g, '')
-            const cityRef = doc(lgaRef, CITIES_SUBCOLLECTION, cityId)
-
-            const cityDocData = {
-              name: cityName,
-              stateId: stateId,
-              lgaId: lgaId,
-            }
-            batch.set(cityRef, cityDocData)
-            cityCount++
-          }
-        } else if (
-          'towns' in lgaData &&
-          Array.isArray(lgaData.towns) &&
-          lgaData.towns.length > 0
-        ) {
-          for (const townName of lgaData.towns) {
-            const townId = townName
-              .toLowerCase()
-              .replace(/\s+/g, '-')
-              .replace(/[^\w-]+/g, '')
-            const townRef = doc(lgaRef, CITIES_SUBCOLLECTION, townId)
-
-            const townDocData = {
-              name: townName,
-              stateId: stateId,
-              lgaId: lgaId,
-            }
-            batch.set(townRef, townDocData)
-            cityCount++
-          }
-        } else if (
-          'city' in lgaData &&
-          lgaData.city &&
-          Array.isArray(lgaData.city.districts)
-        ) {
-          // For AMAC in FCT, add the city and its districts
-          const cityName = lgaData.city.name
-          const cityId = cityName
+      // Check if the state has LGAs or districts (for FCT)
+      if (stateData.lgas && stateData.lgas.length > 0 && 'cities' in stateData.lgas[0]) {
+        // Process states with LGAs that contain cities
+        for (const lgaData of stateData.lgas) {
+          const lgaId = lgaData.name
             .toLowerCase()
             .replace(/\s+/g, '-')
             .replace(/[^\w-]+/g, '')
-          const cityRef = doc(lgaRef, CITIES_SUBCOLLECTION, cityId)
+          const lgaRef = doc(stateRef, LGAS_SUBCOLLECTION, lgaId)
 
-          const cityDocData = {
-            name: cityName,
+          const lgaDocData = {
+            name: lgaData.name,
             stateId: stateId,
-            lgaId: lgaId,
           }
-          batch.set(cityRef, cityDocData)
-          cityCount++
+          batch.set(lgaRef, lgaDocData)
+          stateLgaCount++
+          totalLgaCount++
 
-          for (const districtName of lgaData.city.districts) {
-            const districtId = districtName
-              .toLowerCase()
-              .replace(/\s+/g, '-')
-              .replace(/[^\w-]+/g, '')
-            const districtRef = doc(cityRef, 'districts', districtId)
+          // Handle LGAs with cities
+          if ('cities' in lgaData && Array.isArray(lgaData.cities)) {
+            for (const cityName of lgaData.cities) {
+              const cityId = cityName
+                .toLowerCase()
+                .replace(/\s+/g, '-')
+                .replace(/[^\w-]+/g, '')
+              const cityRef = doc(lgaRef, CITIES_SUBCOLLECTION, cityId)
 
-            const districtDocData = {
-              name: districtName,
-              stateId: stateId,
-              lgaId: lgaId,
-              cityId: cityId,
+              const cityDocData = {
+                name: cityName,
+                stateId: stateId,
+                lgaId: lgaId,
+              }
+              batch.set(cityRef, cityDocData)
+              stateCityCount++
+              totalCityCount++
             }
-            batch.set(districtRef, districtDocData)
-            // Optionally increment cityCount or another counter if you want to track districts
+          }
+        }
+      } else if (stateData.lgas && stateData.lgas.length > 0 && 'districts' in stateData.lgas[0]) {
+        // Handle FCT which has districts instead of cities
+        for (const lgaData of stateData.lgas) {
+          const lgaId = lgaData.name
+            .toLowerCase()
+            .replace(/\s+/g, '-')
+            .replace(/[^\w-]+/g, '')
+          const lgaRef = doc(stateRef, LGAS_SUBCOLLECTION, lgaId)
+
+          const lgaDocData = {
+            name: lgaData.name,
+            stateId: stateId,
+          }
+          batch.set(lgaRef, lgaDocData)
+          stateLgaCount++
+          totalLgaCount++
+
+          // Process districts for FCT
+          if ('districts' in lgaData && Array.isArray(lgaData.districts)) {
+            for (const districtName of lgaData.districts) {
+              const districtId = districtName
+                .toLowerCase()
+                .replace(/\s+/g, '-')
+                .replace(/[^\w-]+/g, '')
+              const districtRef = doc(lgaRef, DISTRICTS_SUBCOLLECTION, districtId)
+
+              const districtDocData = {
+                name: districtName,
+                stateId: stateId,
+                lgaId: lgaId,
+              }
+              batch.set(districtRef, districtDocData)
+              stateDistrictCount++
+              totalDistrictCount++
+            }
           }
         }
       }
+
+      try {
+        await batch.commit()
+        console.log(
+          `Successfully seeded ${stateData.state}: ${stateLgaCount} LGAs, ${stateCityCount} cities, ${stateDistrictCount} districts`
+        )
+      } catch (error) {
+        console.error(`Error seeding ${stateData.state}:`, error)
+        // Continue with next state instead of stopping
+      }
     }
 
-    try {
-      await batch.commit()
-      console.log(
-        `Successfully seeded ${stateData.state} and its sub-collections.`
-      )
-    } catch (error) {
-      console.error(`Error seeding ${stateData.state}:`, error)
-    }
+    console.log('\n--- Seeding Complete! ---')
+    console.log(`Total States seeded: ${totalStateCount}`)
+    console.log(`Total LGAs seeded: ${totalLgaCount}`)
+    console.log(`Total Cities seeded: ${totalCityCount}`)
+    console.log(`Total Districts seeded: ${totalDistrictCount}`)
+    console.log('You can now close this script (Ctrl+C).')
+  } catch (error) {
+    console.error(
+      'An unexpected error occurred during the seeding process:',
+      error
+    )
   }
-
-  console.log('\n--- Seeding Complete! ---')
-  console.log(`Total States seeded: ${stateCount}`)
-  console.log(`Total LGAs seeded: ${lgaCount}`)
-  console.log(`Total Cities seeded: ${cityCount}`)
-  console.log('You can now close this script (Ctrl+C).')
 }
 
 seedDatabase().catch((error) => {
