@@ -59,93 +59,93 @@ const estatesData = [
   // Abuja Gated Estates
   {
     name: "Suncity Estate",
-    location: { state: "FCT", lga: "Municipal Area Council", district: "Lokogoma" },
+    location: { state: "FCT", lga: "Municipal Area Council", area: "Lokogoma" },
     googleMapLink: ""
   },
   {
     name: "Efab Estate, Lokogoma",
-    location: { state: "FCT", lga: "Municipal Area Council", district: "Lokogoma" },
+    location: { state: "FCT", lga: "Municipal Area Council", area: "Lokogoma" },
     googleMapLink: ""
   },
   {
     name: "Efab Estate, Gwarinpa",
-    location: { state: "FCT", lga: "Municipal Area Council", district: "Gwarinpa" },
+    location: { state: "FCT", lga: "Municipal Area Council", area: "Gwarinpa" },
     googleMapLink: ""
   },
   {
     name: "Sunnyvale Homes",
-    location: { state: "FCT", lga: "Municipal Area Council", district: "Dakwo" },
+    location: { state: "FCT", lga: "Municipal Area Council", area: "Dakwo" },
     googleMapLink: ""
   },
   {
     name: "Crown Court Estate",
-    location: { state: "FCT", lga: "Municipal Area Council", district: "Mabushi" },
+    location: { state: "FCT", lga: "Municipal Area Council", area: "Mabushi" },
     googleMapLink: ""
   },
   {
     name: "Goshen Villa Estate",
-    location: { state: "FCT", lga: "Municipal Area Council", district: "Lugbe" },
+    location: { state: "FCT", lga: "Municipal Area Council", area: "Lugbe" },
     googleMapLink: ""
   },
   {
     name: "Peggy’s Pointee",
-    location: { state: "FCT", lga: "Municipal Area Council", district: "Maitama" },
+    location: { state: "FCT", lga: "Municipal Area Council", area: "Maitama" },
     googleMapLink: ""
   },
   {
     name: "River Park Estate",
-    location: { state: "FCT", lga: "Municipal Area Council", district: "Lugbe" },
+    location: { state: "FCT", lga: "Municipal Area Council", area: "Lugbe" },
     googleMapLink: ""
   },
   {
     name: "Cosgrove Estate, Katampe",
-    location: { state: "FCT", lga: "Municipal Area Council", district: "Katampe" },
+    location: { state: "FCT", lga: "Municipal Area Council", area: "Katampe" },
     googleMapLink: ""
   },
   {
     name: "Brains and Hammers Estate",
-    location: { state: "FCT", lga: "Municipal Area Council", district: "Life Camp" },
+    location: { state: "FCT", lga: "Municipal Area Council", area: "Life Camp" },
     googleMapLink: ""
   },
   {
     name: "Bellavue Estate",
-    location: { state: "FCT", lga: "Municipal Area Council", district: "Life Camp" },
+    location: { state: "FCT", lga: "Municipal Area Council", area: "Life Camp" },
     googleMapLink: ""
   },
   {
     name: "Palm Spring Estate",
-    location: { state: "FCT", lga: "Municipal Area Council", district: "Maitama" },
+    location: { state: "FCT", lga: "Municipal Area Council", area: "Maitama" },
     googleMapLink: ""
   },
   {
     name: "Godab Estate",
-    location: { state: "FCT", lga: "Municipal Area Council", district: "Kafe" },
+    location: { state: "FCT", lga: "Municipal Area Council", area: "Kafe" },
     googleMapLink: ""
   },
   {
     name: "Aso Grove Estate",
-    location: { state: "FCT", lga: "Municipal Area Council", district: "Maitama" },
+    location: { state: "FCT", lga: "Municipal Area Council", area: "Maitama" },
     googleMapLink: ""
   },
   {
     name: "Gwarinpa Estate (Phase 3)",
-    location: { state: "FCT", lga: "Municipal Area Council", district: "Gwarinpa" },
+    location: { state: "FCT", lga: "Municipal Area Council", area: "Gwarinpa" },
     googleMapLink: ""
   },
   {
     name: "Apo Ville",
-    location: { state: "FCT", lga: "Municipal Area Council", district: "Apo" },
+    location: { state: "FCT", lga: "Municipal Area Council", area: "Apo" },
     googleMapLink: ""
   },
   {
     name: "Excel Estate",
-    location: { state: "FCT", lga: "Municipal Area Council", district: "Apo-Dutse" },
+    location: { state: "FCT", lga: "Municipal Area Council", area: "Apo-Dutse" },
     googleMapLink: ""
   },
   // Port Harcourt Gated Estates
   {
     name: "Rainbow Town",
-    location: { state: "Rivers", lga: "Port Harcourt", district: "Trans-Amadi" },
+    location: { state: "Rivers", lga: "Port Harcourt", city: "Trans-Amadi" },
     googleMapLink: "https.maps.app.goo.gl/Y7zF9JkK6LgH8dXbA"
   },
 ];
@@ -172,7 +172,7 @@ const seedEstates = async () => {
             name: estate.name,
             location: estate.location,
             googleMapLink: estate.googleMapLink || "",
-            status: "approved", // <-- ADDED THIS LINE
+            status: "approved", 
             source: "Address Data", // As these are seeded
             createdBy: "system-seed",
             lastUpdatedBy: "system-seed",
