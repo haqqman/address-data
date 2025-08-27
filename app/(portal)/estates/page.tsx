@@ -119,7 +119,7 @@ export default function EstatesPage() {
       
       <Card className="shadow-lg rounded-xl bg-background">
         <CardHeader className="p-6 flex flex-col md:flex-row justify-between items-center gap-4">
-            <h2 className="text-xl font-semibold text-primary w-full md:w-auto">Estate Directory</h2>
+            <h2 className="text-xl font-semibold text-primary w-full md:w-auto">{filteredItems.length} {filteredItems.length === 1 ? 'Estate' : 'Estates'}</h2>
             <div className="w-full md:w-auto md:flex-grow md:max-w-2xl flex flex-col md:flex-row gap-4">
               <Select
                 label="Filter by State"
