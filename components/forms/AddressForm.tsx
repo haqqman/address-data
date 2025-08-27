@@ -127,9 +127,9 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
 
   const handleStateChange = (selectedName: string) => {
     setValue("state", selectedName, { shouldValidate: true });
-    setValue("lga", "", { shouldValidate: false });
-    setValue("city", "", { shouldValidate: false });
-    setValue("areaDistrict", "", { shouldValidate: false });
+    setValue("lga", "", { shouldValidate: true });
+    setValue("city", "", { shouldValidate: true });
+    setValue("areaDistrict", "", { shouldValidate: true });
     
     const state = states.find(s => s.name === selectedName);
     if (state) {
@@ -153,8 +153,8 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
   
   const handleLgaChange = (selectedName: string) => {
     setValue("lga", selectedName, { shouldValidate: true });
-    setValue("city", "", { shouldValidate: false });
-    setValue("areaDistrict", "", { shouldValidate: false });
+    setValue("city", "", { shouldValidate: true });
+    setValue("areaDistrict", "", { shouldValidate: true });
 
     const lga = lgas.find(l => l.name === selectedName);
     if (lga && selectedStateId) {
@@ -310,41 +310,55 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
                 variant="bordered"
               />
             ) : (
+              <Controller
+                name="city"
+                control={control}
+                render={({field}) => (
+                  <NextUISelect
+                    {...field}
+                    label="City"
+                    placeholder="Select a city"
+                    variant="bordered"
+                    isInvalid={!!errors.city}
+                    errorMessage={errors.city?.message}
+                    isLoading={isLoadingCities}
+                    isDisabled={!watchedLgaName || cities.length === 0}
+                    selectedKeys={field.value ? [field.value] : []}
+                    onChange={(e) => handleCityChange(e.target.value)}
+                  >
+                    {cities.map((city) => (
+                      <NextUISelectItem key={city.name} value={city.name}>
+                        {city.name}
+                      </NextUISelectItem>
+                    ))}
+                  </NextUISelect>
+                )}
+              />
+           )}
+           <Controller
+            name="areaDistrict"
+            control={control}
+            render={({field}) => (
               <NextUISelect
-                label="City"
-                placeholder="Select a city"
+                {...field}
+                label="District"
+                placeholder="Available for Abuja City Only"
                 variant="bordered"
-                isInvalid={!!errors.city}
-                errorMessage={errors.city?.message}
-                isLoading={isLoadingCities}
-                isDisabled={!watchedLgaName || cities.length === 0}
-                selectedKeys={watch("city") ? [watch("city")] : []}
-                onChange={(e) => handleCityChange(e.target.value)}
+                isInvalid={!!errors.areaDistrict}
+                errorMessage={errors.areaDistrict?.message}
+                isLoading={isLoadingDistricts}
+                isDisabled={watchedCityName !== 'Abuja' || districts.length === 0}
+                selectedKeys={field.value ? [field.value] : []}
+                onChange={(e) => handleDistrictChange(e.target.value)}
               >
-                {cities.map((city) => (
-                  <NextUISelectItem key={city.name} value={city.name}>
-                    {city.name}
-                  </NextUISelectItem>
+                {districts.map((district) => (
+                    <NextUISelectItem key={district.name} value={district.name}>
+                        {district.name}
+                    </NextUISelectItem>
                 ))}
               </NextUISelect>
-           )}
-          <NextUISelect
-            label="District"
-            placeholder="Available for Abuja City Only"
-            variant="bordered"
-            isInvalid={!!errors.areaDistrict}
-            errorMessage={errors.areaDistrict?.message}
-            isLoading={isLoadingDistricts}
-            isDisabled={watchedCityName !== 'Abuja' || districts.length === 0}
-            selectedKeys={watch("areaDistrict") ? [watch("areaDistrict")] : []}
-            onChange={(e) => handleDistrictChange(e.target.value)}
-          >
-            {districts.map((district) => (
-                <NextUISelectItem key={district.name} value={district.name}>
-                    {district.name}
-                </NextUISelectItem>
-            ))}
-          </NextUISelect>
+            )}
+           />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Controller
