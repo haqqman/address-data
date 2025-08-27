@@ -422,28 +422,11 @@ const nigerianStates = [
         districts: ['Abaji', 'Agyana', 'Nuku'],
       },
       {
-        name: 'Bwari',
-        districts: ['Bwari', 'Kubwa', 'Dutse'],
-      },
-      {
-        name: 'Gwagwalada',
-        districts: ['Gwagwalada', 'Zuba', 'Paiko'],
-      },
-      {
-        name: 'Kuje',
-        districts: ['Kuje', 'Chibiri', 'Gaube'],
-      },
-      {
-        name: 'Kwali',
-        districts: ['Kwali', 'Yebu', 'Dafa'],
-      },
-      {
         name: 'Abuja Municipal Area Council (AMAC)',
         districts: [
           'Asokoro',
           'Central Business District',
           'Dakibiyu',
-          'Dawaki',
           'Durumi',
           'Garki',
           'Gwagwa',
@@ -468,6 +451,30 @@ const nigerianStates = [
           'Wuse',
           'Wuye',
         ],
+      },
+      {
+        name: 'Bwari',
+        districts: [
+          'Bwari',
+          'Dutse Alhaji',
+          'Kubwa',
+          'Dawaki',
+          'Bassan',
+          'Byazhin',
+          'Dutse',
+        ],
+      },
+      {
+        name: 'Gwagwalada',
+        districts: ['Gwagwalada', 'Dobi', 'Zuba', 'Paiko'],
+      },
+      {
+        name: 'Kuje',
+        districts: ['Kuje', 'Chibiri', 'Gaube', 'Guni', 'Kabi'],
+      },
+      {
+        name: 'Kwali',
+        districts: ['Kwali', 'Yebu', 'Dafa', 'Pelele'],
       },
     ],
   },
@@ -1130,8 +1137,12 @@ const seedDatabase = async () => {
       let stateDistrictCount = 0
 
       // Check if the state has LGAs or districts (for FCT)
-      if (stateData.lgas && stateData.lgas.length > 0) {
-        // Process states with LGAs
+      if (
+        stateData.lgas &&
+        stateData.lgas.length > 0 &&
+        'cities' in stateData.lgas[0]
+      ) {
+        // Process states with LGAs that contain cities
         for (const lgaData of stateData.lgas) {
           const lgaId = lgaData.name
             .toLowerCase()
@@ -1148,7 +1159,7 @@ const seedDatabase = async () => {
           totalLgaCount++
 
           // Handle LGAs with cities
-          if (lgaData.cities && Array.isArray(lgaData.cities)) {
+          if ('cities' in lgaData && Array.isArray(lgaData.cities)) {
             for (const cityName of lgaData.cities) {
               const cityId = cityName
                 .toLowerCase()
@@ -1167,7 +1178,11 @@ const seedDatabase = async () => {
             }
           }
         }
-      } else if (stateData.lgas && stateData.lgas[0].districts) {
+      } else if (
+        stateData.lgas &&
+        stateData.lgas.length > 0 &&
+        'districts' in stateData.lgas[0]
+      ) {
         // Handle FCT which has districts instead of cities
         for (const lgaData of stateData.lgas) {
           const lgaId = lgaData.name
@@ -1185,13 +1200,17 @@ const seedDatabase = async () => {
           totalLgaCount++
 
           // Process districts for FCT
-          if (lgaData.districts && Array.isArray(lgaData.districts)) {
+          if ('districts' in lgaData && Array.isArray(lgaData.districts)) {
             for (const districtName of lgaData.districts) {
               const districtId = districtName
                 .toLowerCase()
                 .replace(/\s+/g, '-')
                 .replace(/[^\w-]+/g, '')
-              const districtRef = doc(lgaRef, DISTRICTS_SUBCOLLECTION, districtId)
+              const districtRef = doc(
+                lgaRef,
+                DISTRICTS_SUBCOLLECTION,
+                districtId
+              )
 
               const districtDocData = {
                 name: districtName,
