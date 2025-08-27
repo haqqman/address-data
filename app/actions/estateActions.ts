@@ -7,7 +7,7 @@ import { db } from "@/lib/firebase/config";
 import { 
   collection, 
   addDoc, 
-  getDocs, _test_
+  getDocs,
   query, 
   doc, 
   updateDoc, 
