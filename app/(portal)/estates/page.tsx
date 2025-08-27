@@ -13,7 +13,7 @@ export default function EstatesPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [filterValue, setFilterValue] = useState("");
-  const [cityFilter, setCityFilter] = useState<Selection>(new Set([]));
+  const [stateFilter, setStateFilter] = useState<Selection>(new Set([]));
 
 
   const fetchEstates = useCallback(async () => {
@@ -37,16 +37,14 @@ export default function EstatesPage() {
 
   const hasSearchFilter = Boolean(filterValue);
   
-  const citiesAndDistricts = useMemo(() => {
-    const locations = new Set<string>();
+  const uniqueStates = useMemo(() => {
+    const statesSet = new Set<string>();
     estates.forEach(estate => {
-        if (estate.location.city) {
-            locations.add(estate.location.city);
-        } else if (estate.location.area) { // For FCT districts
-            locations.add(estate.location.area);
+        if (estate.location.state) {
+            statesSet.add(estate.location.state);
         }
     });
-    return Array.from(locations).sort();
+    return Array.from(statesSet).sort();
   }, [estates]);
 
 
@@ -60,16 +58,13 @@ export default function EstatesPage() {
       );
     }
     
-    const selectedCity = Array.from(cityFilter).join("");
-    if (selectedCity) {
-         filteredEstates = filteredEstates.filter((estate) => {
-            const locationName = estate.location.city || estate.location.area;
-            return locationName === selectedCity;
-         });
+    const selectedState = Array.from(stateFilter).join("");
+    if (selectedState) {
+         filteredEstates = filteredEstates.filter((estate) => estate.location.state === selectedState);
     }
 
     return filteredEstates;
-  }, [estates, filterValue, hasSearchFilter, cityFilter]);
+  }, [estates, filterValue, hasSearchFilter, stateFilter]);
   
   const onSearchChange = useCallback((value?: string) => {
     if (value) {
@@ -127,16 +122,16 @@ export default function EstatesPage() {
             <h2 className="text-xl font-semibold text-primary w-full md:w-auto">Estate Directory</h2>
             <div className="w-full md:w-auto md:flex-grow md:max-w-2xl flex flex-col md:flex-row gap-4">
               <Select
-                label="Filter by City/District"
-                placeholder="All Locations"
+                label="Filter by State"
+                placeholder="All States"
                 size="sm"
-                selectedKeys={cityFilter}
-                onSelectionChange={setCityFilter}
+                selectedKeys={stateFilter}
+                onSelectionChange={setStateFilter}
                 className="w-full md:max-w-xs"
               >
-                {citiesAndDistricts.map((location) => (
-                  <SelectItem key={location} value={location}>
-                    {location}
+                {uniqueStates.map((state) => (
+                  <SelectItem key={state} value={state}>
+                    {state}
                   </SelectItem>
                 ))}
               </Select>
