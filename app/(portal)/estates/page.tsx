@@ -58,9 +58,9 @@ export default function EstatesPage() {
       );
     }
     
-    const selectedState = Array.from(stateFilter).join("");
-    if (selectedState) {
-         filteredEstates = filteredEstates.filter((estate) => estate.location.state === selectedState);
+    const selectedStates = Array.from(stateFilter);
+    if (selectedStates.length > 0 && !selectedStates.includes("all")) {
+         filteredEstates = filteredEstates.filter((estate) => selectedStates.includes(estate.location.state));
     }
 
     return filteredEstates;
