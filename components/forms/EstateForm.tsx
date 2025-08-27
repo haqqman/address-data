@@ -9,26 +9,28 @@ import { submitEstate } from "@/app/actions/estateActions";
 import { CheckCircle, AlertTriangle, Info } from "lucide-react"; 
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/contexts/auth-context"; 
-import { getStates, getLgasForState } from "@/app/actions/geographyActions";
-import type { GeographyState, GeographyLGA } from "@/types";
+import { getStates, getLgasForState, getCitiesForLga, getAbujaDistricts } from "@/app/actions/geographyActions";
+import type { GeographyState, GeographyLGA, GeographyCity } from "@/types";
 
 const estateSchema = z.object({
   name: z.string().min(3, "Estate name must be at least 3 characters long."),
   state: z.string().min(1, "State is required."),
   lga: z.string().min(1, "LGA is required."),
-  area: z.string().optional(),
+  city: z.string().optional(),
+  area: z.string().optional(), // Used for FCT districts, or optional area for other states
   googleMapLink: z.string().url("Must be a valid URL").optional().or(z.literal('')),
 }).refine(data => {
-    // If state is FCT, area (used as district) is required
-    const fctState = "FCT";
-    if (data.state === fctState) {
+    // If state is FCT, 'area' (which we use for district) is required.
+    if (data.state === 'FCT') {
         return !!data.area && data.area.length > 0;
     }
-    return true;
+    // For other states, 'city' is required.
+    return !!data.city && data.city.length > 0;
 }, {
-    message: "District is required for Abuja (FCT).",
-    path: ["area"], 
+    message: "City or District is required.",
+    path: ["city"], // Attach error to city field as a general location indicator
 });
+
 
 type EstateFormValues = z.infer<typeof estateSchema>;
 
@@ -43,9 +45,16 @@ export function EstateForm({ onSubmissionSuccess }: EstateFormProps) {
   
   const [states, setStates] = useState<GeographyState[]>([]);
   const [lgas, setLgas] = useState<GeographyLGA[]>([]);
+  const [cities, setCities] = useState<GeographyCity[]>([]);
+  const [districts, setDistricts] = useState<GeographyCity[]>([]); 
+
   const [isLoadingStates, setIsLoadingStates] = useState(true);
   const [isLoadingLgas, setIsLoadingLgas] = useState(false);
+  const [isLoadingCities, setIsLoadingCities] = useState(false);
+  const [isLoadingDistricts, setIsLoadingDistricts] = useState(false);
+
   const [selectedStateId, setSelectedStateId] = useState<string | null>(null);
+  const [selectedLgaId, setSelectedLgaId] = useState<string | null>(null);
 
   const { control, handleSubmit, formState: { errors }, reset, setValue, watch } = useForm<EstateFormValues>({
     resolver: zodResolver(estateSchema),
@@ -53,12 +62,14 @@ export function EstateForm({ onSubmissionSuccess }: EstateFormProps) {
       name: "",
       state: "",
       lga: "",
+      city: "",
       area: "",
       googleMapLink: "",
     },
   });
 
   const watchedStateName = watch("state");
+  const watchedLgaName = watch("lga");
 
   const loadStates = useCallback(async () => {
     setIsLoadingStates(true);
@@ -76,9 +87,10 @@ export function EstateForm({ onSubmissionSuccess }: EstateFormProps) {
     loadStates();
   }, [loadStates]);
   
-  const loadLgasForState = useCallback(async (stateId: string) => {
+  const loadLgas = useCallback(async (stateId: string) => {
     setIsLoadingLgas(true);
     setLgas([]);
+    setCities([]);
     try {
       const fetchedLgas = await getLgasForState(stateId);
       setLgas(fetchedLgas);
@@ -88,25 +100,76 @@ export function EstateForm({ onSubmissionSuccess }: EstateFormProps) {
       setIsLoadingLgas(false);
     }
   }, []);
+
+  const loadCities = useCallback(async (stateId: string, lgaId: string) => {
+    setIsLoadingCities(true);
+    setCities([]);
+    try {
+      const fetchedCities = await getCitiesForLga(stateId, lgaId);
+      setCities(fetchedCities);
+    } catch (error) {
+      console.error("Failed to load cities", error);
+    } finally {
+      setIsLoadingCities(false);
+    }
+  }, []);
   
+  const loadDistricts = useCallback(async () => {
+    setIsLoadingDistricts(true);
+    setDistricts([]);
+    try {
+        const fetchedDistricts = await getAbujaDistricts();
+        setDistricts(fetchedDistricts);
+    } catch(e) {
+        console.error("Failed to load FCT Districts", e);
+    } finally {
+        setIsLoadingDistricts(false);
+    }
+  }, []);
+
   const handleStateChange = (selectedName: string) => {
     setValue("state", selectedName, { shouldValidate: true });
     setValue("lga", "", { shouldValidate: true });
+    setValue("city", "", { shouldValidate: true });
     setValue("area", "", { shouldValidate: true });
     
     const state = states.find(s => s.name === selectedName);
     if (state) {
       setSelectedStateId(state.id);
-      loadLgasForState(state.id);
+      loadLgas(state.id);
       if (state.name === 'FCT') {
-        const amac = lgas.find(l => l.name === "Municipal Area Council");
-        setValue("lga", amac ? amac.name : "Municipal Area Council", { shouldValidate: true });
+        loadDistricts();
+        setValue("lga", "Municipal Area Council", { shouldValidate: true });
+        setCities([]);
+      } else {
+        setDistricts([]);
       }
     } else {
       setSelectedStateId(null);
       setLgas([]);
+      setCities([]);
+      setDistricts([]);
+    }
+    setSelectedLgaId(null);
+  };
+  
+  const handleLgaChange = (selectedName: string) => {
+    setValue("lga", selectedName, { shouldValidate: true });
+    setValue("city", "", { shouldValidate: true });
+    setValue("area", "", { shouldValidate: true });
+
+    const lga = lgas.find(l => l.name === selectedName);
+    if (lga && selectedStateId) {
+      setSelectedLgaId(lga.id);
+      if (watchedStateName !== 'FCT') {
+        loadCities(selectedStateId, lga.id);
+      }
+    } else {
+      setSelectedLgaId(null);
+      setCities([]);
     }
   };
+
 
   async function onSubmit(values: EstateFormValues) {
     if (!user) {
@@ -134,6 +197,8 @@ export function EstateForm({ onSubmissionSuccess }: EstateFormProps) {
       reset();
       setSelectedStateId(null);
       setLgas([]);
+      setCities([]);
+      setDistricts([]);
       if (onSubmissionSuccess) {
         setTimeout(() => { 
             onSubmissionSuccess();
@@ -202,45 +267,106 @@ export function EstateForm({ onSubmissionSuccess }: EstateFormProps) {
                 ))}
             </NextUISelect>
           
-             <NextUISelect
-                label={watchedStateName === 'FCT' ? 'City' : "LGA (Local Government Area)"}
-                placeholder={watchedStateName === 'FCT' ? 'Abuja' : "Select an LGA"}
-                variant="bordered"
-                isInvalid={!!errors.lga}
-                errorMessage={errors.lga?.message}
-                isLoading={isLoadingLgas}
-                isDisabled={!watchedStateName || (watchedStateName !== 'FCT' && lgas.length === 0)}
-                selectedKeys={watch("lga") ? [watch("lga")] : []}
-                onChange={(e) => setValue("lga", e.target.value, { shouldValidate: true })}
-             >
-                {watchedStateName === 'FCT' ? (
-                    <NextUISelectItem key="Municipal Area Council" value="Municipal Area Council">Abuja</NextUISelectItem>
-                ) : (
-                    lgas.map((lga) => (
+            {watchedStateName === 'FCT' ? (
+                <NextUIInput
+                    label="City"
+                    value="Abuja"
+                    isReadOnly
+                    variant="bordered"
+                    description="LGA is Municipal Area Council"
+                />
+            ) : (
+                <NextUISelect
+                    label={"LGA (Local Government Area)"}
+                    placeholder={"Select an LGA"}
+                    variant="bordered"
+                    isInvalid={!!errors.lga}
+                    errorMessage={errors.lga?.message}
+                    isLoading={isLoadingLgas}
+                    isDisabled={!watchedStateName || lgas.length === 0}
+                    selectedKeys={watchedLgaName ? [watchedLgaName] : []}
+                    onChange={(e) => handleLgaChange(e.target.value)}
+                >
+                    {lgas.map((lga) => (
                     <NextUISelectItem key={lga.name} value={lga.name}>
                         {lga.name}
                     </NextUISelectItem>
-                    ))
-                )}
-            </NextUISelect>
+                    ))}
+                </NextUISelect>
+            )}
         </div>
 
-        <Controller
-            name="area"
-            control={control}
-            render={({ field }) => (
-                 <NextUIInput
-                    {...field}
-                    label={watchedStateName === 'FCT' ? 'District' : "Area / Neighborhood (Optional)"}
-                    placeholder={watchedStateName === 'FCT' ? "e.g. Maitama, Gwarinpa" : "e.g. Ikoyi, GRA"}
-                    variant="bordered"
-                    isInvalid={!!errors.area}
-                    errorMessage={errors.area?.message}
-                    fullWidth
-                    isRequired={watchedStateName === 'FCT'}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {watchedStateName === 'FCT' ? (
+                 <Controller
+                    name="area"
+                    control={control}
+                    render={({ field }) => (
+                         <NextUISelect
+                            {...field}
+                            label="District"
+                            placeholder="Select a district"
+                            variant="bordered"
+                            isInvalid={!!errors.area}
+                            errorMessage={errors.area?.message}
+                            isLoading={isLoadingDistricts}
+                            isDisabled={districts.length === 0}
+                            selectedKeys={field.value ? [field.value] : []}
+                            onChange={(e) => field.onChange(e.target.value)}
+                        >
+                            {districts.map((district) => (
+                                <NextUISelectItem key={district.name} value={district.name}>
+                                    {district.name}
+                                </NextUISelectItem>
+                            ))}
+                        </NextUISelect>
+                    )}
+                />
+            ) : (
+                <Controller
+                    name="city"
+                    control={control}
+                    render={({ field }) => (
+                        <NextUISelect
+                            {...field}
+                            label="City"
+                            placeholder="Select a city"
+                            variant="bordered"
+                            isInvalid={!!errors.city}
+                            errorMessage={errors.city?.message}
+                            isLoading={isLoadingCities}
+                            isDisabled={!watchedLgaName || cities.length === 0}
+                            selectedKeys={field.value ? [field.value] : []}
+                            onChange={(e) => field.onChange(e.target.value)}
+                        >
+                            {cities.map((city) => (
+                                <NextUISelectItem key={city.name} value={city.name}>
+                                    {city.name}
+                                </NextUISelectItem>
+                            ))}
+                        </NextUISelect>
+                    )}
                 />
             )}
-        />
+             <Controller
+                name="area"
+                control={control}
+                render={({ field }) => (
+                    <NextUIInput
+                        {...field}
+                        label="Neighborhood (Optional)"
+                        placeholder="e.g. GRA, Phase 2"
+                        variant="bordered"
+                        isInvalid={!!errors.area}
+                        errorMessage={errors.area?.message}
+                        fullWidth
+                        // Hide this field if FCT is selected as we use it for District
+                        className={watchedStateName === 'FCT' ? 'hidden' : ''}
+                    />
+                )}
+            />
+        </div>
+
 
         <Controller
           name="googleMapLink"

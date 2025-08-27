@@ -19,12 +19,24 @@ import {
 } from "firebase/firestore";
 
 const estateSchema = z.object({
-  name: z.string().min(1, "Estate name is required"),
-  state: z.string().min(1, "State is required"),
+  name: z.string().min(3, "Estate name must be at least 3 characters long."),
+  state: z.string().min(1, "State is required."),
   lga: z.string().min(1, "LGA is required."),
-  area: z.string().optional(),
+  city: z.string().optional(),
+  area: z.string().optional(), // Now used primarily for FCT districts
   googleMapLink: z.string().url("Must be a valid URL").optional().or(z.literal('')),
+}).refine(data => {
+    // If state is FCT, 'area' (which we use for district) is required.
+    if (data.state === 'FCT') {
+        return !!data.area && data.area.length > 0;
+    }
+    // For other states, 'city' is required.
+    return !!data.city && data.city.length > 0;
+}, {
+    message: "City or District is required.",
+    path: ["city"], // Attach error to city field as a general location indicator
 });
+
 
 // Helper to convert Firestore Timestamps to Date objects
 const convertTimestamps = (docData: any): any => {
@@ -63,13 +75,24 @@ export async function submitEstate({ formData, user }: SubmitEstateParams) {
         return { success: false, message: "User not authenticated." };
     }
 
-    const { name, state, lga, area, googleMapLink } = validation.data;
+    const { name, state, lga, area, city, googleMapLink } = validation.data;
 
     try {
+        // Construct location object based on state
+        const location: Estate['location'] = { state, lga };
+        if (state === 'FCT') {
+            location.area = area || ""; // For FCT, 'area' is the district
+        } else {
+            location.city = city || "";
+            if (area) { // If user provides an area for non-FCT states
+              location.area = area;
+            }
+        }
+        
         const newEstateData: Omit<Estate, 'id' | 'createdAt' | 'updatedAt' | 'lastUpdatedBy' | 'estateCode'> & { createdAt: any, updatedAt: any, lastUpdatedBy: any } = {
             name,
             status: "pending_review",
-            location: { state, lga, area: area || "" },
+            location,
             googleMapLink: googleMapLink || "",
             source: "Platform",
             createdBy: user.id,
