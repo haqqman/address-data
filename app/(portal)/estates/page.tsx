@@ -1,10 +1,10 @@
 
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import type { Estate } from "@/types";
 import { getEstates } from "@/app/actions/estateActions";
-import { Card, CardHeader, CardBody, Skeleton, Button, Input, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell } from "@nextui-org/react";
+import { Card, CardHeader, CardBody, Skeleton, Button, Input, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Link as NextUILink } from "@nextui-org/react";
 import { AlertTriangle, PlusCircle, Search } from "lucide-react";
 import Link from "next/link";
 
@@ -12,12 +12,12 @@ export default function EstatesPage() {
   const [estates, setEstates] = useState<Estate[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [filterValue, setFilterValue] = useState("");
 
   const fetchEstates = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
-      // Fetch only approved estates for the public list
       const data = await getEstates("approved"); 
       setEstates(data);
     } catch (err) {
@@ -31,6 +31,39 @@ export default function EstatesPage() {
   useEffect(() => {
     fetchEstates();
   }, [fetchEstates]);
+
+  const hasSearchFilter = Boolean(filterValue);
+
+  const filteredItems = useMemo(() => {
+    let filteredEstates = [...estates];
+
+    if (hasSearchFilter) {
+      filteredEstates = filteredEstates.filter((estate) =>
+        estate.name.toLowerCase().includes(filterValue.toLowerCase()) ||
+        estate.estateCode?.toLowerCase().includes(filterValue.toLowerCase())
+      );
+    }
+    return filteredEstates;
+  }, [estates, filterValue, hasSearchFilter]);
+  
+  const onSearchChange = useCallback((value?: string) => {
+    if (value) {
+      setFilterValue(value);
+    } else {
+      setFilterValue("");
+    }
+  }, []);
+
+  const onClear = useCallback(()=>{
+    setFilterValue("")
+  },[])
+
+  const formatLocation = (location: Estate['location']) => {
+    const { city, area, lga, state } = location;
+    // For FCT, area is district. For others, city is primary.
+    const primaryLocation = state === 'FCT' ? area : city;
+    return `${primaryLocation || ''}, ${lga}, ${state}`.replace(/^, /g, ''); // Clean leading comma if primary is missing
+  };
 
   return (
     <div className="space-y-8">
@@ -58,6 +91,9 @@ export default function EstatesPage() {
                 placeholder="Search by name or code..."
                 startContent={<Search className="h-4 w-4 text-default-400" />}
                 className="max-w-xs"
+                value={filterValue}
+                onClear={onClear}
+                onValueChange={onSearchChange}
             />
         </CardHeader>
         <CardBody className="p-2 md:p-4">
@@ -89,14 +125,14 @@ export default function EstatesPage() {
                         <TableColumn>LOCATION</TableColumn>
                         <TableColumn>ACTIONS</TableColumn>
                     </TableHeader>
-                    <TableBody items={estates} emptyContent="No approved estates found.">
+                    <TableBody items={filteredItems} emptyContent={"No approved estates found."}>
                         {(item) => (
                             <TableRow key={item.id}>
-                                <TableCell className="font-mono text-xs">{item.estateCode}</TableCell>
+                                <TableCell className="font-mono text-xs">{item.estateCode || 'N/A'}</TableCell>
                                 <TableCell className="font-semibold">{item.name}</TableCell>
-                                <TableCell>{`${item.location.lga}, ${item.location.state}`}</TableCell>
+                                <TableCell>{formatLocation(item.location)}</TableCell>
                                 <TableCell>
-                                    <Button as={Link} href={`/estates/${item.id}`} size="sm" variant="light">
+                                    <Button as={NextUILink} href={`/estates/${item.id}`} size="sm" variant="light" color="secondary">
                                         Manage
                                     </Button>
                                 </TableCell>
