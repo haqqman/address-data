@@ -18,7 +18,7 @@ import {
   NavbarMenu,
   NavbarMenuItem
 } from "@nextui-org/react";
-import { LayoutDashboard, KeyRound, LogOut, UserCircle, PlusCircle, Building } from "lucide-react";
+import { LayoutDashboard, KeyRound, LogOut, UserCircle, PlusCircle, Building, MapPin } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/auth-context"; 
@@ -27,7 +27,7 @@ import { useState } from "react";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: <LayoutDashboard className="mr-2 h-4 w-4" /> },
-  { href: "/contribute", label: "Contribute", icon: <PlusCircle className="mr-2 h-4 w-4" /> },
+  { href: "/addresses", label: "Addresses", icon: <MapPin className="mr-2 h-4 w-4" /> },
   { href: "/estates", label: "Estates", icon: <Building className="mr-2 h-4 w-4" /> },
   { href: "/api-keys", label: "API Keys", icon: <KeyRound className="mr-2 h-4 w-4" /> },
 ];
@@ -71,7 +71,7 @@ export function AppHeader() {
 
       <NavbarContent className="hidden sm:flex gap-1" justify="center">
         {navItems.map((item) => (
-          <NavbarItem key={item.href} isActive={pathname === item.href}>
+          <NavbarItem key={item.href} isActive={pathname.startsWith(item.href)}>
              <NextUIButton
               variant="ghost"
               as={Link}
@@ -79,7 +79,7 @@ export function AppHeader() {
               className={cn(
                 "justify-start shadow-sm hover:shadow-md border border-transparent hover:border-warning/50",
                 "hover:-translate-y-px active:translate-y-0.5 transition-all duration-150 ease-in-out",
-                pathname === item.href 
+                pathname.startsWith(item.href) 
                   ? "bg-warning/20 text-primary font-semibold border-warning" 
                   : "text-foreground hover:bg-warning/10"
               )}
@@ -122,12 +122,12 @@ export function AppHeader() {
 
       <NavbarMenu className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 pt-4">
         {navItems.map((item, index) => (
-          <NavbarMenuItem key={`${item.href}-${index}`} isActive={pathname === item.href}>
+          <NavbarMenuItem key={`${item.href}-${index}`} isActive={pathname.startsWith(item.href)}>
             <Link
               href={item.href}
               className={cn(
                 "w-full block py-2 text-lg",
-                pathname === item.href ? "text-secondary font-semibold" : "text-foreground"
+                pathname.startsWith(item.href) ? "text-secondary font-semibold" : "text-foreground"
               )}
               onClick={() => setIsMenuOpen(false)}
             >

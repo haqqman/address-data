@@ -183,19 +183,17 @@ export async function submitAddress({ formData, user }: SubmitAddressParams) {
   }
 }
 
-export async function getAddressSubmissions(userId: string): Promise<AddressSubmission[]> {
+export async function getAddressSubmissions(userId?: string): Promise<AddressSubmission[]> {
   try {
     const submissionsCol = collection(db, "addressSubmissions");
     let q;
-    
-    const consoleUserIdentifiers = ["DOUKechRV9NoSkNpgGL2jNCp6Sz2", "CONSOLE_USER_UID_JOSHUA"]; 
-    const isAdminUser = consoleUserIdentifiers.includes(userId) || userId === "mockConsoleId";
 
-
-    if (isAdminUser) { 
-      q = query(submissionsCol, orderBy("submittedAt", "desc"));
-    } else {
+    if (userId) {
+       // If a userId is provided, fetch only for that user
       q = query(submissionsCol, where("userId", "==", userId), orderBy("submittedAt", "desc"));
+    } else {
+       // If no userId, fetch all submissions (for the "All Contributions" view)
+      q = query(submissionsCol, orderBy("submittedAt", "desc"));
     }
 
     const querySnapshot = await getDocs(q);
