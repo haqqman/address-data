@@ -127,7 +127,9 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
   
   const handleLgaChange = (selectedName: string) => {
     setValue("lga", selectedName, { shouldValidate: true });
-    setValue("city", watchedStateName === 'FCT' ? 'Abuja' : '', { shouldValidate: true });
+     if (watchedStateName !== 'FCT') {
+        setValue("city", "", { shouldValidate: false });
+     }
     setValue("areaDistrict", "", { shouldValidate: false });
     setCities([]);
 

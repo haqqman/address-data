@@ -7,7 +7,7 @@ import { db } from "@/lib/firebase/config";
 import { 
   collection, 
   addDoc, 
-  getDocs, 
+  getDocs, _test_
   query, 
   doc, 
   updateDoc, 
@@ -23,18 +23,16 @@ const estateSchema = z.object({
   state: z.string().min(1, "State is required."),
   lga: z.string().min(1, "LGA is required."),
   city: z.string().optional(),
-  district: z.string().optional(), // For FCT districts
+  district: z.string().optional(),
   googleMapLink: z.string().url("Must be a valid URL").optional().or(z.literal('')),
 }).refine(data => {
-    // If state is FCT, 'district' is required.
     if (data.state === 'FCT') {
         return !!data.district && data.district.length > 0;
     }
-    // For other states, 'city' is required.
     return !!data.city && data.city.length > 0;
 }, {
-    message: "City or District is required.",
-    path: ["city"], // Attach error to a common field
+    message: "City or District is required based on the selected State.",
+    path: ["city"], 
 });
 
 
