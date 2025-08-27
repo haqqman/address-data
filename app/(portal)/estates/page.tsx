@@ -58,7 +58,7 @@ export default function EstatesPage() {
       );
     }
     
-    const selectedStates = Array.from(stateFilter);
+    const selectedStates = Array.from(stateFilter).map(s => String(s));
     if (selectedStates.length > 0 && !selectedStates.includes("all")) {
          filteredEstates = filteredEstates.filter((estate) => selectedStates.includes(estate.location.state));
     }
@@ -77,13 +77,6 @@ export default function EstatesPage() {
   const onClear = useCallback(()=>{
     setFilterValue("")
   },[])
-
-  const formatLocation = (location: Estate['location']) => {
-    const { city, area, lga, state } = location;
-    // For FCT, area is district. For other states, city is primary.
-    const primaryLocation = location.state === 'FCT' ? area : city;
-    return `${primaryLocation || ''}, ${lga}, ${state}`.replace(/^, /g, ''); // Clean leading comma
-  };
 
   const getStatusChipColor = (status: Estate['status']): "success" | "warning" | "danger" | "default" => {
     switch (status) {
@@ -182,7 +175,7 @@ export default function EstatesPage() {
                             <TableRow key={item.id}>
                                 <TableCell className="font-mono text-xs">{item.estateCode || 'N/A'}</TableCell>
                                 <TableCell className="font-semibold">{item.name}</TableCell>
-                                <TableCell>{item.location.city || item.location.area}</TableCell>
+                                <TableCell>{item.location.state === 'FCT' ? item.location.area : item.location.city}</TableCell>
                                 <TableCell>
                                   <Chip size="sm" variant="flat" color={getStatusChipColor(item.status)}>
                                     {item.status.replace("_", " ").toUpperCase()}
@@ -203,3 +196,5 @@ export default function EstatesPage() {
     </div>
   );
 }
+
+    
