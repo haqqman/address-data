@@ -18,6 +18,7 @@ import {
 const GEOGRAPHY_COLLECTION = "nigerianGeography";
 const LGAS_SUBCOLLECTION = "lgas";
 const CITIES_SUBCOLLECTION = "cities";
+const DISTRICTS_SUBCOLLECTION = "districts"; // For FCT
 
 // --- State Actions ---
 export async function addState(stateData: Omit<FirestoreGeographyStateData, 'id'>): Promise<GeographyState> {
@@ -125,8 +126,9 @@ export async function deleteLga(stateId: string, lgaId: string): Promise<void> {
     const lgaRef = doc(db, GEOGRAPHY_COLLECTION, stateId, LGAS_SUBCOLLECTION, lgaId);
     await runTransaction(db, async (transaction) => {
       const citiesSnapshot = await getDocs(collection(lgaRef, CITIES_SUBCOLLECTION));
-      if (!citiesSnapshot.empty) {
-        throw new Error("Cannot delete LGA: It contains cities/towns. Delete them first or implement cascade delete.");
+      const districtsSnapshot = await getDocs(collection(lgaRef, DISTRICTS_SUBCOLLECTION));
+      if (!citiesSnapshot.empty || !districtsSnapshot.empty) {
+        throw new Error("Cannot delete LGA: It contains cities/towns/districts. Delete them first or implement cascade delete.");
       }
       transaction.delete(lgaRef);
     });
@@ -136,25 +138,27 @@ export async function deleteLga(stateId: string, lgaId: string): Promise<void> {
   }
 }
 
-// --- City Actions ---
+// --- City/District Actions ---
 export async function addCity(stateId: string, lgaId: string, cityData: Omit<FirestoreGeographyCityData, 'id' | 'stateId' | 'lgaId'>): Promise<GeographyCity> {
   try {
+    const subcollection = stateId === 'fct' ? DISTRICTS_SUBCOLLECTION : CITIES_SUBCOLLECTION;
     const cityId = cityData.name.toLowerCase().replace(/\s+/g, "-").replace(/[^\w-]+/g, '');
-    const cityRef = doc(db, GEOGRAPHY_COLLECTION, stateId, LGAS_SUBCOLLECTION, lgaId, CITIES_SUBCOLLECTION, cityId);
+    const cityRef = doc(db, GEOGRAPHY_COLLECTION, stateId, LGAS_SUBCOLLECTION, lgaId, subcollection, cityId);
     const dataToSet = { ...cityData, stateId, lgaId };
 
     await setDoc(cityRef, dataToSet);
 
     return { id: cityId, ...dataToSet };
   } catch (error) {
-    console.error("Error adding City:", error);
-    throw new Error("Failed to add City.");
+    console.error("Error adding City/District:", error);
+    throw new Error("Failed to add City/District.");
   }
 }
 
 export async function getCitiesForLga(stateId: string, lgaId: string): Promise<GeographyCity[]> {
   try {
-    const citiesCol = collection(db, GEOGRAPHY_COLLECTION, stateId, LGAS_SUBCOLLECTION, lgaId, CITIES_SUBCOLLECTION);
+    const subcollectionName = stateId === 'fct' ? DISTRICTS_SUBCOLLECTION : CITIES_SUBCOLLECTION;
+    const citiesCol = collection(db, GEOGRAPHY_COLLECTION, stateId, LGAS_SUBCOLLECTION, lgaId, subcollectionName);
     const q = query(citiesCol, orderBy("name"));
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map(docSnap => ({
@@ -164,26 +168,30 @@ export async function getCitiesForLga(stateId: string, lgaId: string): Promise<G
       ...(docSnap.data() as Omit<FirestoreGeographyCityData, 'stateId' | 'lgaId'>)
     }));
   } catch (error) {
-    console.error("Error fetching Cities for LGA:", lgaId, error);
+    console.error(`Error fetching from ${stateId === 'fct' ? 'districts' : 'cities'} for LGA:`, lgaId, error);
     return [];
   }
 }
 
 export async function updateCity(stateId: string, lgaId: string, cityId: string, dataToUpdate: Partial<Omit<FirestoreGeographyCityData, 'id' | 'stateId' | 'lgaId'>>): Promise<void> {
   try {
-    const cityRef = doc(db, GEOGRAPHY_COLLECTION, stateId, LGAS_SUBCOLLECTION, lgaId, CITIES_SUBCOLLECTION, cityId);
+    const subcollection = stateId === 'fct' ? DISTRICTS_SUBCOLLECTION : CITIES_SUBCOLLECTION;
+    const cityRef = doc(db, GEOGRAPHY_COLLECTION, stateId, LGAS_SUBCOLLECTION, lgaId, subcollection, cityId);
     await updateDoc(cityRef, dataToUpdate);
   } catch (error) {
-    console.error("Error updating City:", error);
-    throw new Error("Failed to update City.");
+    console.error("Error updating City/District:", error);
+    throw new Error("Failed to update City/District.");
   }
 }
 
 export async function deleteCity(stateId: string, lgaId: string, cityId: string): Promise<void> {
   try {
-    await deleteDoc(doc(db, GEOGRAPHY_COLLECTION, stateId, LGAS_SUBCOLLECTION, lgaId, CITIES_SUBCOLLECTION, cityId));
+    const subcollection = stateId === 'fct' ? DISTRICTS_SUBCOLLECTION : CITIES_SUBCOLLECTION;
+    await deleteDoc(doc(db, GEOGRAPHY_COLLECTION, stateId, LGAS_SUBCOLLECTION, lgaId, subcollection, cityId));
   } catch (error) {
-    console.error("Error deleting City:", error);
-    throw new Error("Failed to delete City.");
+    console.error("Error deleting City/District:", error);
+    throw new Error("Failed to delete City/District.");
   }
 }
+
+    
