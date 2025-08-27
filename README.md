@@ -1,3 +1,4 @@
+
 # Address Data
 
 **Address Data** is an address intelligence platform purpose-built for Nigeria. It provides developers, businesses, and operations with tools to validate, store, and retrieve Nigerian address data in a structured, efficient, and scalable way.
