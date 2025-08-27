@@ -21,7 +21,7 @@ import {
 const estateSchema = z.object({
   name: z.string().min(1, "Estate name is required"),
   state: z.string().min(1, "State is required"),
-  lga: z.string().min(1, "LGA is required"),
+  lga: z.string().min(1, "LGA is required."),
   area: z.string().optional(),
   googleMapLink: z.string().url("Must be a valid URL").optional().or(z.literal('')),
 });

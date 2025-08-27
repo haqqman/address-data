@@ -38,7 +38,7 @@ export default function PortalLayout({
   return (
     <div className="flex flex-col min-h-screen">
       <AppHeader />
-      <main className="flex-grow container mx-auto px-4 py-8">
+      <main className="flex-grow container mx-auto px-4 py-8 max-w-6xl">
         {children}
       </main>
        <footer className="py-8 border-t bg-background">
