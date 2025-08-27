@@ -22,8 +22,12 @@ import {
   Search,
 } from 'lucide-react'
 import { PublicHeader } from '@/components/layout/PublicHeader'
+import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 
 export default function HomePage() {
+  const router = useRouter()
+  const [searchQuery, setSearchQuery] = useState('')
   const features = [
     {
       icon: <MapPin className='h-8 w-8 text-secondary' />,
@@ -75,6 +79,13 @@ export default function HomePage() {
     },
   ]
 
+  const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    if (searchQuery.trim()) {
+      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`)
+    }
+  }
+
   return (
     <div className='flex flex-col min-h-screen'>
       <PublicHeader />
@@ -110,18 +121,14 @@ export default function HomePage() {
               The Future of Nigerian Address Data
             </h1>
             <div className='mt-10 max-w-xl mx-auto'>
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault()
-                  alert('Search functionality coming soon!')
-                }}
-                className='flex gap-2'
-              >
+              <form onSubmit={handleSearchSubmit} className='flex gap-2'>
                 <NextUIInput
-                  aria-label="Search by Address or Estate Code"
-                  placeholder="Enter address or estate code"
-                  variant="bordered"
-                  size="lg"
+                  aria-label='Search by Address or Estate Code'
+                  placeholder='Enter address or estate code'
+                  variant='bordered'
+                  size='lg'
+                  value={searchQuery}
+                  onValueChange={setSearchQuery}
                   classNames={{
                     inputWrapper: 'bg-background/80 backdrop-blur-sm',
                   }}
