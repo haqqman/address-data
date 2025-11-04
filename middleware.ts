@@ -35,7 +35,7 @@ export async function middleware(request: NextRequest) {
     const session = request.cookies.get("session")?.value;
 
     if (!session) {
-      // Allow access to the console login page itself
+      // Allow access to the console login page itself, which is now at /console
       if (pathname === "/console") {
         return NextResponse.next();
       }
@@ -45,8 +45,7 @@ export async function middleware(request: NextRequest) {
 
     try {
       // Dynamically import server-side modules ONLY when needed
-      const { default: admin } = await import('@/lib/firebase/admin-config');
-      const { initAdmin } = await import('@/lib/firebase/admin-config');
+      const { initAdmin, default: admin } = await import('@/lib/firebase/admin-config');
       
       // Initialize admin app
       initAdmin();
