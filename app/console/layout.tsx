@@ -4,7 +4,6 @@
 import type { ReactNode } from 'react';
 import { useEffect, useState } from 'react';
 import { ConsoleHeader } from "@/components/layout/ConsoleHeader";
-import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/auth-context';
 import { Spinner } from "@nextui-org/react";
 
@@ -13,22 +12,15 @@ export default function ConsoleLayout({
 }: {
   children: ReactNode;
 }) {
-  const { user, loading } = useAuth();
-  const router = useRouter();
+  const { loading } = useAuth();
   const [displayYear, setDisplayYear] = useState<number | null>(null);
 
   useEffect(() => {
     setDisplayYear(new Date().getFullYear());
   }, []);
 
-  useEffect(() => {
-    if (!loading) {
-      const consoleRoles: Array<User['role'] | undefined> = ['cto', 'administrator', 'manager'];
-      if (!user || !consoleRoles.includes(user.role)) {
-        router.push('/console'); // Redirect to console login page
-      }
-    }
-  }, [user, loading, router]);
+  // The redirection logic has been moved to middleware.ts to avoid redirect loops
+  // and to secure all console routes consistently on the server-side.
 
   if (loading) {
     return (
@@ -36,12 +28,6 @@ export default function ConsoleLayout({
         <Spinner label="Loading Console..." color="warning" labelColor="warning" />
       </div>
     );
-  }
-
-  const consoleRoles: Array<User['role'] | undefined> = ['cto', 'administrator', 'manager'];
-  if (!user || !consoleRoles.includes(user.role)) {
-    // This will be brief as the useEffect above will redirect.
-    return null;
   }
 
   return (

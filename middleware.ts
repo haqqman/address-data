@@ -1,6 +1,7 @@
 
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { auth } from "firebase-admin";
 
 export function middleware(request: NextRequest) {
   const { nextUrl } = request;
@@ -34,7 +35,30 @@ export function middleware(request: NextRequest) {
     }
   }
 
-  // Allow all other requests in development or that don't match the rules.
+  const session = request.cookies.get("session")?.value;
+  if (pathname.startsWith("/console")) {
+    if (!session) {
+      if (pathname === "/console") {
+        return NextResponse.next();
+      }
+      return NextResponse.redirect(new URL("/console", request.url));
+    }
+
+    try {
+      const decodedClaims = await auth().verifySessionCookie(session, true);
+      const consoleRoles: Array<string | undefined> = [
+        "cto",
+        "administrator",
+        "manager",
+      ];
+      if (!consoleRoles.includes(decodedClaims.role)) {
+        return NextResponse.redirect(new URL("/console", request.url));
+      }
+      return NextResponse.next();
+    } catch (error) {
+      return NextResponse.redirect(new URL("/console", request.url));
+    }
+  }
   return NextResponse.next();
 }
 

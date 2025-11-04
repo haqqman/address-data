@@ -41,11 +41,23 @@ export function ConsoleLogInForm() {
     setIsLoading(true);
     setErrorMessage(null);
     try {
-      const user = await signInWithEmail(values.email, values.password, true); 
-      if (user) { 
-        router.push('/console/dashboard');
+      const userCredential = await signInWithEmail(values.email, values.password, true);
+      if (userCredential) {
+        const idToken = await userCredential.getIdToken();
+        const res = await fetch("/api/console/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ idToken }),
+        });
+
+        if (res.ok) {
+          router.push('/console/dashboard');
+        } else {
+          setErrorMessage("Login failed. Please check your credentials.");
+        }
       } else {
-        // This case might not be reached if signInWithEmail throws an error or onAuthStateChanged handles it.
         setErrorMessage("Login failed. Please check your credentials.");
       }
     } catch (error: any) {
