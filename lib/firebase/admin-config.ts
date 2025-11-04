@@ -13,3 +13,6 @@ export const initAdmin = () => {
     credential: admin.credential.cert(serviceAccount),
   });
 };
+
+// Export admin itself for dynamic import
+export default admin;
