@@ -23,7 +23,7 @@ interface AuthContextType {
   loading: boolean;
   signInWithGoogle: () => Promise<FirebaseUser | null>;
   signInWithGitHub: () => Promise<FirebaseUser | null>;
-  signInWithEmail: (email: string, pass: string, isConsole?: boolean) => Promise<FirebaseUser | null>;
+  signInWithEmail: (email: string, pass: string, isConsole?: boolean) => Promise<import("firebase/auth").UserCredential | null>;
   signOut: (isConsole?: boolean) => Promise<void>;
 }
 
@@ -220,16 +220,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const signInWithEmail = async (email: string, pass: string, isConsole: boolean = false): Promise<FirebaseUser | null> => {
+  const signInWithEmail = async (email: string, pass: string, isConsole: boolean = false): Promise<import("firebase/auth").UserCredential | null> => {
     if (!auth) throw new Error("Firebase auth not initialized.");
     setLoading(true);
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, pass);
-      return await handleSuccessfulLogin(userCredential.user, isConsole);
+      await handleSuccessfulLogin(userCredential.user, isConsole);
+      return userCredential;
     } catch (error) {
       console.error("Error signing in with email:", error);
       setLoading(false);
-      throw error; 
+      throw error;
     }
   };
 
@@ -245,6 +246,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       await firebaseSignOut(auth);
       setUser(null);
+      if (isConsole) {
+        await fetch("/api/console/logout", {
+          method: "POST",
+        });
+      }
       router.push(isConsole ? '/console' : '/login');
     } catch (error) {
       console.error("Error signing out:", error);
