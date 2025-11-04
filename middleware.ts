@@ -32,18 +32,20 @@ export async function middleware(request: NextRequest) {
   if (pathname.startsWith("/console")) {
     const session = request.cookies.get("session")?.value;
 
+    // The console login page itself is at /console. No need to check for a session there.
+    if (pathname === "/console") {
+      return NextResponse.next();
+    }
+
     if (!session) {
-      // Allow access to the console login page itself, which is now at /console
-      if (pathname === "/console") {
-        return NextResponse.next();
-      }
       // Redirect all other /console/* requests to the login page
       return NextResponse.redirect(new URL("/console", request.url));
     }
 
     try {
       // Dynamically import server-side modules ONLY when needed
-      const { initAdmin, default: admin } = await import('@/lib/firebase/admin-config');
+      const { initAdmin } = await import('@/lib/firebase/admin-config');
+      const admin = (await import('firebase-admin')).default;
       
       // Initialize admin app
       initAdmin();

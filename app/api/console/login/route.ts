@@ -1,8 +1,8 @@
 
-import { auth } from "firebase-admin";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import { initAdmin } from "@/lib/firebase/admin-config";
+import admin from "firebase-admin";
 
 // Init the Firebase SDK every time the server function is called
 initAdmin();
@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
   const expiresIn = 60 * 60 * 24 * 5 * 1000; // 5 days
 
   try {
-    const sessionCookie = await auth().createSessionCookie(idToken, { expiresIn });
+    const sessionCookie = await admin.auth().createSessionCookie(idToken, { expiresIn });
     cookies().set("session", sessionCookie, {
       maxAge: expiresIn,
       httpOnly: true,
