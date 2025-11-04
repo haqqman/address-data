@@ -39,9 +39,9 @@ export function AppHeader() {
 
   const handleSignOut = async () => {
     try {
-      await signOut(false); // Explicitly pass false for portal sign out
+      await signOut(false); // Explicitly pass false for portal log out
     } catch (error) {
-      console.error("Failed to sign out", error);
+      console.error("Failed to log out", error);
     }
   };
 

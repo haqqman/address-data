@@ -2,13 +2,11 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-// Note: 'firebase-admin' is NOT imported at the top level
-
 export async function middleware(request: NextRequest) {
   const { nextUrl } = request;
   const pathname = nextUrl.pathname;
 
-  // --- Domain Protection Logic (No changes needed here) ---
+  // --- Domain Protection Logic ---
   const hostname = nextUrl.hostname;
   const isProduction = process.env.NODE_ENV === 'production';
   const CONSOLE_HOSTNAME = process.env.NEXT_PUBLIC_CONSOLE_HOSTNAME || 'console.localhost';

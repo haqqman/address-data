@@ -83,7 +83,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         firstName: userFirstName,
         lastName: userLastName,
         displayName: firebaseUser.displayName || `${userFirstName} ${userLastName}`.trim(),
-        role: 'user', // New social sign-ups are always 'user' role
+        role: 'user', // New social log-ups are always 'user' role
         authProvider: firebaseUser.providerData[0]?.providerId || 'unknown',
         phoneNumber: firebaseUser.phoneNumber || null,
         createdAt: serverTimestamp(),
@@ -236,7 +236,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signOut = async (isConsole: boolean = false) => {
     if (!auth) {
-      console.error("Firebase auth not initialized. Cannot sign out.");
+      console.error("Firebase auth not initialized. Cannot log out.");
       setUser(null);
       setLoading(false);
       router.push(isConsole ? '/console' : '/login');
