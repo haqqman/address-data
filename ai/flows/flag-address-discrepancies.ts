@@ -64,7 +64,15 @@ const flagAddressDiscrepanciesFlow = ai.defineFlow(
     outputSchema: FlagAddressDiscrepanciesOutputSchema,
   },
   async input => {
-    const {output} = await flagAddressDiscrepanciesPrompt(input);
-    return output!;
+    try {
+      const {output} = await flagAddressDiscrepanciesPrompt(input);
+      return output!;
+    } catch (error) {
+      console.error('Error in flagAddressDiscrepanciesFlow:', error);
+      return {
+        isDiscrepant: true,
+        reason: 'AI check failed. Address requires manual review.',
+      };
+    }
   }
 );
