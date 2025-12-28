@@ -123,12 +123,12 @@ export async function submitAddress({ formData, user }: SubmitAddressParams) {
       googleMapsAddress: googleMapsAddress,
     });
 
-    let status: AddressSubmission['status'] = "pending_review";
+    let status: AddressSubmission['status'] = "pending-review";
     let aiFlaggedReason: string | undefined = undefined;
     let adc: string | null = null;
 
     if (aiResult.isDiscrepant) {
-      status = "pending_review";
+      status = "pending-review";
       aiFlaggedReason = aiResult.reason;
     } else {
       status = "approved"; 
@@ -211,7 +211,7 @@ export async function getAddressSubmissions(userId?: string): Promise<AddressSub
 export async function getFlaggedAddresses(): Promise<AddressSubmission[]> {
   try {
     const submissionsCol = collection(db, "addressSubmissions");
-    const q = query(submissionsCol, where("status", "==", "pending_review"), orderBy("submittedAt", "desc"));
+    const q = query(submissionsCol, where("status", "==", "pending-review"), orderBy("submittedAt", "desc"));
     
     const querySnapshot = await getDocs(q);
     const submissions: AddressSubmission[] = [];

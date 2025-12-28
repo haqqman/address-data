@@ -86,7 +86,7 @@ export async function submitEstate({ formData, user }: SubmitEstateParams) {
         const newEstateData: Omit<Estate, 'id' | 'createdAt' | 'updatedAt' | 'lastUpdatedBy'> & { createdAt: any, updatedAt: any, lastUpdatedBy: any } = {
             name,
             estateCode: generateEstateCode(state, lga),
-            status: "pending_review",
+            status: "pending-review",
             location,
             googleMapLink: googleMapLink || "",
             source: "Platform",
