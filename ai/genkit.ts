@@ -8,4 +8,4 @@ export const ai = genkit({
   // The previous model, `gemini-2.0-flash-exp`, was causing an error.
   model: 'googleai/gemini-1.5-flash',
 });
-
+  model: process.env.GENKIT_MODEL || 'googleai/gemini-1.5-flash',
