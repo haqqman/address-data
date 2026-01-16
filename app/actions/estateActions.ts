@@ -4,6 +4,7 @@
 import { z } from "zod";
 import type { Estate, User } from "@/types";
 import { db } from "@/lib/firebase/config";
+import { customAlphabet } from 'nanoid';
 import { 
   collection, 
   addDoc, 
@@ -15,7 +16,9 @@ import {
   Timestamp,
   orderBy,
   getDoc,
-  where
+  where,
+  getFirestore,
+  runTransaction,
 } from "firebase/firestore";
 
 const estateSchema = z.object({
@@ -49,12 +52,41 @@ const convertTimestamps = (docData: any): any => {
   return data;
 };
 
-// Simplified code generation for now
-const generateEstateCode = (state: string, lga: string): string => {
-  const stateCode = state.substring(0, 3).toUpperCase();
-  const lgaCode = lga.substring(0, 3).toUpperCase();
-  const estateNumber = Math.random().toString(36).substring(2, 7).toUpperCase();
-  return `${stateCode}-${lgaCode}-${estateNumber}`;
+const nanoid5 = customAlphabet('ABCDEFGHJKLMNPQRSTUVWXYZ23456789', 5);
+const generateUniqueEstateCode = async (
+  state: string, 
+  lga: string,
+  estateData: any
+): Promise<string> => {
+  const db = getFirestore();
+  let finalCode: string = '';
+  
+  // Ensure 'uniqueness' at db level and protect from race conditions
+  await runTransaction(db, async (transaction) => {
+    for (let attempt = 0; attempt < 10; attempt++) {
+      const stateCode = state.substring(0, 3).toUpperCase();
+      const lgaCode = lga.substring(0, 3).toUpperCase();
+      const estateNumber = nanoid5();
+      const code = `${stateCode}-${lgaCode}-${estateNumber}`;
+      
+      const docRef = doc(db, 'estates', code);
+      const docSnap = await transaction.get(docRef);
+      
+      if (!docSnap.exists()) {
+        // Claim this code immediately
+        transaction.set(docRef, {
+          ...estateData,
+          createdAt: new Date()
+        });
+        finalCode = code;
+        return; // Exit transaction
+      }
+    }
+    
+    throw new Error('Failed to generate unique code');
+  });
+  
+  return finalCode;
 };
 
 interface SubmitEstateParams {
@@ -83,9 +115,9 @@ export async function submitEstate({ formData, user }: SubmitEstateParams) {
             location.city = city;
         }
         
-        const newEstateData: Omit<Estate, 'id' | 'createdAt' | 'updatedAt' | 'lastUpdatedBy'> & { createdAt: any, updatedAt: any, lastUpdatedBy: any } = {
+        const newEstateData: Omit<Estate, 'id' | 'createdAt' | 'updatedAt' > & { createdAt: any, updatedAt: any } = {
             name,
-            estateCode: generateEstateCode(state, lga),
+            estateCode: await generateUniqueEstateCode(state, lga),
             status: "pending-review",
             location,
             googleMapLink: googleMapLink || "",
@@ -168,7 +200,7 @@ export async function updateEstate(estateId: string, dataToUpdate: Partial<Omit<
         };
 
         if(isApproving && !currentData.estateCode) {
-            updatePayload.estateCode = generateEstateCode(currentData.location.state, currentData.location.lga);
+            updatePayload.estateCode = await generateUniqueEstateCode(currentData.location.state, currentData.location.lga);
         }
         
         if (isApproving || (dataToUpdate.status && dataToUpdate.status === 'rejected')) {
