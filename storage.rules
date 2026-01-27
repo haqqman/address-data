@@ -1,0 +1,54 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    // Helper Functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isImage() {
+      return request.resource.contentType.matches('image/.*');
+    }
+    
+    function isValidSize() {
+      return request.resource.size < 5 * 1024 * 1024;
+    }
+
+    // Entity Logos: Entity members only (simplified to owner check via Firestore)
+    match /entity_logos/{entityId}/{fileName} {
+      function isEntityOwner() {
+        return isAuthenticated() && 
+               firestore.exists(/databases/(default)/documents/entities/$(entityId)) && 
+               firestore.get(/databases/(default)/documents/entities/$(entityId)).data.ownerUserId == request.auth.uid;
+      }
+      
+      allow read: if isEntityOwner();
+      allow write: if isEntityOwner() && isImage() && isValidSize();
+    }
+
+    // Distributor Logos: Entity members only (simplified to owner check via Firestore)
+    match /distributor_logos/{entityId}/{distributorId}/{fileName} {
+      function isEntityOwner() {
+        return isAuthenticated() && 
+               firestore.exists(/databases/(default)/documents/entities/$(entityId)) && 
+               firestore.get(/databases/(default)/documents/entities/$(entityId)).data.ownerUserId == request.auth.uid;
+      }
+
+      allow read: if isEntityOwner();
+      allow write: if isEntityOwner() && isImage() && isValidSize();
+    }
+
+    // Avatars: User-owned only
+    match /avatars/{userId}/{fileName} {
+      allow read: if isAuthenticated() && request.auth.uid == userId;
+      allow write: if isAuthenticated() && request.auth.uid == userId && isImage() && isValidSize();
+    }
+
+    // Default deny for everything else
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
