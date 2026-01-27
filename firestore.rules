@@ -12,10 +12,6 @@ service cloud.firestore {
       return isAuthenticated() && request.auth.uid == userId;
     }
 
-    function isEntityOwner(userId) {
-      return isAuthenticated() && request.auth.uid == userId;
-    }
-
     // Check if the user is the owner of the document
     function isDocOwner() {
       return isAuthenticated() && resource.data.ownerUserId == request.auth.uid;
@@ -24,6 +20,16 @@ service cloud.firestore {
     // Check if the user is setting themselves as owner on create
     function isSettingSelfAsOwner() {
       return isAuthenticated() && request.resource.data.ownerUserId == request.auth.uid;
+    }
+    
+    // Standard owner create check
+    function isDocOwnerCreate() {
+      return isSettingSelfAsOwner() && isValidNewDoc();
+    }
+
+    // Standard owner update check (preserves ownership)
+    function isDocOwnerUpdate() {
+      return isDocOwner() && request.resource.data.ownerUserId == resource.data.ownerUserId && isValidNewDoc();
     }
     
     // Check if the user is the creator of the document
@@ -54,8 +60,8 @@ service cloud.firestore {
     // Entities: Owner-only access
     match /entities/{entityId} {
       allow read: if isDocOwner();
-      allow create: if isSettingSelfAsOwner() && isValidNewDoc();
-      allow update: if isDocOwner() && request.resource.data.ownerUserId == resource.data.ownerUserId && isValidNewDoc();
+      allow create: if isDocOwnerCreate();
+      allow update: if isDocOwnerUpdate();
       allow delete: if isDocOwner();
     }
 
@@ -70,58 +76,62 @@ service cloud.firestore {
       allow create: if isAuthenticated() && request.resource.data.inviterId == request.auth.uid && isValidNewDoc();
       allow delete: if isAuthenticated() && resource.data.inviterId == request.auth.uid;
       allow read: if isAuthenticated() && (resource.data.inviterId == request.auth.uid || resource.data.inviteeEmail == request.auth.token.email);
-      allow update: if isAuthenticated() && resource.data.inviteeEmail == request.auth.token.email && isValidNewDoc();
+      allow update: if isAuthenticated() && 
+                      resource.data.inviteeEmail == request.auth.token.email && 
+                      request.resource.data.inviterId == resource.data.inviterId &&
+                      request.resource.data.inviteeEmail == resource.data.inviteeEmail &&
+                      isValidNewDoc();
     }
 
     // Audit Logs: Owner read, authenticated create, immutable
     match /audit_logs/{logId} {
       allow read: if isDocOwner();
-      allow create: if isAuthenticated() && request.resource.data.actor.id == request.auth.uid && isValidNewDoc();
+      allow create: if isAuthenticated() && request.resource.data.actor.id == request.auth.uid && request.resource.data.ownerUserId == request.auth.uid && isValidNewDoc();
       allow update, delete: if false;
     }
 
     // Business Data: Owner-only access
     match /distributors/{docId} {
       allow read: if isDocOwner();
-      allow create: if isSettingSelfAsOwner() && isValidNewDoc();
-      allow update: if isDocOwner() && request.resource.data.ownerUserId == resource.data.ownerUserId && isValidNewDoc();
+      allow create: if isDocOwnerCreate();
+      allow update: if isDocOwnerUpdate();
       allow delete: if isDocOwner();
     }
 
     match /products/{docId} {
       allow read: if isDocOwner();
-      allow create: if isSettingSelfAsOwner() && isValidNewDoc();
-      allow update: if isDocOwner() && request.resource.data.ownerUserId == resource.data.ownerUserId && isValidNewDoc();
+      allow create: if isDocOwnerCreate();
+      allow update: if isDocOwnerUpdate();
       allow delete: if isDocOwner();
     }
 
     match /sales/{docId} {
       allow read: if isDocOwner();
-      allow create: if isSettingSelfAsOwner() && isValidNewDoc();
-      allow update: if isDocOwner() && request.resource.data.ownerUserId == resource.data.ownerUserId && isValidNewDoc();
+      allow create: if isDocOwnerCreate();
+      allow update: if isDocOwnerUpdate();
       allow delete: if isDocOwner();
     }
 
     match /supplies/{docId} {
       allow read: if isDocOwner();
-      allow create: if isSettingSelfAsOwner() && isValidNewDoc();
-      allow update: if isDocOwner() && request.resource.data.ownerUserId == resource.data.ownerUserId && isValidNewDoc();
+      allow create: if isDocOwnerCreate();
+      allow update: if isDocOwnerUpdate();
       allow delete: if isDocOwner();
     }
 
     // Requisitions: Creator or owner access
     match /requisitions/{docId} {
       allow read: if isDocOwner() || isCreator();
-      allow create: if (isSettingSelfAsOwner() || isSettingSelfAsCreator()) && isValidNewDoc();
-      allow update: if (isDocOwner() || isCreator()) && isValidNewDoc();
+      allow create: if isSettingSelfAsOwner() && isSettingSelfAsCreator() && isValidNewDoc();
+      allow update: if (isDocOwner() || isCreator()) && request.resource.data.ownerUserId == resource.data.ownerUserId && request.resource.data.createdBy == resource.data.createdBy && isValidNewDoc();
       allow delete: if isDocOwner() || isCreator();
     }
 
     // Support Tickets: Creator or owner access
     match /support_tickets/{ticketId} {
       allow read: if isDocOwner() || isCreator();
-      allow create: if (isSettingSelfAsOwner() || isSettingSelfAsCreator()) && isValidNewDoc();
-      allow update: if (isDocOwner() || isCreator()) && isValidNewDoc();
+      allow create: if isSettingSelfAsOwner() && isSettingSelfAsCreator() && isValidNewDoc();
+      allow update: if (isDocOwner() || isCreator()) && request.resource.data.ownerUserId == resource.data.ownerUserId && request.resource.data.createdBy == resource.data.createdBy && isValidNewDoc();
       allow delete: if isDocOwner() || isCreator();
     }
 
@@ -133,7 +143,7 @@ service cloud.firestore {
 
     // Privileged Collections (NO client access)
     match /subscription_plans/{planId} {
-      allow read: if true;
+      allow read: if isAuthenticated();
       allow write: if false;
     }
 

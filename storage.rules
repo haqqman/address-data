@@ -16,28 +16,21 @@ service firebase.storage {
       return request.resource.size < 5 * 1024 * 1024;
     }
 
+    function isEntityOwner(entityId) {
+      return isAuthenticated() && 
+             firestore.get(/databases/(default)/documents/entities/$(entityId)).data.ownerUserId == request.auth.uid;
+    }
+
     // Entity Logos: Entity members only (simplified to owner check via Firestore)
     match /entity_logos/{entityId}/{fileName} {
-      function isEntityOwner() {
-        return isAuthenticated() && 
-               firestore.exists(/databases/(default)/documents/entities/$(entityId)) && 
-               firestore.get(/databases/(default)/documents/entities/$(entityId)).data.ownerUserId == request.auth.uid;
-      }
-      
-      allow read: if isEntityOwner();
-      allow write: if isEntityOwner() && isImage() && isValidSize();
+      allow read: if isEntityOwner(entityId);
+      allow write: if isEntityOwner(entityId) && isImage() && isValidSize();
     }
 
     // Distributor Logos: Entity members only (simplified to owner check via Firestore)
     match /distributor_logos/{entityId}/{distributorId}/{fileName} {
-      function isEntityOwner() {
-        return isAuthenticated() && 
-               firestore.exists(/databases/(default)/documents/entities/$(entityId)) && 
-               firestore.get(/databases/(default)/documents/entities/$(entityId)).data.ownerUserId == request.auth.uid;
-      }
-
-      allow read: if isEntityOwner();
-      allow write: if isEntityOwner() && isImage() && isValidSize();
+      allow read: if isEntityOwner(entityId);
+      allow write: if isEntityOwner(entityId) && isImage() && isValidSize();
     }
 
     // Avatars: User-owned only
