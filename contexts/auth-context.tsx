@@ -55,7 +55,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (userDocSnap.exists()) {
       // User exists, update their last login and return their profile
       const existingData = userDocSnap.data() as User;
-      await updateDoc(userDocRef, { lastLogin: serverTimestamp() });
+      try {
+        await updateDoc(userDocRef, { lastLogin: serverTimestamp() });
+      } catch (error) {
+        console.warn("[AuthProvider] Failed to update lastLogin timestamp. Proceeding with login.", error);
+      }
 
       // Ensure local user object has JS Dates, not Firestore Timestamps
       const appUser: User = {
@@ -110,7 +114,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!auth || !db) {
-      console.error("Firebase auth or db service is not initialized. AuthProvider cannot function.");
+      console.error("[AuthProvider] Firebase auth or db service is not initialized. AuthProvider cannot function.");
       setUser(null);
       setLoading(false);
       return;
@@ -146,12 +150,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setUser(appUser);
           } else {
             // This can happen if auth record exists but Firestore doc was deleted.
-            console.warn(`User ${firebaseUser.uid} authenticated but not found in any user collection.`);
+            console.warn(`[AuthProvider] User ${firebaseUser.uid} authenticated but not found in any user collection.`);
             setUser(null);
             await firebaseSignOut(auth!);
           }
         } catch (error) {
-          console.error("Error in onAuthStateChanged > user sync:", error);
+          console.error("[AuthProvider] Error in onAuthStateChanged > user sync:", error);
           setUser(null);
           await firebaseSignOut(auth!);
         }
@@ -181,6 +185,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     // If it's a console login attempt, the user MUST exist in `consoleUsers`.
     if (isConsoleAttempt && (!consoleDocSnap || !consoleDocSnap.exists())) {
+      console.warn("[AuthProvider] Console login attempted by non-console user.");
       await firebaseSignOut(auth!);
       setUser(null);
       setLoading(false);
@@ -193,9 +198,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const appUser = await syncUserWithFirestore(firebaseUser);
       setUser(appUser);
       setLoading(false);
-      router.push(isConsoleRole(appUser.role) ? '/console/dashboard' : '/dashboard');
+      const redirectPath = isConsoleRole(appUser.role) ? '/console/dashboard' : '/dashboard';
+      router.push(redirectPath);
       return firebaseUser;
     } catch (e) {
+      console.error("[AuthProvider] Error in handleSuccessfulLogin:", e);
       await firebaseSignOut(auth!);
       setUser(null);
       setLoading(false);
@@ -211,7 +218,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const result = await signInWithPopup(auth, provider);
       return await handleSuccessfulLogin(result.user, false);
     } catch (error) {
-      console.error("Error signing in with Google:", error);
+      console.error("[AuthProvider] Error signing in with Google:", error);
       setLoading(false);
       throw error;
     }
@@ -225,7 +232,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const result = await signInWithPopup(auth, provider);
       return await handleSuccessfulLogin(result.user, false);
     } catch (error) {
-      console.error("Error signing in with GitHub:", error);
+      console.error("[AuthProvider] Error signing in with GitHub:", error);
       setLoading(false);
       throw error;
     }
@@ -239,7 +246,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await handleSuccessfulLogin(userCredential.user, isConsole);
       return userCredential;
     } catch (error) {
-      console.error("Error signing in with email:", error);
+      console.error("[AuthProvider] Error signing in with email:", error);
       setLoading(false);
       throw error;
     }

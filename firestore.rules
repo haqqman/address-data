@@ -54,7 +54,9 @@ service cloud.firestore {
     // Users: Self-read/write only
     match /users/{userId} {
       allow read: if isOwner(userId);
-      allow write: if isOwner(userId) && isValidNewDoc();
+      allow create: if isOwner(userId) && isValidNewDoc();
+      allow update: if isOwner(userId);
+      allow delete: if false; // Prevent users from deleting their own account for now
     }
 
     // Console Users: Self-read and restricted update (prevent role escalation)

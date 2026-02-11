@@ -2,7 +2,7 @@
 "use client";
 
 import { Button as NextUIButton } from "@nextui-org/react";
-import { Chrome, Github } from "lucide-react"; 
+import { Chrome, Github } from "lucide-react";
 import { useAuth } from "@/contexts/auth-context";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -28,11 +28,12 @@ export function LogInButtons() {
       logInFunction = signInWithGitHub;
       setLoadingState = setIsLoadingGitHub;
     }
-    
+
     setLoadingState(true);
 
     try {
       const user = await logInFunction();
+
       if (user) {
         // The redirect is handled within the auth context, but we keep the button disabled
         // using the global authLoading state until the redirect is complete.
@@ -47,13 +48,13 @@ export function LogInButtons() {
 
   return (
     <div className="space-y-4">
-       {errorMessage && (
+      {errorMessage && (
         <div className="p-3 bg-danger-50 border border-danger-200 rounded-md text-danger-700 text-sm">
           {errorMessage}
         </div>
       )}
       <NextUIButton
-        variant="bordered" 
+        variant="bordered"
         fullWidth
         onClick={() => handleLogIn("google")}
         disabled={isLoadingGoogle || isLoadingGitHub || authLoading}
@@ -64,7 +65,7 @@ export function LogInButtons() {
         {isLoadingGoogle || authLoading ? "Authenticating..." : "Log in with Google"}
       </NextUIButton>
       <NextUIButton
-        variant="bordered" 
+        variant="bordered"
         fullWidth
         onClick={() => handleLogIn("github")}
         disabled={isLoadingGoogle || isLoadingGitHub || authLoading}

@@ -5,7 +5,7 @@ import { getAuth } from "firebase-admin/auth";
 import { getFirestore } from "firebase-admin/firestore";
 
 if (!admin.apps.length) {
-  const serviceAccountString = process.env.GOOGLE_APPLICATION_CREDENTIALS;
+  const serviceAccountString = process.env.FIREBASE_SERVICE_ACCOUNT;
   
   try {
     if (serviceAccountString) {

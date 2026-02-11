@@ -14,11 +14,11 @@ import { format } from "date-fns";
 import { CheckCircle, XCircle, AlertTriangle, Info } from "lucide-react";
 import { updateAddressStatus } from "@/app/actions/addressActions";
 import { useState } from "react";
-import { useAuth } from "@/contexts/auth-context"; 
+import { useAuth } from "@/contexts/auth-context";
 
 interface FlaggedAddressTableProps {
   addresses: AddressSubmission[];
-  onActionComplete: () => void; 
+  onActionComplete: () => void;
 }
 
 export function FlaggedAddressTable({ addresses, onActionComplete }: FlaggedAddressTableProps) {
@@ -26,26 +26,26 @@ export function FlaggedAddressTable({ addresses, onActionComplete }: FlaggedAddr
   const { isOpen: isRejectOpen, onOpen: onRejectOpen, onClose: onRejectClose, onOpenChange: onRejectOpenChange } = useDisclosure();
   const [selectedSubmissionId, setSelectedSubmissionId] = useState<string | null>(null);
   const [reviewNotes, setReviewNotes] = useState("");
-  const { user } = useAuth(); 
+  const { user } = useAuth();
 
   const handleAction = async (newStatus: "approved" | "rejected") => {
-    if (!selectedSubmissionId || !user || user.role !== 'admin') {
-        console.error("Action cannot be performed. Console user not found or invalid submission.");
-        return;
+    if (!selectedSubmissionId || !user || user.role !== 'administrator') {
+      console.error("Action cannot be performed. Console user not found or invalid submission.");
+      return;
     }
 
     const result = await updateAddressStatus(selectedSubmissionId, newStatus, user.id, reviewNotes);
     if (result.success) {
       console.log("Action Successful", result.message);
-      onActionComplete(); 
+      onActionComplete();
     } else {
       console.error("Action Failed", result.message);
     }
-    setReviewNotes(""); 
+    setReviewNotes("");
     if (newStatus === "approved") onApproveClose(); else onRejectClose();
     setSelectedSubmissionId(null);
   };
-  
+
   const formatFullAddress = (address: AddressSubmission['submittedAddress']) => {
     return `${address.streetAddress}, ${address.areaDistrict}, ${address.city}, ${address.lga}, ${address.state}, ${address.country} ${address.zipCode ? `(${address.zipCode})` : ''}`;
   };
@@ -90,7 +90,7 @@ export function FlaggedAddressTable({ addresses, onActionComplete }: FlaggedAddr
                 <NextUITableCell className="max-w-xs">
                   <Tooltip content={submission.googleMapsSuggestion || "N/A"} placement="top-start">
                     <div className="truncate">
-                    {submission.googleMapsSuggestion || "N/A"}
+                      {submission.googleMapsSuggestion || "N/A"}
                     </div>
                   </Tooltip>
                 </NextUITableCell>
@@ -101,9 +101,9 @@ export function FlaggedAddressTable({ addresses, onActionComplete }: FlaggedAddr
                       variant="flat"
                       color="warning"
                       startContent={<AlertTriangle className="h-3 w-3" />}
-                      className="max-w-full whitespace-normal h-auto py-1" 
+                      className="max-w-full whitespace-normal h-auto py-1"
                     >
-                     <span className="truncate block" title={submission.aiFlaggedReason}>
+                      <span className="truncate block" title={submission.aiFlaggedReason}>
                         {submission.aiFlaggedReason}
                       </span>
                     </NextUIChip>
@@ -146,10 +146,10 @@ export function FlaggedAddressTable({ addresses, onActionComplete }: FlaggedAddr
         </NextUITable>
       </ScrollShadow>
 
-      
+
       <Modal isOpen={isApproveOpen} onOpenChange={onApproveOpenChange} backdrop="blur">
         <ModalContent>
-          {(onCloseModal) => ( 
+          {(onCloseModal) => (
             <>
               <ModalHeader className="flex flex-col gap-1">Approve Address?</ModalHeader>
               <ModalBody>
@@ -165,10 +165,10 @@ export function FlaggedAddressTable({ addresses, onActionComplete }: FlaggedAddr
                 <NextUIButton variant="light" onPress={onCloseModal}>
                   Cancel
                 </NextUIButton>
-                <NextUIButton 
-                    color="success" 
-                    onPress={() => {handleAction("approved");}}
-                    className="text-white shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out"
+                <NextUIButton
+                  color="success"
+                  onPress={() => { handleAction("approved"); }}
+                  className="text-white shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out"
                 >
                   Approve
                 </NextUIButton>
@@ -178,10 +178,10 @@ export function FlaggedAddressTable({ addresses, onActionComplete }: FlaggedAddr
         </ModalContent>
       </Modal>
 
-      
+
       <Modal isOpen={isRejectOpen} onOpenChange={onRejectOpenChange} backdrop="blur">
         <ModalContent>
-          {(onCloseModal) => ( 
+          {(onCloseModal) => (
             <>
               <ModalHeader className="flex flex-col gap-1">Reject Address?</ModalHeader>
               <ModalBody>
@@ -197,10 +197,10 @@ export function FlaggedAddressTable({ addresses, onActionComplete }: FlaggedAddr
                 <NextUIButton variant="light" onPress={onCloseModal}>
                   Cancel
                 </NextUIButton>
-                <NextUIButton 
-                    color="danger" 
-                    onPress={() => {handleAction("rejected");}}
-                    className="text-white shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out"
+                <NextUIButton
+                  color="danger"
+                  onPress={() => { handleAction("rejected"); }}
+                  className="text-white shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out"
                 >
                   Reject
                 </NextUIButton>
