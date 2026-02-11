@@ -57,6 +57,13 @@ service cloud.firestore {
       allow write: if isOwner(userId) && isValidNewDoc();
     }
 
+    // Console Users: Self-read and restricted update (prevent role escalation)
+    match /consoleUsers/{userId} {
+      allow read: if isOwner(userId);
+      allow update: if isOwner(userId) && request.resource.data.role == resource.data.role;
+      allow create, delete: if false;
+    }
+
     // Entities: Owner-only access
     match /entities/{entityId} {
       allow read: if isDocOwner();

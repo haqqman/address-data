@@ -1,9 +1,9 @@
 
 "use client";
 
-import type { ReactNode} from 'react';
+import type { ReactNode } from 'react';
 import { createContext, useContext, useEffect, useState } from 'react';
-import type { User as FirebaseUser} from 'firebase/auth';
+import type { User as FirebaseUser } from 'firebase/auth';
 import {
   GoogleAuthProvider,
   GithubAuthProvider,
@@ -40,12 +40,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (email.endsWith('@haqqman.com')) return 'administrator'; // Simplified default for haqqman emails
     return 'user';
   };
-  
+
   const isConsoleRole = (role: User['role']) => ['cto', 'administrator', 'manager'].includes(role);
 
   const syncUserWithFirestore = async (firebaseUser: FirebaseUser): Promise<User> => {
     if (!db) throw new Error("Firestore not available. User sync failed.");
-    
+
     const determinedRole = determineUserRole(firebaseUser.email);
     const useConsoleCollection = isConsoleRole(determinedRole);
     const collectionName = useConsoleCollection ? 'consoleUsers' : 'users';
@@ -56,14 +56,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // User exists, update their last login and return their profile
       const existingData = userDocSnap.data() as User;
       await updateDoc(userDocRef, { lastLogin: serverTimestamp() });
-      
+
       // Ensure local user object has JS Dates, not Firestore Timestamps
       const appUser: User = {
         ...existingData,
         id: firebaseUser.uid,
         lastLogin: new Date(), // Set to now
-        createdAt: existingData.createdAt instanceof Timestamp 
-          ? existingData.createdAt.toDate() 
+        createdAt: existingData.createdAt instanceof Timestamp
+          ? existingData.createdAt.toDate()
           : existingData.createdAt || new Date(),
       };
       return appUser;
@@ -78,7 +78,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const userFirstName = firebaseUser.displayName?.split(' ')[0] || firebaseUser.email?.split('@')[0] || 'User';
       const userLastName = firebaseUser.displayName?.split(' ').slice(1).join(' ') || '';
 
-      const newUserProfile: Omit<User, 'id'> & { createdAt: any, lastLogin: any } = {
+      const newUserProfile: Omit<User, 'id' | 'createdAt' | 'lastLogin'> & { createdAt: any, lastLogin: any } = {
         email: firebaseUser.email,
         firstName: userFirstName,
         lastName: userLastName,
@@ -89,12 +89,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         createdAt: serverTimestamp(),
         lastLogin: serverTimestamp(),
       };
-      
+
       await setDoc(userDocRef, newUserProfile);
-      
+
       // Send welcome email to new user
       if (newUserProfile.email) {
-          sendWelcomeEmail({ name: newUserProfile.displayName || "there", email: newUserProfile.email });
+        sendWelcomeEmail({ name: newUserProfile.displayName || "there", email: newUserProfile.email });
       }
 
 
@@ -113,43 +113,47 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.error("Firebase auth or db service is not initialized. AuthProvider cannot function.");
       setUser(null);
       setLoading(false);
-      return; 
+      return;
     }
 
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser: FirebaseUser | null) => {
       setLoading(true);
       if (firebaseUser) {
         try {
-          // Check both collections to find where the user profile is stored.
-          const consoleDocRef = doc(db, 'consoleUsers', firebaseUser.uid);
-          const portalDocRef = doc(db, 'users', firebaseUser.uid);
-          
-          const consoleDocSnap = await getDoc(consoleDocRef);
+          // Check collections based on email domain to avoid permission errors
+          const portalDocRef = doc(db!, 'users', firebaseUser.uid);
+          const isHaqqmanEmail = firebaseUser.email?.endsWith('@haqqman.com');
+
+          let consoleDocSnap;
+          if (isHaqqmanEmail) {
+            const consoleDocRef = doc(db!, 'consoleUsers', firebaseUser.uid);
+            consoleDocSnap = await getDoc(consoleDocRef);
+          }
           const portalDocSnap = await getDoc(portalDocRef);
 
           let userDocSnap;
-          if (consoleDocSnap.exists()) {
+          if (consoleDocSnap?.exists()) {
             userDocSnap = consoleDocSnap;
           } else if (portalDocSnap.exists()) {
             userDocSnap = portalDocSnap;
           }
 
           if (userDocSnap?.exists()) {
-             const appUser = { id: firebaseUser.uid, ...userDocSnap.data() } as User;
-             // Ensure timestamps are JS Dates
-             if(appUser.createdAt && appUser.createdAt instanceof Timestamp) appUser.createdAt = appUser.createdAt.toDate();
-             if(appUser.lastLogin && appUser.lastLogin instanceof Timestamp) appUser.lastLogin = appUser.lastLogin.toDate();
-             setUser(appUser);
+            const appUser = { id: firebaseUser.uid, ...userDocSnap.data() } as User;
+            // Ensure timestamps are JS Dates
+            if (appUser.createdAt && appUser.createdAt instanceof Timestamp) appUser.createdAt = appUser.createdAt.toDate();
+            if (appUser.lastLogin && appUser.lastLogin instanceof Timestamp) appUser.lastLogin = appUser.lastLogin.toDate();
+            setUser(appUser);
           } else {
-             // This can happen if auth record exists but Firestore doc was deleted.
-             console.warn(`User ${firebaseUser.uid} authenticated but not found in any user collection.`);
-             setUser(null);
-             await firebaseSignOut(auth);
+            // This can happen if auth record exists but Firestore doc was deleted.
+            console.warn(`User ${firebaseUser.uid} authenticated but not found in any user collection.`);
+            setUser(null);
+            await firebaseSignOut(auth!);
           }
         } catch (error) {
           console.error("Error in onAuthStateChanged > user sync:", error);
           setUser(null);
-          await firebaseSignOut(auth);
+          await firebaseSignOut(auth!);
         }
       } else {
         setUser(null);
@@ -157,38 +161,45 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setLoading(false);
     });
     return () => unsubscribe();
-  }, []); 
+  }, []);
 
   const handleSuccessfulLogin = async (firebaseUser: FirebaseUser, isConsoleAttempt: boolean = false) => {
     setLoading(true);
-    
+
     // Check for user in Firestore collections
-    const consoleDocRef = doc(db, 'consoleUsers', firebaseUser.uid);
-    const portalDocRef = doc(db, 'users', firebaseUser.uid);
-    const consoleDocSnap = await getDoc(consoleDocRef);
+    const portalDocRef = doc(db!, 'users', firebaseUser.uid);
     const portalDocSnap = await getDoc(portalDocRef);
 
+    // Only check consoleUsers if necessary
+    const isHaqqmanEmail = firebaseUser.email?.endsWith('@haqqman.com');
+    let consoleDocSnap;
+
+    if (isConsoleAttempt || isHaqqmanEmail) {
+      const consoleDocRef = doc(db!, 'consoleUsers', firebaseUser.uid);
+      consoleDocSnap = await getDoc(consoleDocRef);
+    }
+
     // If it's a console login attempt, the user MUST exist in `consoleUsers`.
-    if (isConsoleAttempt && !consoleDocSnap.exists()) {
-        await firebaseSignOut(auth);
-        setUser(null);
-        setLoading(false);
-        const authError = new Error("Access Denied. Not a valid console user.");
-        (authError as any).code = 'auth/unauthorized-console-user';
-        throw authError;
+    if (isConsoleAttempt && (!consoleDocSnap || !consoleDocSnap.exists())) {
+      await firebaseSignOut(auth!);
+      setUser(null);
+      setLoading(false);
+      const authError = new Error("Access Denied. Not a valid console user.");
+      (authError as any).code = 'auth/unauthorized-console-user';
+      throw authError;
     }
 
     try {
-        const appUser = await syncUserWithFirestore(firebaseUser);
-        setUser(appUser);
-        setLoading(false);
-        router.push(isConsoleRole(appUser.role) ? '/console/dashboard' : '/dashboard');
-        return firebaseUser;
+      const appUser = await syncUserWithFirestore(firebaseUser);
+      setUser(appUser);
+      setLoading(false);
+      router.push(isConsoleRole(appUser.role) ? '/console/dashboard' : '/dashboard');
+      return firebaseUser;
     } catch (e) {
-        await firebaseSignOut(auth);
-        setUser(null);
-        setLoading(false);
-        throw e;
+      await firebaseSignOut(auth!);
+      setUser(null);
+      setLoading(false);
+      throw e;
     }
   };
 
