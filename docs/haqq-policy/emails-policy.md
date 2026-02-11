@@ -46,8 +46,8 @@ When adding a new email notification:
 1. Create `emails/[name].email.ts`.
 2. Implement the async function using the `sendEmail` utility.
 3. Add the function and its param type to `emails/index.ts`.
-4. Update `docs/emails-series.md` to document the new flow.
-5. Import from `@/emails` in your application action.
+4. Update `docs/emails-series.md` to document the email series flow.
+5. Import from `@/emails` in the application action.
 
 ## Security & Reliability
 - **Header Injection**: All dynamic values used in headers (Subject, To, From) must be run through the `escapeEmailHeaderValue` utility in `email-service.ts`.
