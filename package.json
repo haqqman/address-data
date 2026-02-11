@@ -39,6 +39,7 @@
     "react-hook-form": "^7.71.1",
     "recharts": "^2.15.4",
     "tailwind-merge": "^3.4.0",
+    "zeptomail": "^7.0.1-alpha-3",
     "zod": "^3.25.76"
   },
   "devDependencies": {

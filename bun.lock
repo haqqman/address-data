@@ -9,7 +9,7 @@
         "@hookform/resolvers": "^4.1.3",
         "@nextui-org/react": "^2.6.11",
         "@tanstack-query-firebase/react": "^1.0.7",
-        "@tanstack/react-query": "^5.90.20",
+        "@tanstack/react-query": "^5.90.21",
         "@vercel/analytics": "^1.6.1",
         "clsx": "^2.1.1",
         "date-fns": "^3.6.0",
@@ -30,10 +30,11 @@
         "react-hook-form": "^7.71.1",
         "recharts": "^2.15.4",
         "tailwind-merge": "^3.4.0",
+        "zeptomail": "^7.0.1-alpha-3",
         "zod": "^3.25.76",
       },
       "devDependencies": {
-        "@types/node": "^20.19.32",
+        "@types/node": "^20.19.33",
         "@types/react": "^18.3.28",
         "@types/react-dom": "^18.3.7",
         "eslint": "^8.57.1",
@@ -2424,6 +2425,8 @@
 
     "yoctocolors-cjs": ["yoctocolors-cjs@2.1.3", "", {}, "sha512-U/PBtDf35ff0D8X8D0jfdzHYEPFxAI7jJlxZXwCSez5M3190m+QobIfh+sWDWSHMCWWJN2AWamkegn6vr6YBTw=="],
 
+    "zeptomail": ["zeptomail@7.0.1-alpha-3", "", { "dependencies": { "node-fetch": "^2.6.0" } }, "sha512-/2Fh0kF/npfDdgBvd53VjNbfBd6j40a7jImYT85Q47w1Ffm+z2PdgymnsDnvR9RHUoyS7aICnBLw88d1KZBNwA=="],
+
     "zod": ["zod@3.25.76", "", {}, "sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ=="],
 
     "zod-to-json-schema": ["zod-to-json-schema@3.24.5", "", { "peerDependencies": { "zod": "^3.24.1" } }, "sha512-/AuWwMP+YqiPbsJx5D6TfgRTc4kTLjsh5SOcd4bLsfUg2RcEXrFMJl1DGgdHy2aCfsIA/cr/1JM0xcB2GZji8g=="],
@@ -2989,6 +2992,8 @@
     "vite-node/debug": ["debug@4.4.3", "", { "dependencies": { "ms": "^2.1.3" } }, "sha512-RGwwWnwQvkVfavKVt22FGLw+xYSdzARwm0ru6DhTVA3umU5hZc28V3kO4stgYryrTlLpuvgI9GiijltAjNbcqA=="],
 
     "vitest/debug": ["debug@4.4.3", "", { "dependencies": { "ms": "^2.1.3" } }, "sha512-RGwwWnwQvkVfavKVt22FGLw+xYSdzARwm0ru6DhTVA3umU5hZc28V3kO4stgYryrTlLpuvgI9GiijltAjNbcqA=="],
+
+    "zeptomail/node-fetch": ["node-fetch@2.7.0", "", { "dependencies": { "whatwg-url": "^5.0.0" }, "peerDependencies": { "encoding": "^0.1.0" }, "optionalPeers": ["encoding"] }, "sha512-c4FRfUm/dbcWZ7U+1Wq0AwCyFL+3nt2bEw05wfxSz+DWpWsitgmSgYmy2dQdWyKC1694ELPqMs/YzUSNozLt8A=="],
 
     "@genkit-ai/core/ajv/json-schema-traverse": ["json-schema-traverse@1.0.0", "", {}, "sha512-NM8/P9n3XjXhIZn1lLhkFaACTOURQXjWhV4BA/RnOv8xvgqtqpAX9IO4mRQxSx1Rlo4tqzeqb0sOlruaOy3dug=="],
 

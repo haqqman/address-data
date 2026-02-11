@@ -17,7 +17,7 @@ All email-related code is located in the `emails/` directory at the root of the 
 Each email template must reside in its own file named `[feature-name].email.ts`. 
 
 - **Directives**: Must include `'use server'` at the top.
-- **Stream Tags**: Must include a comment `/** stream=[transactional|marketing] */` at the top of the file (after directives) for product management reference.
+- **Stream Tags**: Include a comment `/** stream=[transactional|marketing] */` for classification, which is metadata-only at template level, not part of function params.
 - **Dependencies**: Must import the generic `sendEmail` from `./email-service`.
 - **Functions**: Should export a single `async` function named `send[Feature]Email`.
 - **Typing**: Must export a corresponding interface or type named `[Feature]EmailParams` for the function arguments.
