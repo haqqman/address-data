@@ -1,7 +1,7 @@
 
 "use server";
 
-import { auth, db } from "@/lib/firebase/config";
+import { auth, db } from "@/firebase/client";
 import { doc, updateDoc, getDoc, setDoc, serverTimestamp, collection, query, getDocs, orderBy, deleteDoc, Timestamp } from "firebase/firestore";
 import { createUserWithEmailAndPassword, deleteUser as deleteAuthUser } from "firebase/auth";
 import { z } from "zod";

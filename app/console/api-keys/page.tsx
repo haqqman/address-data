@@ -1,14 +1,14 @@
 
-"use client"; 
+"use client";
 
 import { useState, useEffect, useCallback } from "react";
 import { ApiKeyManagementTable } from "@/components/console/ApiKeyManagementTable";
-import type { APIKey } from "@/types"; 
+import type { APIKey } from "@/types";
 import { Skeleton as NextUISkeleton, Card as NextUICard, CardHeader as NextUICardHeader, CardBody as NextUICardBody, Button as NextUIButton, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Input as NextUIInput, useDisclosure, Autocomplete, AutocompleteItem } from "@nextui-org/react";
 import { AlertTriangle, PlusCircle } from "lucide-react";
 import { getAllApiKeys, createApiKey } from "@/app/actions/apiKeyActions";
-import { db } from "@/lib/firebase/config"; 
-import { collection, getDocs, query, where } from "firebase/firestore"; 
+import { db } from "@/firebase/client";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import { useAuth } from "@/contexts/auth-context";
 
 
@@ -20,24 +20,24 @@ interface SimpleUser {
 
 // Fetch portal users, as API keys are for them.
 async function fetchPortalUsers(): Promise<SimpleUser[]> {
-    try {
-        const usersCol = collection(db, "users"); 
-        const q = query(usersCol, where("role", "==", "user"));
-        const querySnapshot = await getDocs(q);
-        const users: SimpleUser[] = [];
-        querySnapshot.forEach((doc) => {
-            const data = doc.data();
-            users.push({
-                id: doc.id, 
-                displayName: data.displayName || "Unnamed User",
-                email: data.email
-            });
-        });
-        return users;
-    } catch (error) {
-        console.error("Error fetching portal users for API key assignment:", error);
-        return []; 
-    }
+  try {
+    const usersCol = collection(db, "users");
+    const q = query(usersCol, where("role", "==", "user"));
+    const querySnapshot = await getDocs(q);
+    const users: SimpleUser[] = [];
+    querySnapshot.forEach((doc) => {
+      const data = doc.data();
+      users.push({
+        id: doc.id,
+        displayName: data.displayName || "Unnamed User",
+        email: data.email
+      });
+    });
+    return users;
+  } catch (error) {
+    console.error("Error fetching portal users for API key assignment:", error);
+    return [];
+  }
 }
 
 
@@ -79,17 +79,17 @@ export default function ConsoleApiKeysPage() {
 
   const handleCreateNewKey = async () => {
     if (!adminUser || !['cto', 'administrator'].includes(adminUser.role)) {
-        alert("Unauthorized action.");
-        return;
+      alert("Unauthorized action.");
+      return;
     }
     if (!selectedUserId) {
-        alert("Please select a user to assign the API key to.");
-        return;
+      alert("Please select a user to assign the API key to.");
+      return;
     }
     const targetUser = portalUsers.find(u => u.id === selectedUserId);
     if (!targetUser) {
-        alert("Selected user not found.");
-        return;
+      alert("Selected user not found.");
+      return;
     }
 
     setIsCreating(true);
@@ -102,9 +102,9 @@ export default function ConsoleApiKeysPage() {
         keyName: newKeyName || undefined,
       });
       if (result.success) {
-        alert(result.message); 
-        fetchApiKeys(); 
-        onClose(); 
+        alert(result.message);
+        fetchApiKeys();
+        onClose();
         setNewKeyName("");
         setSelectedUserId(null);
       } else {
@@ -117,9 +117,9 @@ export default function ConsoleApiKeysPage() {
       setIsCreating(false);
     }
   };
-  
+
   const handleActionComplete = () => {
-    fetchApiKeys(); 
+    fetchApiKeys();
   };
 
 
@@ -127,19 +127,19 @@ export default function ConsoleApiKeysPage() {
     <div className="space-y-8">
       <div className="flex justify-between items-center">
         <div className="flex flex-col space-y-1">
-            <h1 className="text-3xl font-bold tracking-tight text-primary">Manage Developer API Keys</h1>
-            <p className="text-foreground-500">
+          <h1 className="text-3xl font-bold tracking-tight text-primary">Manage Developer API Keys</h1>
+          <p className="text-foreground-500">
             Oversee, create, and revoke API keys for portal users.
-            </p>
+          </p>
         </div>
-        <NextUIButton 
-            onPress={onOpen} 
-            color="warning" 
-            className="text-primary shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out" 
-            startContent={<PlusCircle className="h-4 w-4" />}
-            isDisabled={!adminUser || !['cto', 'administrator'].includes(adminUser.role)}
+        <NextUIButton
+          onPress={onOpen}
+          color="warning"
+          className="text-primary shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out"
+          startContent={<PlusCircle className="h-4 w-4" />}
+          isDisabled={!adminUser || !['cto', 'administrator'].includes(adminUser.role)}
         >
-             Create New API Key
+          Create New API Key
         </NextUIButton>
       </div>
 
@@ -161,7 +161,7 @@ export default function ConsoleApiKeysPage() {
             </div>
           )}
 
-          {error && !isLoading && ( 
+          {error && !isLoading && (
             <NextUICard className="mt-4 bg-danger-50 border-danger-200 rounded-xl">
               <NextUICardBody className="p-4">
                 <div className="flex items-center">
@@ -181,7 +181,7 @@ export default function ConsoleApiKeysPage() {
         </NextUICardBody>
       </NextUICard>
 
-      
+
       <Modal isOpen={isOpen} onOpenChange={onOpenChange} backdrop="blur">
         <ModalContent>
           {(modalOnClose) => (
@@ -220,12 +220,12 @@ export default function ConsoleApiKeysPage() {
                 <NextUIButton variant="light" onPress={modalOnClose} disabled={isCreating}>
                   Cancel
                 </NextUIButton>
-                <NextUIButton 
-                    color="warning" 
-                    onPress={handleCreateNewKey} 
-                    isLoading={isCreating} 
-                    disabled={isCreating || !selectedUserId}
-                    className="text-primary shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out"
+                <NextUIButton
+                  color="warning"
+                  onPress={handleCreateNewKey}
+                  isLoading={isCreating}
+                  disabled={isCreating || !selectedUserId}
+                  className="text-primary shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out"
                 >
                   {isCreating ? "Creating..." : "Create API Key"}
                 </NextUIButton>

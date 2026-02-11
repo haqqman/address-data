@@ -4,7 +4,7 @@
 import { z } from "zod";
 import { flagAddressDiscrepancies } from "@/ai/flows/flag-address-discrepancies";
 import type { AddressSubmission, User } from "@/types";
-import { db } from "@/lib/firebase/config";
+import { db } from "@/firebase/client";
 import { 
   collection, 
   addDoc, 
@@ -241,7 +241,7 @@ export async function updateAddressStatus(
 
     const submissionData = docSnap.data() as AddressSubmission;
 
-    const updateData: Partial<AddressSubmission> & { reviewedAt: any } = { 
+    const updateData: Partial<Omit<AddressSubmission, 'reviewedAt'>> & { reviewedAt: any } = { 
       status: newStatus,
       reviewedAt: serverTimestamp(),
       reviewerId: reviewerId, 

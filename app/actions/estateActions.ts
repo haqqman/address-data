@@ -3,7 +3,7 @@
 
 import { z } from "zod";
 import type { Estate, User } from "@/types";
-import { db } from "@/lib/firebase/config";
+import { db } from "@/firebase/client";
 import { customAlphabet } from 'nanoid';
 import { 
   collection, 
@@ -55,38 +55,25 @@ const convertTimestamps = (docData: any): any => {
 const nanoid5 = customAlphabet('ABCDEFGHJKLMNPQRSTUVWXYZ23456789', 5);
 const generateUniqueEstateCode = async (
   state: string, 
-  lga: string,
-  estateData: any
+  lga: string
 ): Promise<string> => {
-  const db = getFirestore();
-  let finalCode: string = '';
-  
-  // Ensure 'uniqueness' at db level and protect from race conditions
-  await runTransaction(db, async (transaction) => {
-    for (let attempt = 0; attempt < 10; attempt++) {
-      const stateCode = state.substring(0, 3).toUpperCase();
-      const lgaCode = lga.substring(0, 3).toUpperCase();
-      const estateNumber = nanoid5();
-      const code = `${stateCode}-${lgaCode}-${estateNumber}`;
-      
-      const docRef = doc(db, 'estates', code);
-      const docSnap = await transaction.get(docRef);
-      
-      if (!docSnap.exists()) {
-        // Claim this code immediately
-        transaction.set(docRef, {
-          ...estateData,
-          createdAt: new Date()
-        });
-        finalCode = code;
-        return; // Exit transaction
-      }
-    }
+  for (let attempt = 0; attempt < 10; attempt++) {
+    const stateCode = state.substring(0, 3).toUpperCase();
+    const lgaCode = lga.substring(0, 3).toUpperCase();
+    const estateNumber = nanoid5();
+    const code = `${stateCode}-${lgaCode}-${estateNumber}`;
     
-    throw new Error('Failed to generate unique code');
-  });
+    // Check for uniqueness by querying the collection
+    const estatesCol = collection(db, 'estates');
+    const q = query(estatesCol, where("estateCode", "==", code));
+    const snapshot = await getDocs(q);
+    
+    if (snapshot.empty) {
+      return code;
+    }
+  }
   
-  return finalCode;
+  throw new Error('Failed to generate unique code');
 };
 
 interface SubmitEstateParams {

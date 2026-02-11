@@ -12,7 +12,7 @@ import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
 } from 'firebase/auth';
-import { auth, db } from '@/lib/firebase/config';
+import { auth, db } from '@/firebase/client';
 import type { User } from '@/types';
 import { useRouter } from 'next/navigation';
 import { doc, getDoc, setDoc, serverTimestamp, Timestamp, updateDoc } from 'firebase/firestore';

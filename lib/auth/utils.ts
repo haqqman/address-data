@@ -1,5 +1,5 @@
 
-import { auth, db } from '@/lib/firebase/config'; // Added db
+import { auth, db } from '@/firebase/client'; // Added db
 import type { User as FirebaseUser } from 'firebase/auth';
 import type { User } from '@/types';
 import { doc, getDoc } from 'firebase/firestore'; // Added getDoc
@@ -36,6 +36,8 @@ export async function getCurrentUser(): Promise<User | null> {
           email: firebaseUser.email,
           displayName: firebaseUser.displayName,
           role: role,
+          createdAt: new Date(),
+          lastLogin: new Date(),
         };
         resolve(appUser);
       } else {

@@ -44,13 +44,9 @@ export async function proxy(request: NextRequest) {
 
     try {
       // Dynamically import server-side modules ONLY when needed
-      const { initAdmin } = await import('@/lib/firebase/admin-config');
-      const admin = (await import('firebase-admin')).default;
+      const { adminAuth } = await import('@/firebase/server');
       
-      // Initialize admin app
-      initAdmin();
-
-      const decodedClaims = await admin.auth().verifySessionCookie(session, true);
+      const decodedClaims = await adminAuth.verifySessionCookie(session, true);
       const consoleRoles: Array<string | undefined> = [
         "cto",
         "administrator",

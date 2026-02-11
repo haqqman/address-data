@@ -1,7 +1,7 @@
 
 "use server";
 
-import { db } from "@/lib/firebase/config";
+import { db } from "@/firebase/client";
 import type { GeographyState, GeographyLGA, GeographyCity, FirestoreGeographyStateData, FirestoreGeographyLGAData, FirestoreGeographyCityData } from "@/types";
 import { 
   collection, 
