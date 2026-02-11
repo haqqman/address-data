@@ -7,8 +7,7 @@ import type { APIKey } from "@/types";
 import { Skeleton as NextUISkeleton, Card as NextUICard, CardHeader as NextUICardHeader, CardBody as NextUICardBody, Button as NextUIButton, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Input as NextUIInput, useDisclosure, Autocomplete, AutocompleteItem } from "@nextui-org/react";
 import { AlertTriangle, PlusCircle } from "lucide-react";
 import { getAllApiKeys, createApiKey } from "@/app/actions/apiKeyActions";
-import { db } from "@/firebase/client";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { getPortalUsers } from "@/app/actions/userActions";
 import { useAuth } from "@/contexts/auth-context";
 
 
@@ -17,29 +16,6 @@ interface SimpleUser {
   displayName?: string | null;
   email?: string | null;
 }
-
-// Fetch portal users, as API keys are for them.
-async function fetchPortalUsers(): Promise<SimpleUser[]> {
-  try {
-    const usersCol = collection(db, "users");
-    const q = query(usersCol, where("role", "==", "user"));
-    const querySnapshot = await getDocs(q);
-    const users: SimpleUser[] = [];
-    querySnapshot.forEach((doc) => {
-      const data = doc.data();
-      users.push({
-        id: doc.id,
-        displayName: data.displayName || "Unnamed User",
-        email: data.email
-      });
-    });
-    return users;
-  } catch (error) {
-    console.error("Error fetching portal users for API key assignment:", error);
-    return [];
-  }
-}
-
 
 export default function ConsoleApiKeysPage() {
   const [apiKeys, setApiKeys] = useState<APIKey[]>([]);
@@ -68,7 +44,7 @@ export default function ConsoleApiKeysPage() {
   }, []);
 
   const loadUsersForDropdown = useCallback(async () => {
-    const users = await fetchPortalUsers();
+    const users = await getPortalUsers();
     setPortalUsers(users);
   }, []);
 
@@ -97,8 +73,6 @@ export default function ConsoleApiKeysPage() {
     try {
       const result = await createApiKey({
         userId: targetUser.id,
-        userName: targetUser.displayName || undefined,
-        userEmail: targetUser.email || undefined,
         keyName: newKeyName || undefined,
       });
       if (result.success) {

@@ -1,16 +1,9 @@
 
 "use server";
 
-import { db } from "@/firebase/client";
+import { adminDb } from "@/firebase/server";
 import type { AddressSubmission, Estate } from "@/types";
-import {
-  collection,
-  query,
-  where,
-  getDocs,
-  Timestamp,
-  or
-} from "firebase/firestore";
+import { Filter, Timestamp } from "firebase-admin/firestore";
 
 // Helper function to convert Firestore Timestamps
 const convertTimestamps = (docData: any): any => {
@@ -27,29 +20,28 @@ const convertTimestamps = (docData: any): any => {
 
 // Search for approved addresses
 async function searchAddresses(term: string): Promise<AddressSubmission[]> {
-  const submissionsCol = collection(db, "addressSubmissions");
+  const submissionsCol = adminDb.collection("addressSubmissions");
   
   // Note: Firestore does not support full-text search on its own.
   // This query looks for an exact match on the ADC or case-insensitive partial matches on address components.
-  // For production, a dedicated search service like Algolia or Typesense is recommended.
-  const q = query(
-    submissionsCol,
-    where("status", "==", "approved"),
-    // This `or` condition is a composite query and requires a Firestore index.
-    // Firebase will provide a link in the console error to create it automatically.
-    or(
-        where("adc", "==", term.toUpperCase()),
-        where("submittedAddress.streetAddress", ">=", term),
-        where("submittedAddress.streetAddress", "<=", term + '\uf8ff'),
-        where("submittedAddress.city", "==", term),
-        where("submittedAddress.lga", "==", term)
+  // Using Admin SDK `Filter`
+  const query = submissionsCol.where(
+    Filter.and(
+        Filter.where("status", "==", "approved"),
+        Filter.or(
+            Filter.where("adc", "==", term.toUpperCase()),
+            Filter.where("submittedAddress.streetAddress", ">=", term),
+            Filter.where("submittedAddress.streetAddress", "<=", term + '\uf8ff'),
+            Filter.where("submittedAddress.city", "==", term),
+            Filter.where("submittedAddress.lga", "==", term)
+        )
     )
   );
 
-  const querySnapshot = await getDocs(q);
+  const querySnapshot = await query.get();
   const addresses: AddressSubmission[] = [];
   querySnapshot.forEach((doc) => {
-    const data = convertTimestamps(doc.data()) as AddressSubmission;
+    const data = convertTimestamps(doc.data()) as Omit<AddressSubmission, 'id'>;
     // Manual filtering for case-insensitivity as Firestore is limited
     const fullAddress = `${data.submittedAddress.streetAddress} ${data.submittedAddress.city} ${data.submittedAddress.lga}`.toLowerCase();
     if (data.adc === term.toUpperCase() || fullAddress.includes(term.toLowerCase())) {
@@ -62,22 +54,23 @@ async function searchAddresses(term: string): Promise<AddressSubmission[]> {
 
 // Search for approved estates
 async function searchEstates(term: string): Promise<Estate[]> {
-  const estatesCol = collection(db, "estates");
+  const estatesCol = adminDb.collection("estates");
   
-  const q = query(
-    estatesCol,
-    where("status", "==", "approved"),
-    or(
-        where("estateCode", "==", term.toUpperCase()),
-        where("name", ">=", term),
-        where("name", "<=", term + '\uf8ff')
+  const query = estatesCol.where(
+    Filter.and(
+        Filter.where("status", "==", "approved"),
+        Filter.or(
+            Filter.where("estateCode", "==", term.toUpperCase()),
+            Filter.where("name", ">=", term),
+            Filter.where("name", "<=", term + '\uf8ff')
+        )
     )
   );
 
-  const querySnapshot = await getDocs(q);
+  const querySnapshot = await query.get();
   const estates: Estate[] = [];
   querySnapshot.forEach((doc) => {
-    const data = convertTimestamps(doc.data()) as Estate;
+    const data = convertTimestamps(doc.data()) as Omit<Estate, 'id'>;
     // Manual filtering for case-insensitivity
     if (data.estateCode === term.toUpperCase() || data.name.toLowerCase().includes(term.toLowerCase())) {
         estates.push({ id: doc.id, ...data });
@@ -107,7 +100,6 @@ export async function searchByTerm(term: string): Promise<{ addresses: AddressSu
   } catch (error) {
     console.error("Error performing search:", error);
     // In case of an error (e.g., missing Firestore index), return empty results
-    // to prevent the page from crashing.
     return { addresses: [], estates: [] };
   }
 }

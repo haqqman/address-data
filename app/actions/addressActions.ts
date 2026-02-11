@@ -4,20 +4,9 @@
 import { z } from "zod";
 import { flagAddressDiscrepancies } from "@/ai/flows/flag-address-discrepancies";
 import type { AddressSubmission, User } from "@/types";
-import { db } from "@/firebase/client";
-import { 
-  collection, 
-  addDoc, 
-  getDocs, 
-  query, 
-  where, 
-  doc, 
-  updateDoc, 
-  serverTimestamp, 
-  Timestamp,
-  orderBy,
-  getDoc
-} from "firebase/firestore";
+import { adminDb } from "@/firebase/server";
+import { verifyServerSession } from "@/lib/auth/server-utils";
+import { Timestamp } from "firebase-admin/firestore";
 
 const addressSchema = z.object({
   street: z.string().min(1, "Street is required"),
@@ -75,6 +64,20 @@ interface SubmitAddressParams {
 }
 
 export async function submitAddress({ formData, user }: SubmitAddressParams) {
+  // Verify session securely on server
+  const sessionUser = await verifyServerSession();
+  
+  // Note: We currently allow submitting if sessionUser exists. 
+  // If the user is unauthenticated, we might block them or allow guest submissions depending on business logic.
+  // The original code returned "User authentication required." if !user
+  if (!sessionUser) {
+    return {
+      success: false,
+      message: "User authentication required.",
+      errors: null,
+    };
+  }
+
   const rawFormData = {
     street: formData.get("street") as string,
     areaDistrict: formData.get("areaDistrict") as string,
@@ -91,14 +94,6 @@ export async function submitAddress({ formData, user }: SubmitAddressParams) {
       success: false,
       errors: validation.error.flatten().fieldErrors,
       message: "Validation failed.",
-    };
-  }
-
-  if (!user || !user.id) {
-    return {
-      success: false,
-      message: "User authentication required.",
-      errors: null,
     };
   }
 
@@ -145,22 +140,22 @@ export async function submitAddress({ formData, user }: SubmitAddressParams) {
       country: country,
     };
 
-    const newSubmissionData: Omit<AddressSubmission, 'id' | 'submittedAt' | 'reviewedAt'> & { submittedAt: any, reviewedAt: any } = {
-      userId: user.id,
-      userName: user.displayName || "User",
-      userEmail: user.email || "user@example.com",
+    const newSubmissionData = {
+      userId: sessionUser.id,
+      userName: sessionUser.displayName || "User",
+      userEmail: sessionUser.email || "user@example.com",
       submittedAddress: submittedAddressDataForDB,
       adc: adc,
       googleMapsSuggestion: googleMapsAddress,
       status: status,
       aiFlaggedReason: aiFlaggedReason || undefined,
-      submittedAt: serverTimestamp(), 
-      reviewedAt: status === 'approved' ? serverTimestamp() : null,
+      submittedAt: new Date(), 
+      reviewedAt: status === 'approved' ? new Date() : null,
       reviewerId: status === 'approved' ? 'system-ai' : null,
       reviewNotes: status === 'approved' ? 'Auto-approved by AI.' : undefined,
     };
 
-    const docRef = await addDoc(collection(db, "addressSubmissions"), newSubmissionData);
+    const docRef = await adminDb.collection("addressSubmissions").add(newSubmissionData);
     
     return {
       success: true,
@@ -185,21 +180,21 @@ export async function submitAddress({ formData, user }: SubmitAddressParams) {
 
 export async function getAddressSubmissions(userId?: string): Promise<AddressSubmission[]> {
   try {
-    const submissionsCol = collection(db, "addressSubmissions");
-    let q;
+    const submissionsCol = adminDb.collection("addressSubmissions");
+    let query;
 
     if (userId) {
        // If a userId is provided, fetch only for that user
-      q = query(submissionsCol, where("userId", "==", userId), orderBy("submittedAt", "desc"));
+      query = submissionsCol.where("userId", "==", userId).orderBy("submittedAt", "desc");
     } else {
        // If no userId, fetch all submissions (for the "All Contributions" view)
-      q = query(submissionsCol, orderBy("submittedAt", "desc"));
+      query = submissionsCol.orderBy("submittedAt", "desc");
     }
 
-    const querySnapshot = await getDocs(q);
+    const querySnapshot = await query.get();
     const submissions: AddressSubmission[] = [];
-    querySnapshot.forEach((docSnap) => {
-      submissions.push({ id: docSnap.id, ...convertTimestamps(docSnap.data()) } as AddressSubmission);
+    querySnapshot.forEach((doc) => {
+      submissions.push({ id: doc.id, ...convertTimestamps(doc.data()) } as AddressSubmission);
     });
     return submissions;
   } catch (error) {
@@ -210,13 +205,13 @@ export async function getAddressSubmissions(userId?: string): Promise<AddressSub
 
 export async function getFlaggedAddresses(): Promise<AddressSubmission[]> {
   try {
-    const submissionsCol = collection(db, "addressSubmissions");
-    const q = query(submissionsCol, where("status", "==", "pending-review"), orderBy("submittedAt", "desc"));
+    const submissionsCol = adminDb.collection("addressSubmissions");
+    const query = submissionsCol.where("status", "==", "pending-review").orderBy("submittedAt", "desc");
     
-    const querySnapshot = await getDocs(q);
+    const querySnapshot = await query.get();
     const submissions: AddressSubmission[] = [];
-    querySnapshot.forEach((docSnap) => {
-      submissions.push({ id: docSnap.id, ...convertTimestamps(docSnap.data()) } as AddressSubmission);
+    querySnapshot.forEach((doc) => {
+      submissions.push({ id: doc.id, ...convertTimestamps(doc.data()) } as AddressSubmission);
     });
     return submissions;
   } catch (error) {
@@ -232,19 +227,30 @@ export async function updateAddressStatus(
   reviewNotes?: string
 ): Promise<{success: boolean, message: string}> {
   try {
-    const submissionRef = doc(db, "addressSubmissions", submissionId);
+    // Security Check: Verify the reviewer
+    const sessionUser = await verifyServerSession();
+    if (!sessionUser) {
+        return { success: false, message: "Unauthorized." };
+    }
     
-    const docSnap = await getDoc(submissionRef);
-    if (!docSnap.exists()) {
+    const isConsole = ['cto', 'administrator', 'manager'].includes(sessionUser.role);
+    if (!isConsole) {
+        return { success: false, message: "Permission denied." };
+    }
+
+    const submissionRef = adminDb.collection("addressSubmissions").doc(submissionId);
+    
+    const docSnap = await submissionRef.get();
+    if (!docSnap.exists) {
       return { success: false, message: "Submission not found." };
     }
 
     const submissionData = docSnap.data() as AddressSubmission;
 
-    const updateData: Partial<Omit<AddressSubmission, 'reviewedAt'>> & { reviewedAt: any } = { 
+    const updateData: any = { 
       status: newStatus,
-      reviewedAt: serverTimestamp(),
-      reviewerId: reviewerId, 
+      reviewedAt: new Date(),
+      reviewerId: sessionUser.id, 
     };
 
     if (reviewNotes) updateData.reviewNotes = reviewNotes;
@@ -254,8 +260,7 @@ export async function updateAddressStatus(
       updateData.adc = generateADC(submissionData.submittedAddress.state, submissionData.submittedAddress.city);
     }
 
-
-    await updateDoc(submissionRef, updateData);
+    await submissionRef.update(updateData);
     
     return { success: true, message: `Submission ${submissionId} status updated to ${newStatus}.` };
   } catch (error) {

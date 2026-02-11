@@ -3,23 +3,10 @@
 
 import { z } from "zod";
 import type { Estate, User } from "@/types";
-import { db } from "@/firebase/client";
+import { adminDb } from "@/firebase/server";
+import { verifyServerSession } from "@/lib/auth/server-utils";
 import { customAlphabet } from 'nanoid';
-import { 
-  collection, 
-  addDoc, 
-  getDocs,
-  query, 
-  doc, 
-  updateDoc, 
-  serverTimestamp, 
-  Timestamp,
-  orderBy,
-  getDoc,
-  where,
-  getFirestore,
-  runTransaction,
-} from "firebase/firestore";
+import { Timestamp } from "firebase-admin/firestore";
 
 const estateSchema = z.object({
   name: z.string().min(3, "Estate name must be at least 3 characters long."),
@@ -57,6 +44,8 @@ const generateUniqueEstateCode = async (
   state: string, 
   lga: string
 ): Promise<string> => {
+  const estatesCol = adminDb.collection('estates');
+  
   for (let attempt = 0; attempt < 10; attempt++) {
     const stateCode = state.substring(0, 3).toUpperCase();
     const lgaCode = lga.substring(0, 3).toUpperCase();
@@ -64,9 +53,7 @@ const generateUniqueEstateCode = async (
     const code = `${stateCode}-${lgaCode}-${estateNumber}`;
     
     // Check for uniqueness by querying the collection
-    const estatesCol = collection(db, 'estates');
-    const q = query(estatesCol, where("estateCode", "==", code));
-    const snapshot = await getDocs(q);
+    const snapshot = await estatesCol.where("estateCode", "==", code).get();
     
     if (snapshot.empty) {
       return code;
@@ -82,14 +69,17 @@ interface SubmitEstateParams {
 }
 
 export async function submitEstate({ formData, user }: SubmitEstateParams) {
+    // Note: 'user' param is passed from client, but we should verify session for security.
+    const sessionUser = await verifyServerSession();
+    if (!sessionUser) {
+        return { success: false, message: "User not authenticated." };
+    }
+
     const rawFormData = Object.fromEntries(formData.entries());
     const validation = estateSchema.safeParse(rawFormData);
 
     if (!validation.success) {
         return { success: false, errors: validation.error.flatten().fieldErrors, message: "Validation failed." };
-    }
-    if (!user || !user.id) {
-        return { success: false, message: "User not authenticated." };
     }
 
     const { name, state, lga, city, district, googleMapLink } = validation.data;
@@ -102,23 +92,24 @@ export async function submitEstate({ formData, user }: SubmitEstateParams) {
             location.city = city;
         }
         
-        const newEstateData: Omit<Estate, 'id' | 'createdAt' | 'updatedAt' > & { createdAt: any, updatedAt: any } = {
+        // Use sessionUser id for createdBy to ensure authenticity
+        const newEstateData = {
             name,
             estateCode: await generateUniqueEstateCode(state, lga),
             status: "pending-review",
             location,
             googleMapLink: googleMapLink || "",
             source: "Platform",
-            createdBy: user.id,
-            lastUpdatedBy: user.id,
-            createdAt: serverTimestamp(),
-            updatedAt: serverTimestamp(),
+            createdBy: sessionUser.id, 
+            lastUpdatedBy: sessionUser.id,
+            createdAt: new Date(),
+            updatedAt: new Date(),
             reviewedBy: null,
             reviewedAt: null,
             reviewNotes: null,
         };
 
-        const docRef = await addDoc(collection(db, "estates"), newEstateData);
+        const docRef = await adminDb.collection("estates").add(newEstateData);
 
         return { success: true, message: "Estate submitted for review successfully!", estateId: docRef.id };
     } catch (error) {
@@ -129,19 +120,19 @@ export async function submitEstate({ formData, user }: SubmitEstateParams) {
 
 export async function getEstates(status?: Estate['status']): Promise<Estate[]> {
   try {
-    const estatesCol = collection(db, "estates");
-    let q;
+    const estatesCol = adminDb.collection("estates");
+    let query;
     
     if (status) {
-      q = query(estatesCol, where("status", "==", status), orderBy("createdAt", "desc"));
+      query = estatesCol.where("status", "==", status).orderBy("createdAt", "desc");
     } else {
-      q = query(estatesCol, orderBy("createdAt", "desc"));
+      query = estatesCol.orderBy("createdAt", "desc");
     }
     
-    const querySnapshot = await getDocs(q);
+    const querySnapshot = await query.get();
     const estates: Estate[] = [];
-    querySnapshot.forEach((docSnap) => {
-      estates.push({ id: docSnap.id, ...convertTimestamps(docSnap.data()) } as Estate);
+    querySnapshot.forEach((doc) => {
+      estates.push({ id: doc.id, ...convertTimestamps(doc.data()) } as Estate);
     });
     return estates;
   } catch (error) {
@@ -152,10 +143,10 @@ export async function getEstates(status?: Estate['status']): Promise<Estate[]> {
 
 export async function getEstateById(estateId: string): Promise<Estate | null> {
   try {
-    const estateRef = doc(db, "estates", estateId);
-    const docSnap = await getDoc(estateRef);
+    const estateRef = adminDb.collection("estates").doc(estateId);
+    const docSnap = await estateRef.get();
 
-    if (!docSnap.exists()) {
+    if (!docSnap.exists) {
       console.log("No such estate found!");
       return null;
     }
@@ -167,23 +158,42 @@ export async function getEstateById(estateId: string): Promise<Estate | null> {
   }
 }
 
-export async function updateEstate(estateId: string, dataToUpdate: Partial<Omit<Estate, 'id' | 'createdAt' | 'createdBy'>>, userId: string): Promise<{ success: boolean; message: string }> {
+export async function updateEstate(estateId: string, dataToUpdate: Partial<Omit<Estate, 'id' | 'createdAt' | 'createdBy'>>): Promise<{ success: boolean; message: string }> {
     try {
-        const estateRef = doc(db, "estates", estateId);
+        const user = await verifyServerSession();
+        if (!user) {
+            return { success: false, message: "Unauthorized. Please log in." };
+        }
 
-        const docSnap = await getDoc(estateRef);
-        if(!docSnap.exists()) {
+        const estateRef = adminDb.collection("estates").doc(estateId);
+        const docSnap = await estateRef.get();
+
+        if(!docSnap.exists) {
             return { success: false, message: "Estate not found." };
         }
         
-        // Generate estate code only if it's being approved for the first time and doesn't have one
         const currentData = docSnap.data() as Estate;
+        
+        // Permission Check
+        const isConsoleUser = ['cto', 'administrator', 'manager'].includes(user.role);
+        const isOwner = currentData.createdBy === user.id;
+
+        if (!isConsoleUser && !isOwner) {
+             return { success: false, message: "You do not have permission to update this estate." };
+        }
+
         const isApproving = 'status' in dataToUpdate && dataToUpdate.status === 'approved';
         
+        // Only console users can approve
+        if (isApproving && !isConsoleUser) {
+             return { success: false, message: "Only administrators can approve estates." };
+        }
+
+        // Generate estate code only if it's being approved for the first time and doesn't have one
         const updatePayload: any = {
             ...dataToUpdate,
-            lastUpdatedBy: userId,
-            updatedAt: serverTimestamp(),
+            lastUpdatedBy: user.id,
+            updatedAt: new Date(),
         };
 
         if(isApproving && !currentData.estateCode) {
@@ -191,16 +201,15 @@ export async function updateEstate(estateId: string, dataToUpdate: Partial<Omit<
         }
         
         if (isApproving || (dataToUpdate.status && dataToUpdate.status === 'rejected')) {
-            updatePayload.reviewedBy = userId;
-            updatePayload.reviewedAt = serverTimestamp();
+            updatePayload.reviewedBy = user.id;
+            updatePayload.reviewedAt = new Date();
         }
 
-
-        await updateDoc(estateRef, updatePayload);
+        await estateRef.update(updatePayload);
         
         return { success: true, message: "Estate updated successfully." };
     } catch (error) {
-        console.error("Error updating estate in Firestore:", error);
+        console.error("Error updating estate:", error);
         return { success: false, message: "Failed to update estate." };
     }
 }
