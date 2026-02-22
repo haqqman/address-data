@@ -1,6 +1,6 @@
 'use client'
 
-import { Button as NextUIButton } from '@nextui-org/react'
+import { Button as NextUIButton } from '@heroui/react'
 import { Chrome, Github } from 'lucide-react'
 import { useAuth } from '@/contexts/auth-context'
 import { useRouter } from 'next/navigation'

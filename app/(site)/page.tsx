@@ -8,7 +8,7 @@ import {
   CardHeader as NextUICardHeader,
   CardBody as NextUICardBody,
   Input as NextUIInput,
-} from '@nextui-org/react'
+} from '@heroui/react'
 import {
   CheckCircle,
   DatabaseZap,

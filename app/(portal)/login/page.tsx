@@ -5,7 +5,7 @@ import {
   Card as NextUICard,
   CardHeader as NextUICardHeader,
   CardBody as NextUICardBody,
-} from '@nextui-org/react'
+} from '@heroui/react'
 import { LogInButtons } from '@/components/forms/LogInButtons'
 import Image from 'next/image'
 

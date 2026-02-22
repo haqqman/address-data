@@ -19,7 +19,7 @@ import {
   Textarea as NextUITextarea,
   ScrollShadow,
   Tooltip,
-} from '@nextui-org/react'
+} from '@heroui/react'
 import { format } from 'date-fns'
 import { CheckCircle, XCircle, AlertTriangle, Info } from 'lucide-react'
 import { updateAddressStatus } from '@/app/actions/addressActions'

@@ -13,7 +13,7 @@ import {
   TableCell as NextUITableCell,
   Chip as NextUIChip,
   ScrollShadow,
-} from '@nextui-org/react'
+} from '@heroui/react'
 import { format } from 'date-fns'
 import { useIsMobile } from '@/hooks/use-mobile'
 

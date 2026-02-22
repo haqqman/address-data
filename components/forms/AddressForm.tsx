@@ -10,7 +10,7 @@ import {
   CardBody as NextUICardBody,
   Select as NextUISelect,
   SelectItem as NextUISelectItem,
-} from '@nextui-org/react'
+} from '@heroui/react'
 import { submitAddress } from '@/app/actions/addressActions'
 import { CheckCircle, AlertTriangle, Info } from 'lucide-react'
 import { useState, useEffect, useCallback } from 'react'

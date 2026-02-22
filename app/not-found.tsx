@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { Button as NextUIButton } from '@nextui-org/react'
+import { Button as NextUIButton } from '@heroui/react'
 import { SearchX } from 'lucide-react'
 import { SiteHeader } from '@/components/layout/header'
 

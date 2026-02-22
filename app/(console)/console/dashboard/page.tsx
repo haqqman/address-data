@@ -9,7 +9,7 @@ import {
   Card as NextUICard,
   CardHeader as NextUICardHeader,
   CardBody as NextUICardBody,
-} from '@nextui-org/react'
+} from '@heroui/react'
 import { AlertTriangle } from 'lucide-react'
 
 export default function ConsoleDashboardPage() {

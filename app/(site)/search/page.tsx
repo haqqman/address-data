@@ -11,7 +11,7 @@ import {
   Divider,
   Link as NextUILink,
   Chip,
-} from '@nextui-org/react'
+} from '@heroui/react'
 import { searchByTerm } from '@/app/actions/searchActions'
 import type { AddressSubmission, Estate } from '@/types'
 import {

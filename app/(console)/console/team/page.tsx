@@ -27,7 +27,7 @@ import {
   TableCell,
   Chip,
   Tooltip,
-} from '@nextui-org/react'
+} from '@heroui/react'
 import {
   Users2,
   ShieldAlert,

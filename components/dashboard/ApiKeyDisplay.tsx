@@ -14,7 +14,7 @@ import {
   Listbox,
   ListboxItem,
   Chip as NextUIChip,
-} from '@nextui-org/react'
+} from '@heroui/react'
 import {
   Copy,
   Eye,

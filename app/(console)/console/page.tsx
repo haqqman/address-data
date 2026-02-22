@@ -5,7 +5,7 @@ import {
   Card as NextUICard,
   CardHeader as NextUICardHeader,
   CardBody as NextUICardBody,
-} from '@nextui-org/react'
+} from '@heroui/react'
 import { ConsoleLogInForm } from '@/components/forms/ConsoleLogInForm'
 import { ShieldAlert } from 'lucide-react'
 import Image from 'next/image'

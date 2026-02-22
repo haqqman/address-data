@@ -5,7 +5,7 @@ import {
   Card,
   CardBody,
   CardHeader,
-} from '@nextui-org/react'
+} from '@heroui/react'
 import { PlusCircle, Map, Building, Hash } from 'lucide-react'
 import Link from 'next/link'
 

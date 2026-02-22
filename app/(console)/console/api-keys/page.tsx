@@ -18,7 +18,7 @@ import {
   useDisclosure,
   Autocomplete,
   AutocompleteItem,
-} from '@nextui-org/react'
+} from '@heroui/react'
 import { AlertTriangle, PlusCircle } from 'lucide-react'
 import { getAllApiKeys, createApiKey } from '@/app/actions/apiKeyActions'
 import { getPortalUsers } from '@/app/actions/userActions'

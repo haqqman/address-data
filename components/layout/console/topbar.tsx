@@ -9,7 +9,7 @@ import {
   DropdownItem,
   DropdownSection,
   User as NextUIUser,
-} from '@nextui-org/react'
+} from '@heroui/react'
 import {
   Users,
   KeyRound,

@@ -6,7 +6,7 @@ import { Topbar } from '@/components/layout/portal/topbar'
 import { Footer } from '@/components/layout/footer'
 import { useRouter, usePathname } from 'next/navigation'
 import { useAuth } from '@/contexts/auth-context'
-import { Spinner } from '@nextui-org/react'
+import { Spinner } from '@heroui/react'
 import Link from 'next/link'
 
 export default function PortalLayout({ children }: { children: ReactNode }) {

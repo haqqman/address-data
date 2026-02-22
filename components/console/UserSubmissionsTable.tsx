@@ -11,7 +11,7 @@ import {
   Chip as NextUIChip,
   ScrollShadow,
   Tooltip,
-} from '@nextui-org/react'
+} from '@heroui/react'
 import { format } from 'date-fns'
 
 interface UserSubmissionsTableProps {

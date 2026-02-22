@@ -9,7 +9,7 @@ import {
   Button as NextUIButton,
   Input as NextUIInput,
   Textarea as NextUITextarea,
-} from '@nextui-org/react'
+} from '@heroui/react'
 import { LifeBuoy, Mail, MessageSquare } from 'lucide-react'
 import Link from 'next/link'
 import { Footer } from '@/components/layout/footer'

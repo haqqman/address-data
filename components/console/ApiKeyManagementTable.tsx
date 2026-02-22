@@ -19,7 +19,7 @@ import {
   ModalBody,
   ModalFooter,
   Input as NextUIInput,
-} from '@nextui-org/react'
+} from '@heroui/react'
 import { format } from 'date-fns'
 import {
   KeyRound,

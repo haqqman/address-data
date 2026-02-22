@@ -9,7 +9,7 @@ import {
   Link as NextUILink,
   Divider as NextUIDivider,
   Code,
-} from '@nextui-org/react'
+} from '@heroui/react'
 import {
   BookOpen,
   Code2,

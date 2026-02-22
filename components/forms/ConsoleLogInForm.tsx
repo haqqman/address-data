@@ -4,7 +4,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm, Controller } from 'react-hook-form'
 import * as z from 'zod'
-import { Button as NextUIButton, Input as NextUIInput } from '@nextui-org/react'
+import { Button as NextUIButton, Input as NextUIInput } from '@heroui/react'
 
 import { useAuth } from '@/contexts/auth-context'
 import { useState } from 'react'

@@ -2,7 +2,7 @@
 
 import { type ReactNode, useEffect } from 'react'
 import { useAuth } from '@/contexts/auth-context'
-import { Spinner } from '@nextui-org/react'
+import { Spinner } from '@heroui/react'
 import { useRouter, usePathname } from 'next/navigation'
 import { ConsoleTopbar } from '@/components/layout/console/topbar'
 import { Footer } from '@/components/layout/footer'

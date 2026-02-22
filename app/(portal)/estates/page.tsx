@@ -21,7 +21,7 @@ import {
   Select,
   SelectItem,
   type Selection,
-} from '@nextui-org/react'
+} from '@heroui/react'
 import { AlertTriangle, PlusCircle, Search } from 'lucide-react'
 import Link from 'next/link'
 

@@ -18,7 +18,7 @@ import {
   SelectItem as NextUISelectItem,
   useDisclosure,
   Spinner,
-} from '@nextui-org/react'
+} from '@heroui/react'
 import { PlusCircle, Edit3, Trash2, MapPin, Building, Map } from 'lucide-react'
 import {
   addState,

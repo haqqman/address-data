@@ -11,7 +11,7 @@ import {
   NavbarMenuItem,
   Button as NextUIButton,
   Spinner,
-} from '@nextui-org/react'
+} from '@heroui/react'
 import Image from 'next/image'
 import { useState } from 'react'
 import { useAuth } from '@/contexts/auth-context'
