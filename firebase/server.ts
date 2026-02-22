@@ -4,25 +4,41 @@ import admin from "firebase-admin";
 import { getAuth } from "firebase-admin/auth";
 import { getFirestore } from "firebase-admin/firestore";
 
-if (!admin.apps.length) {
+const getApp = () => {
+  if (admin.apps.length > 0) {
+    return admin.apps[0];
+  }
+
   const serviceAccountString = process.env.FIREBASE_SERVICE_ACCOUNT;
   
-  try {
-    if (serviceAccountString) {
-      const serviceAccount = JSON.parse(serviceAccountString);
-      admin.initializeApp({
+  if (serviceAccountString) {
+    try {
+      // Filter out any potential characters that could break JSON parsing if env var is malformed
+      const serviceAccount = JSON.parse(serviceAccountString.trim());
+      return admin.initializeApp({
         credential: admin.credential.cert(serviceAccount),
       });
-    } else {
-      // Fallback to default application credentials if env var is missing
-      // This is useful for Cloud Run or when not setting manual credentials
-      admin.initializeApp();
+    } catch (e) {
+      console.error("[Firebase Admin] Failed to parse FIREBASE_SERVICE_ACCOUNT:", e);
+      throw new Error("Invalid FIREBASE_SERVICE_ACCOUNT environment variable.");
     }
-  } catch (e) {
-    console.error("Failed to parse or initialize Firebase Admin SDK credentials:", e);
   }
+
+  // Fallback to default application credentials (e.g., for Cloud Run)
+  try {
+    return admin.initializeApp();
+  } catch (e) {
+    console.error("[Firebase Admin] Failed to initialize with default credentials:", e);
+    throw e;
+  }
+};
+
+const app = getApp();
+
+if (!app) {
+  throw new Error("Firebase Admin failed to initialize.");
 }
 
-export const adminAuth = getAuth();
-export const adminDb = getFirestore();
+export const adminAuth = getAuth(app);
+export const adminDb = getFirestore(app);
 export default admin;

@@ -7,6 +7,7 @@ import { AppHeader } from "@/components/layout/AppHeader";
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '@/contexts/auth-context';
 import { Spinner } from "@nextui-org/react";
+import Link from 'next/link';
 
 export default function PortalLayout({
   children,
@@ -18,24 +19,19 @@ export default function PortalLayout({
   const pathname = usePathname();
   const [displayYear, setDisplayYear] = useState<number | null>(null);
 
-  // If we are on the login page itself, bypass the auth guard entirely
-  // to prevent an infinite redirect loop for unauthenticated users.
-  if (pathname === '/login') {
-    return <>{children}</>;
-  }
-
   useEffect(() => {
     setDisplayYear(new Date().getFullYear());
   }, []);
 
   useEffect(() => {
-    // If auth has finished loading and there's no user, redirect to login.
-    if (!loading && !user) {
+    if (!loading && !user && pathname !== '/login') {
       router.push('/login');
     }
-  }, [user, loading, router]);
+  }, [user, loading, router, pathname]);
+  if (pathname === '/login') {
+    return <>{children}</>;
+  }
 
-  // While loading, show a spinner to prevent rendering children or redirecting prematurely.
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -44,7 +40,6 @@ export default function PortalLayout({
     );
   }
 
-  // If not loading and there's a user, render the full layout with the page content.
   if (user) {
     return (
       <div className="flex flex-col min-h-screen">
@@ -56,14 +51,14 @@ export default function PortalLayout({
           <div className="max-w-7xl mx-auto px-4 text-center text-muted-foreground">
             <p className="mb-2">
               Built for Nigeria, for developers. Powered by{' '}
-              <a
+              <Link
                 href="https://seapane.com"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-primary hover:text-secondary no-underline"
               >
                 Seapane
-              </a>
+              </Link>
             </p>
             <p className="text-sm">
               &copy; {displayYear !== null ? displayYear : new Date().getFullYear()} AddressData. All Rights Reserved.
@@ -74,8 +69,6 @@ export default function PortalLayout({
     );
   }
 
-  // If not loading and no user, the useEffect will handle the redirect. 
-  // Return a spinner for the brief moment before the redirect occurs.
   return (
     <div className="flex items-center justify-center min-h-screen">
       <Spinner label="Initializing Session..." color="primary" labelColor="warning" />
