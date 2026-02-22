@@ -1,6 +1,6 @@
 @import 'tailwindcss';
 
-/* NextUI's Tailwind plugin and Provider handle theming */
+/* HeroUI's Tailwind plugin and Provider handle theming */
 
 @layer base {
   body {

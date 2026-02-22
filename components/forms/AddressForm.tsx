@@ -293,7 +293,7 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
             onChange={(e) => handleStateChange(e.target.value)}
           >
             {states.map((state) => (
-              <NextUISelectItem key={state.name} value={state.name}>
+              <NextUISelectItem key={state.name}>
                 {state.name}
               </NextUISelectItem>
             ))}
@@ -310,7 +310,7 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
             onChange={(e) => handleLgaChange(e.target.value)}
           >
             {lgas.map((lga) => (
-              <NextUISelectItem key={lga.name} value={lga.name}>
+              <NextUISelectItem key={lga.name}>
                 {lga.name}
               </NextUISelectItem>
             ))}
@@ -345,7 +345,7 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
                   onChange={(e) => field.onChange(e.target.value)}
                 >
                   {cities.map((city) => (
-                    <NextUISelectItem key={city.name} value={city.name}>
+                    <NextUISelectItem key={city.name}>
                       {city.name}
                     </NextUISelectItem>
                   ))}
@@ -377,7 +377,7 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
                 }
               >
                 {cities.map((district) => (
-                  <NextUISelectItem key={district.name} value={district.name}>
+                  <NextUISelectItem key={district.name}>
                     {district.name}
                   </NextUISelectItem>
                 ))}
@@ -414,10 +414,10 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
                 selectedKeys={[field.value]}
                 onChange={(e) => field.onChange(e.target.value)}
               >
-                <NextUISelectItem key='residential' value='residential'>
+                <NextUISelectItem key='residential'>
                   Residential
                 </NextUISelectItem>
-                <NextUISelectItem key='commercial' value='commercial'>
+                <NextUISelectItem key='commercial'>
                   Commercial
                 </NextUISelectItem>
               </NextUISelect>

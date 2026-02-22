@@ -2,7 +2,7 @@ import type { Config } from 'tailwindcss'
 import { heroui } from '@heroui/theme'
 
 export default {
-  darkMode: ['class'],
+  darkMode: 'class',
   content: [
     './pages/**/*.{js,ts,jsx,tsx,mdx}',
     './components/**/*.{js,ts,jsx,tsx,mdx}',
@@ -12,7 +12,7 @@ export default {
   theme: {
     extend: {
       // ShadCN specific theme extensions were previously removed.
-      // NextUI handles this through its plugin and theme configuration below.
+      // HeroUI handles this through its plugin and theme configuration below.
     },
   },
   plugins: [

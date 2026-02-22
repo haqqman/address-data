@@ -477,13 +477,13 @@ export default function TeamManagementPage() {
                     variant='bordered'
                     color='secondary'
                   >
-                    <NextUISelectItem key='manager' value='manager'>
+                    <NextUISelectItem key='manager'>
                       Manager
                     </NextUISelectItem>
-                    <NextUISelectItem key='administrator' value='administrator'>
+                    <NextUISelectItem key='administrator'>
                       Administrator
                     </NextUISelectItem>
-                    <NextUISelectItem key='cto' value='cto'>
+                    <NextUISelectItem key='cto'>
                       CTO
                     </NextUISelectItem>
                   </NextUISelect>
@@ -585,13 +585,13 @@ export default function TeamManagementPage() {
                     color='secondary'
                     isDisabled={user?.id === editingUser?.id}
                   >
-                    <NextUISelectItem key='manager' value='manager'>
+                    <NextUISelectItem key='manager'>
                       Manager
                     </NextUISelectItem>
-                    <NextUISelectItem key='administrator' value='administrator'>
+                    <NextUISelectItem key='administrator'>
                       Administrator
                     </NextUISelectItem>
-                    <NextUISelectItem key='cto' value='cto'>
+                    <NextUISelectItem key='cto'>
                       CTO
                     </NextUISelectItem>
                   </NextUISelect>

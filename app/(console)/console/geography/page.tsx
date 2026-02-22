@@ -528,7 +528,6 @@ export default function GeographyManagementPage() {
                   {states.map((state) => (
                     <NextUISelectItem
                       key={state.id}
-                      value={state.id}
                       textValue={state.name}
                     >
                       {state.name}
@@ -631,7 +630,6 @@ export default function GeographyManagementPage() {
                     {states.map((state) => (
                       <NextUISelectItem
                         key={state.id}
-                        value={state.id}
                         textValue={state.name}
                       >
                         {state.name}
@@ -658,7 +656,6 @@ export default function GeographyManagementPage() {
                       .map((lga) => (
                         <NextUISelectItem
                           key={lga.id}
-                          value={lga.id}
                           textValue={lga.name}
                         >
                           {lga.name}
@@ -755,16 +752,16 @@ export default function GeographyManagementPage() {
                   variant='bordered'
                   color='secondary'
                 >
-                  <NextUISelectItem key='State' value='State'>
+                  <NextUISelectItem key='State'>
                     State
                   </NextUISelectItem>
-                  <NextUISelectItem key='LGA' value='LGA'>
+                  <NextUISelectItem key='LGA'>
                     LGA
                   </NextUISelectItem>
-                  <NextUISelectItem key='City' value='City'>
+                  <NextUISelectItem key='City'>
                     City
                   </NextUISelectItem>
-                  <NextUISelectItem key='District' value='District'>
+                  <NextUISelectItem key='District'>
                     Abuja District
                   </NextUISelectItem>
                 </NextUISelect>
@@ -804,7 +801,6 @@ export default function GeographyManagementPage() {
                       {states.map((s) => (
                         <NextUISelectItem
                           key={s.id}
-                          value={s.id}
                           textValue={s.name}
                         >
                           {s.name}
@@ -840,7 +836,6 @@ export default function GeographyManagementPage() {
                       {states.map((s) => (
                         <NextUISelectItem
                           key={s.id}
-                          value={s.id}
                           textValue={s.name}
                         >
                           {s.name}
@@ -868,7 +863,6 @@ export default function GeographyManagementPage() {
                       {lgasForCityDropdown.map((lga) => (
                         <NextUISelectItem
                           key={lga.id}
-                          value={lga.id}
                           textValue={lga.name}
                         >
                           {lga.name}

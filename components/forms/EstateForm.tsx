@@ -283,7 +283,7 @@ export function EstateForm({ onSubmissionSuccess }: EstateFormProps) {
             onChange={(e) => handleStateChange(e.target.value)}
           >
             {states.map((state) => (
-              <NextUISelectItem key={state.name} value={state.name}>
+              <NextUISelectItem key={state.name}>
                 {state.name}
               </NextUISelectItem>
             ))}
@@ -301,7 +301,7 @@ export function EstateForm({ onSubmissionSuccess }: EstateFormProps) {
             onChange={(e) => handleLgaChange(e.target.value)}
           >
             {lgas.map((lga) => (
-              <NextUISelectItem key={lga.name} value={lga.name}>
+              <NextUISelectItem key={lga.name}>
                 {lga.name}
               </NextUISelectItem>
             ))}
@@ -329,7 +329,7 @@ export function EstateForm({ onSubmissionSuccess }: EstateFormProps) {
                   onChange={(e) => field.onChange(e.target.value)}
                 >
                   {cities.map((district) => (
-                    <NextUISelectItem key={district.name} value={district.name}>
+                    <NextUISelectItem key={district.name}>
                       {district.name}
                     </NextUISelectItem>
                   ))}
@@ -356,7 +356,7 @@ export function EstateForm({ onSubmissionSuccess }: EstateFormProps) {
                   onChange={(e) => field.onChange(e.target.value)}
                 >
                   {cities.map((city) => (
-                    <NextUISelectItem key={city.name} value={city.name}>
+                    <NextUISelectItem key={city.name}>
                       {city.name}
                     </NextUISelectItem>
                   ))}

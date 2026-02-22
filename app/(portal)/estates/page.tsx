@@ -149,7 +149,7 @@ export default function EstatesPage() {
               className='w-full md:max-w-xs'
             >
               {uniqueStates.map((state) => (
-                <SelectItem key={state} value={state}>
+                <SelectItem key={state}>
                   {state}
                 </SelectItem>
               ))}
