@@ -58,22 +58,22 @@ export function LogInButtons() {
         fullWidth
         onClick={() => handleLogIn("google")}
         disabled={isLoadingGoogle || isLoadingGitHub || authLoading}
-        isLoading={isLoadingGoogle || authLoading}
-        startContent={!isLoadingGoogle && !authLoading ? <Chrome className="h-5 w-5" /> : null}
+        isLoading={isLoadingGoogle}
+        startContent={!isLoadingGoogle ? <Chrome className="h-5 w-5" /> : null}
         className="shadow-sm hover:shadow-md hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out"
       >
-        {isLoadingGoogle || authLoading ? "Authenticating..." : "Log in with Google"}
+        {isLoadingGoogle ? "Authenticating..." : "Log in with Google"}
       </NextUIButton>
       <NextUIButton
         variant="bordered"
         fullWidth
         onClick={() => handleLogIn("github")}
         disabled={isLoadingGoogle || isLoadingGitHub || authLoading}
-        isLoading={isLoadingGitHub || authLoading}
-        startContent={!isLoadingGitHub && !authLoading ? <Github className="h-5 w-5" /> : null}
+        isLoading={isLoadingGitHub}
+        startContent={!isLoadingGitHub ? <Github className="h-5 w-5" /> : null}
         className="shadow-sm hover:shadow-md hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out"
       >
-        {isLoadingGitHub || authLoading ? "Authenticating..." : "Log in with GitHub"}
+        {isLoadingGitHub ? "Authenticating..." : "Log in with GitHub"}
       </NextUIButton>
     </div>
   );

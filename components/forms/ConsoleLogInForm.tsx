@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, Controller } from "react-hook-form";
 import * as z from "zod";
 import { Button as NextUIButton, Input as NextUIInput } from "@nextui-org/react";
-import { useRouter } from "next/navigation";
+
 import { useAuth } from "@/contexts/auth-context";
 import { useState } from "react";
 
@@ -23,7 +23,6 @@ const consoleLogInSchema = z.object({
 type ConsoleLogInFormValues = z.infer<typeof consoleLogInSchema>;
 
 export function ConsoleLogInForm() {
-  const router = useRouter();
   const { signInWithEmail } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -43,22 +42,16 @@ export function ConsoleLogInForm() {
     try {
       const userCredential = await signInWithEmail(values.email, values.password, true);
       if (userCredential) {
-        const idToken = await userCredential.getIdToken();
+        const idToken = await userCredential.user.getIdToken();
         const res = await fetch("/api/console/login", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ idToken }),
         });
-
-        if (res.ok) {
-          router.push('/console/dashboard');
-        } else {
-          setErrorMessage("Login failed. Please check your credentials.");
+        if (!res.ok) {
+          setErrorMessage("Session could not be established. Please try again.");
         }
-      } else {
-        setErrorMessage("Login failed. Please check your credentials.");
+        // Redirect is already handled by the auth context — no router.push here.
       }
     } catch (error: any) {
       const friendlyErrorMessage = error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password'
@@ -86,13 +79,13 @@ export function ConsoleLogInForm() {
             label="Email Address"
             placeholder="example@haqqman.com"
             variant="bordered"
-            isInvalid={!!errors.email || !!errorMessage} 
+            isInvalid={!!errors.email || !!errorMessage}
             errorMessage={errors.email?.message}
             fullWidth
             onValueChange={(value) => {
-              if(errorMessage) setErrorMessage(null); // Clear server error on new input
+              if (errorMessage) setErrorMessage(null); // Clear server error on new input
               const transformedValue = value.toLowerCase().replace(/\s+/g, '');
-              field.onChange(transformedValue); 
+              field.onChange(transformedValue);
             }}
           />
         )}
@@ -107,20 +100,20 @@ export function ConsoleLogInForm() {
             type="password"
             placeholder="••••••••"
             variant="bordered"
-            isInvalid={!!errors.password || !!errorMessage} 
+            isInvalid={!!errors.password || !!errorMessage}
             errorMessage={errors.password?.message}
             fullWidth
-             onValueChange={(value) => {
-              if(errorMessage) setErrorMessage(null); // Clear server error on new input
+            onValueChange={(value) => {
+              if (errorMessage) setErrorMessage(null); // Clear server error on new input
               field.onChange(value);
             }}
           />
         )}
       />
-      <NextUIButton 
-        type="submit" 
-        color="warning" 
-        fullWidth 
+      <NextUIButton
+        type="submit"
+        color="warning"
+        fullWidth
         isLoading={isLoading}
         disabled={isLoading}
         className="text-primary shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out"

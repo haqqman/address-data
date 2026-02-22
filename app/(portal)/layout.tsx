@@ -4,7 +4,7 @@
 import type { ReactNode } from 'react';
 import { useEffect, useState } from 'react';
 import { AppHeader } from "@/components/layout/AppHeader";
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '@/contexts/auth-context';
 import { Spinner } from "@nextui-org/react";
 
@@ -15,7 +15,14 @@ export default function PortalLayout({
 }) {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
   const [displayYear, setDisplayYear] = useState<number | null>(null);
+
+  // If we are on the login page itself, bypass the auth guard entirely
+  // to prevent an infinite redirect loop for unauthenticated users.
+  if (pathname === '/login') {
+    return <>{children}</>;
+  }
 
   useEffect(() => {
     setDisplayYear(new Date().getFullYear());
