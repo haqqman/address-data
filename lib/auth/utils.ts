@@ -1,50 +1,52 @@
-
-import { auth, db } from '@/firebase/client'; // Added db
-import type { User as FirebaseUser } from 'firebase/auth';
-import type { User } from '@/types';
-import { doc, getDoc } from 'firebase/firestore'; // Added getDoc
+import { auth, db } from '@/firebase/client' // Added db
+import type { User as FirebaseUser } from 'firebase/auth'
+import type { User } from '@/types'
+import { doc, getDoc } from 'firebase/firestore' // Added getDoc
 
 /**
  * Retrieves the current authenticated user with role from Firestore.
  */
 export async function getCurrentUser(): Promise<User | null> {
   return new Promise((resolve, reject) => {
-    const unsubscribe = auth.onAuthStateChanged(async (firebaseUser: FirebaseUser | null) => {
-      unsubscribe(); 
-      if (firebaseUser) {
-        const userDocRef = doc(db, "users", firebaseUser.uid);
-        const userDocSnap = await getDoc(userDocRef);
-        
-        let role: User['role'] = 'user'; // Default role
+    const unsubscribe = auth.onAuthStateChanged(
+      async (firebaseUser: FirebaseUser | null) => {
+        unsubscribe()
+        if (firebaseUser) {
+          const userDocRef = doc(db, 'users', firebaseUser.uid)
+          const userDocSnap = await getDoc(userDocRef)
 
-        if (userDocSnap.exists()) {
-          const userDataFromFirestore = userDocSnap.data() as User;
-          role = userDataFromFirestore.role;
-        } else {
-          // Fallback role determination if Firestore doc doesn't exist (should be rare after login)
-          if (firebaseUser.email === "webmanager@haqqman.com") {
-            role = 'cto';
-          } else if (firebaseUser.email === "joshua+sandbox@haqqman.com") {
-            role = 'administrator';
-          } else if (firebaseUser.email?.endsWith('@haqqman.com')) {
-            role = 'manager';
+          let role: User['role'] = 'user' // Default role
+
+          if (userDocSnap.exists()) {
+            const userDataFromFirestore = userDocSnap.data() as User
+            role = userDataFromFirestore.role
+          } else {
+            // Fallback role determination if Firestore doc doesn't exist (should be rare after login)
+            if (firebaseUser.email === 'webmanager@haqqman.com') {
+              role = 'cto'
+            } else if (firebaseUser.email === 'joshua+sandbox@haqqman.com') {
+              role = 'administrator'
+            } else if (firebaseUser.email?.endsWith('@haqqman.com')) {
+              role = 'manager'
+            }
           }
-        }
 
-        const appUser: User = {
-          id: firebaseUser.uid,
-          email: firebaseUser.email,
-          displayName: firebaseUser.displayName,
-          role: role,
-          createdAt: new Date(),
-          lastLogin: new Date(),
-        };
-        resolve(appUser);
-      } else {
-        resolve(null);
-      }
-    }, reject);
-  });
+          const appUser: User = {
+            id: firebaseUser.uid,
+            email: firebaseUser.email,
+            displayName: firebaseUser.displayName,
+            role: role,
+            createdAt: new Date(),
+            lastLogin: new Date(),
+          }
+          resolve(appUser)
+        } else {
+          resolve(null)
+        }
+      },
+      reject,
+    )
+  })
 }
 
 /**
@@ -52,11 +54,11 @@ export async function getCurrentUser(): Promise<User | null> {
  */
 export async function checkConsole(): Promise<boolean> {
   try {
-    const user = await getCurrentUser();
-    const consoleRoles: User['role'][] = ['cto', 'administrator', 'manager'];
-    return user?.role ? consoleRoles.includes(user.role) : false;
+    const user = await getCurrentUser()
+    const consoleRoles: User['role'][] = ['cto', 'administrator', 'manager']
+    return user?.role ? consoleRoles.includes(user.role) : false
   } catch (error) {
-    console.error("Error checking console user status:", error);
-    return false;
+    console.error('Error checking console user status:', error)
+    return false
   }
 }

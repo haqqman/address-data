@@ -1,17 +1,17 @@
-'use server';
+'use server'
 
 /** stream=transactional */
 
-import { sendEmail } from "./email-service";
-import { EMAIL_BRAND, escapeHtml } from "./layout.email";
+import { sendEmail } from './email-service'
+import { EMAIL_BRAND, escapeHtml } from './layout.email'
 
 export interface WelcomeEmailParams {
-  name: string;
-  email: string;
+  name: string
+  email: string
 }
 
 function welcomeEmailBody({ name }: { name: string }): string {
-  const safeName = escapeHtml(name);
+  const safeName = escapeHtml(name)
 
   return `
     <p style="margin: 0 0 14px; font-size: 16px;">Hi ${safeName},</p>
@@ -39,7 +39,7 @@ function welcomeEmailBody({ name }: { name: string }): string {
         </td>
       </tr>
     </table>
-  `;
+  `
 }
 
 export async function sendWelcomeEmail({
@@ -49,13 +49,13 @@ export async function sendWelcomeEmail({
   try {
     await sendEmail({
       to: email,
-      subject: "Welcome to AddressData",
-      preheader: "Your AddressData account is ready.",
+      subject: 'Welcome to AddressData',
+      preheader: 'Your AddressData account is ready.',
       htmlBody: welcomeEmailBody({ name }),
       textBody: `Hi ${name}, welcome to AddressData. Visit https://www.addressdata.ng/dashboard to get started.`,
-    });
+    })
   } catch (error) {
-    console.error("[email] Welcome email failed", { email, error });
+    console.error('[email] Welcome email failed', { email, error })
     // Non-blocking by design; registration should continue even if mail fails.
   }
 }

@@ -43,11 +43,7 @@ export function ConsoleProvider({ children }: { children: ReactNode }) {
   if (!isOnLoginPage && !isAuthorized) {
     return (
       <div className='flex items-center justify-center min-h-screen'>
-        <Spinner
-          label='Redirecting...'
-          color='warning'
-          labelColor='warning'
-        />
+        <Spinner label='Redirecting...' color='warning' labelColor='warning' />
       </div>
     )
   }

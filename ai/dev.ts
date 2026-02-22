@@ -1,4 +1,4 @@
-import { config } from 'dotenv';
-config();
+import { config } from 'dotenv'
+config()
 
-import '@/ai/flows/flag-address-discrepancies.ts';
+import '@/ai/flows/flag-address-discrepancies.ts'

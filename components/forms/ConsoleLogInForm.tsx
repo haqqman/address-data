@@ -1,125 +1,139 @@
 // components/forms/ConsoleLogInForm.tsx
-"use client";
+'use client'
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, Controller } from "react-hook-form";
-import * as z from "zod";
-import { Button as NextUIButton, Input as NextUIInput } from "@nextui-org/react";
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm, Controller } from 'react-hook-form'
+import * as z from 'zod'
+import { Button as NextUIButton, Input as NextUIInput } from '@nextui-org/react'
 
-import { useAuth } from "@/contexts/auth-context";
-import { useState } from "react";
+import { useAuth } from '@/contexts/auth-context'
+import { useState } from 'react'
 
 const consoleLogInSchema = z.object({
-  email: z.string()
-    .transform(val => val.toLowerCase().replace(/\s+/g, ''))
-    .refine(val => z.string().email().safeParse(val).success, { message: "Invalid email address." })
-    .refine(
-      (email) => email.endsWith("@haqqman.com"),
-      { message: "Access restricted to @haqqman.com emails." }
-    ),
-  password: z.string().min(6, { message: "Password must be at least 6 characters." }),
-});
+  email: z
+    .string()
+    .transform((val) => val.toLowerCase().replace(/\s+/g, ''))
+    .refine((val) => z.string().email().safeParse(val).success, {
+      message: 'Invalid email address.',
+    })
+    .refine((email) => email.endsWith('@haqqman.com'), {
+      message: 'Access restricted to @haqqman.com emails.',
+    }),
+  password: z
+    .string()
+    .min(6, { message: 'Password must be at least 6 characters.' }),
+})
 
-type ConsoleLogInFormValues = z.infer<typeof consoleLogInSchema>;
+type ConsoleLogInFormValues = z.infer<typeof consoleLogInSchema>
 
 export function ConsoleLogInForm() {
-  const { signInWithEmail } = useAuth();
-  const [isLoading, setIsLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const { signInWithEmail } = useAuth()
+  const [isLoading, setIsLoading] = useState(false)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
-
-  const { control, handleSubmit, formState: { errors } } = useForm<ConsoleLogInFormValues>({
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<ConsoleLogInFormValues>({
     resolver: zodResolver(consoleLogInSchema),
     defaultValues: {
-      email: "",
-      password: "",
+      email: '',
+      password: '',
     },
-  });
+  })
 
   async function onSubmit(values: ConsoleLogInFormValues) {
-    setIsLoading(true);
-    setErrorMessage(null);
+    setIsLoading(true)
+    setErrorMessage(null)
     try {
-      const userCredential = await signInWithEmail(values.email, values.password, true);
+      const userCredential = await signInWithEmail(
+        values.email,
+        values.password,
+        true,
+      )
       if (userCredential) {
-        const idToken = await userCredential.user.getIdToken();
-        const res = await fetch("/api/console/login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
+        const idToken = await userCredential.user.getIdToken()
+        const res = await fetch('/api/console/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ idToken }),
-        });
+        })
         if (!res.ok) {
-          setErrorMessage("Session could not be established. Please try again.");
+          setErrorMessage('Session could not be established. Please try again.')
         }
         // Redirect is already handled by the auth context — no router.push here.
       }
     } catch (error: any) {
-      const friendlyErrorMessage = error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password'
-        ? "Invalid email or password. Please try again."
-        : error.message || "An unexpected error occurred. Please try again.";
-      setErrorMessage(friendlyErrorMessage);
+      const friendlyErrorMessage =
+        error.code === 'auth/invalid-credential' ||
+        error.code === 'auth/user-not-found' ||
+        error.code === 'auth/wrong-password'
+          ? 'Invalid email or password. Please try again.'
+          : error.message || 'An unexpected error occurred. Please try again.'
+      setErrorMessage(friendlyErrorMessage)
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <form onSubmit={handleSubmit(onSubmit)} className='space-y-6'>
       {errorMessage && (
-        <div className="p-3 bg-danger-50 border border-danger-200 rounded-md text-danger-700 text-sm">
+        <div className='p-3 bg-danger-50 border border-danger-200 rounded-md text-danger-700 text-sm'>
           {errorMessage}
         </div>
       )}
       <Controller
-        name="email"
+        name='email'
         control={control}
         render={({ field }) => (
           <NextUIInput
             {...field}
-            label="Email Address"
-            placeholder="example@haqqman.com"
-            variant="bordered"
+            label='Email Address'
+            placeholder='example@haqqman.com'
+            variant='bordered'
             isInvalid={!!errors.email || !!errorMessage}
             errorMessage={errors.email?.message}
             fullWidth
             onValueChange={(value) => {
-              if (errorMessage) setErrorMessage(null); // Clear server error on new input
-              const transformedValue = value.toLowerCase().replace(/\s+/g, '');
-              field.onChange(transformedValue);
+              if (errorMessage) setErrorMessage(null) // Clear server error on new input
+              const transformedValue = value.toLowerCase().replace(/\s+/g, '')
+              field.onChange(transformedValue)
             }}
           />
         )}
       />
       <Controller
-        name="password"
+        name='password'
         control={control}
         render={({ field }) => (
           <NextUIInput
             {...field}
-            label="Password"
-            type="password"
-            placeholder="••••••••"
-            variant="bordered"
+            label='Password'
+            type='password'
+            placeholder='••••••••'
+            variant='bordered'
             isInvalid={!!errors.password || !!errorMessage}
             errorMessage={errors.password?.message}
             fullWidth
             onValueChange={(value) => {
-              if (errorMessage) setErrorMessage(null); // Clear server error on new input
-              field.onChange(value);
+              if (errorMessage) setErrorMessage(null) // Clear server error on new input
+              field.onChange(value)
             }}
           />
         )}
       />
       <NextUIButton
-        type="submit"
-        color="warning"
+        type='submit'
+        color='warning'
         fullWidth
         isLoading={isLoading}
         disabled={isLoading}
-        className="text-primary shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out"
+        className='text-primary shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out'
       >
-        {isLoading ? "Logging In..." : "Log In"}
+        {isLoading ? 'Logging In...' : 'Log In'}
       </NextUIButton>
     </form>
-  );
+  )
 }

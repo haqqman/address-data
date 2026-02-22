@@ -1,4 +1,3 @@
-
 # AddressData
 
 **AddressData** is an address intelligence platform purpose-built for Nigeria. It provides developers, businesses, and operations with tools to validate, store, and retrieve Nigerian address data in a structured, efficient, and scalable way.
@@ -6,6 +5,7 @@
 ## Project Overview
 
 The platform consists of:
+
 - A **Portal** for users to submit and manage addresses.
 - A **Console** for manual verification, user management, and API key management.
 - A **Developer API** for programmatic access to verified address data and Nigerian geographic information.
@@ -65,9 +65,9 @@ Replace `YOUR_...` placeholders with the actual values from your Firebase projec
 1.  In the Firebase Console, navigate to **Authentication** (under "Build" in the sidebar).
 2.  Go to the **"Sign-in method"** tab.
 3.  Enable the following providers:
-    *   **Email/Password**
-    *   **Google** (ensure you provide SHA-1 certificates if required for Android, though not critical for web-only local dev)
-    *   **GitHub** (you'll need to provide a Client ID and Client Secret from your GitHub OAuth app settings)
+    - **Email/Password**
+    - **Google** (ensure you provide SHA-1 certificates if required for Android, though not critical for web-only local dev)
+    - **GitHub** (you'll need to provide a Client ID and Client Secret from your GitHub OAuth app settings)
 4.  Under **"Authorized domains"** on the "Sign-in method" tab, ensure `localhost` is added if it's not there already. This is crucial for local development.
 
 ### 6. Set Up Firestore Database
@@ -84,29 +84,30 @@ For accessing the Admin Console, you need to create user accounts with specific 
 The application expects console users to have emails ending in `@haqqman.com`.
 
 1.  **Create Users in Firebase Authentication:**
-    *   Go to Firebase Console -> Authentication -> Users tab.
-    *   Click "Add user".
-    *   Enter the email (e.g., `webmanager@haqqman.com`, `joshua+sandbox@haqqman.com`) and a password (e.g., `P@ssw0rd*AD!2025`).
-    *   Note down the **User UID** for each user created.
+    - Go to Firebase Console -> Authentication -> Users tab.
+    - Click "Add user".
+    - Enter the email (e.g., `webmanager@haqqman.com`, `joshua+sandbox@haqqman.com`) and a password (e.g., `P@ssw0rd*AD!2025`).
+    - Note down the **User UID** for each user created.
 
 2.  **Create User Profiles in Firestore:**
-    *   Go to Firebase Console -> Firestore Database.
-    *   Create a collection named `users`.
-    *   For each console user created in Authentication, add a new document in the `users` collection.
-    *   Set the **Document ID** to be the **User UID** you noted earlier.
-    *   Add the following fields to each user document:
-        *   `email` (String): The user's email (e.g., `webmanager@haqqman.com`)
-        *   `firstName` (String): User's first name (e.g., `Abdulhaqq`)
-        *   `lastName` (String): User's last name (e.g., `Sule`)
-        *   `name` (String): Full name (e.g., `Abdulhaqq Sule`)
-        *   `role` (String): The user's role (`cto`, `manager`, or `administrator`)
-        *   `phoneNumber` (String): User's phone number (e.g., `+2347011568196`) or `null`
-        *   `authProvider` (String): `password`
-        *   `createdAt` (Timestamp): Set to current server timestamp.
-        *   `lastLogin` (Timestamp): Set to current server timestamp.
+    - Go to Firebase Console -> Firestore Database.
+    - Create a collection named `users`.
+    - For each console user created in Authentication, add a new document in the `users` collection.
+    - Set the **Document ID** to be the **User UID** you noted earlier.
+    - Add the following fields to each user document:
+      - `email` (String): The user's email (e.g., `webmanager@haqqman.com`)
+      - `firstName` (String): User's first name (e.g., `Abdulhaqq`)
+      - `lastName` (String): User's last name (e.g., `Sule`)
+      - `name` (String): Full name (e.g., `Abdulhaqq Sule`)
+      - `role` (String): The user's role (`cto`, `manager`, or `administrator`)
+      - `phoneNumber` (String): User's phone number (e.g., `+2347011568196`) or `null`
+      - `authProvider` (String): `password`
+      - `createdAt` (Timestamp): Set to current server timestamp.
+      - `lastLogin` (Timestamp): Set to current server timestamp.
 
     **Example `users` document for a CTO:**
-    *   Document ID: `[UID_OF_CTO_FROM_AUTH]`
+    - Document ID: `[UID_OF_CTO_FROM_AUTH]`
+
     ```json
     {
       "email": "webmanager@haqqman.com",
@@ -138,33 +139,34 @@ npm run genkit:watch
 # or for a single run
 # npm run genkit:dev
 ```
+
 This will start the Genkit development UI, usually on `http://localhost:4000`.
 
 ## Firebase Services Used
 
-*   **Firebase Authentication:** Manages user accounts for both the portal and console.
-*   **Firestore:** NoSQL database for storing address submissions, verified addresses, API keys, and user profiles.
-*   **Firebase Hosting:** For deploying the web application.
-*   **Cloud Functions for Firebase (via Genkit):** Backend logic for AI flows (e.g., address discrepancy checking).
+- **Firebase Authentication:** Manages user accounts for both the portal and console.
+- **Firestore:** NoSQL database for storing address submissions, verified addresses, API keys, and user profiles.
+- **Firebase Hosting:** For deploying the web application.
+- **Cloud Functions for Firebase (via Genkit):** Backend logic for AI flows (e.g., address discrepancy checking).
 
 ## Code Structure (Simplified)
 
--   `app/`: Contains Next.js App Router routes and components.
-    -   `(auth)/`: Routes related to authentication (login, console access).
-    -   `console/`: Routes for the console.
-    -   `dashboard/`: Routes for the user portal dashboard.
-    -   `api/`: (Potentially for Next.js API routes, though core API logic is planned via Cloud Functions as per blueprint).
--   `components/`: Reusable UI components.
-    -   `console/`: Components specific to the Admin Console.
-    -   `dashboard/`: Components specific to the User Portal Dashboard.
-    -   `forms/`: Form components.
-    -   `layout/`: Header, footer, and layout components.
--   `contexts/`: React Context providers (e.g., `auth-context.tsx`).
--   `lib/`: Utility functions and Firebase configuration.
-    -   `firebase/`: Firebase initialization.
--   `ai/`: Genkit related files.
-    -   `flows/`: Genkit AI flows.
--   `public/`: Static assets.
+- `app/`: Contains Next.js App Router routes and components.
+  - `(auth)/`: Routes related to authentication (login, console access).
+  - `console/`: Routes for the console.
+  - `dashboard/`: Routes for the user portal dashboard.
+  - `api/`: (Potentially for Next.js API routes, though core API logic is planned via Cloud Functions as per blueprint).
+- `components/`: Reusable UI components.
+  - `console/`: Components specific to the Admin Console.
+  - `dashboard/`: Components specific to the User Portal Dashboard.
+  - `forms/`: Form components.
+  - `layout/`: Header, footer, and layout components.
+- `contexts/`: React Context providers (e.g., `auth-context.tsx`).
+- `lib/`: Utility functions and Firebase configuration.
+  - `firebase/`: Firebase initialization.
+- `ai/`: Genkit related files.
+  - `flows/`: Genkit AI flows.
+- `public/`: Static assets.
 
 ## Contributing
 

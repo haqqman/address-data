@@ -112,7 +112,7 @@ export function ConsoleTopbar() {
                 'border border-foreground/20',
                 pathname === item.href
                   ? 'bg-warning/20 text-black border-warning'
-                  : 'text-foreground hover:border-warning hover:bg-warning/10'
+                  : 'text-foreground hover:border-warning hover:bg-warning/10',
               )}
               startContent={item.icon}
             >

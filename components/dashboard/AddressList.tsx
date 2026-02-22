@@ -1,90 +1,154 @@
+'use client'
 
-"use client";
-
-import type { AddressSubmission } from "@/types";
-import { Card as NextUICard, CardHeader as NextUICardHeader, CardBody as NextUICardBody, Table as NextUITable, TableHeader as NextUITableHeader, TableColumn as NextUITableColumn, TableBody as NextUITableBody, TableRow as NextUITableRow, TableCell as NextUITableCell, Chip as NextUIChip, ScrollShadow } from "@nextui-org/react";
-import { format } from "date-fns";
-import { useIsMobile } from "@/hooks/use-mobile";
+import type { AddressSubmission } from '@/types'
+import {
+  Card as NextUICard,
+  CardHeader as NextUICardHeader,
+  CardBody as NextUICardBody,
+  Table as NextUITable,
+  TableHeader as NextUITableHeader,
+  TableColumn as NextUITableColumn,
+  TableBody as NextUITableBody,
+  TableRow as NextUITableRow,
+  TableCell as NextUITableCell,
+  Chip as NextUIChip,
+  ScrollShadow,
+} from '@nextui-org/react'
+import { format } from 'date-fns'
+import { useIsMobile } from '@/hooks/use-mobile'
 
 interface AddressListProps {
-  addresses: AddressSubmission[];
-  title: string;
+  addresses: AddressSubmission[]
+  title: string
 }
 
 export function AddressList({ addresses, title }: AddressListProps) {
-  const isMobile = useIsMobile();
+  const isMobile = useIsMobile()
 
-  const getStatusChipColor = (status: AddressSubmission['status']): "primary" | "secondary" | "danger" | "default" | "success" | "warning" => {
+  const getStatusChipColor = (
+    status: AddressSubmission['status'],
+  ): 'primary' | 'secondary' | 'danger' | 'default' | 'success' | 'warning' => {
     switch (status) {
-      case "approved":
-        return "success";
-      case "pending-review":
-        return "warning";
-      case "rejected":
-        return "danger";
+      case 'approved':
+        return 'success'
+      case 'pending-review':
+        return 'warning'
+      case 'rejected':
+        return 'danger'
       default:
-        return "default";
+        return 'default'
     }
-  };
+  }
 
   const formatAddress = (address: AddressSubmission['submittedAddress']) => {
     // A more concise format for mobile
     if (isMobile) {
-      return `${address.streetAddress}, ${address.city}`;
+      return `${address.streetAddress}, ${address.city}`
     }
-    return `${address.streetAddress}, ${address.areaDistrict || ''}, ${address.city}, ${address.lga}, ${address.state}`.replace(/, ,/g, ',');
+    return `${address.streetAddress}, ${address.areaDistrict || ''}, ${address.city}, ${address.lga}, ${address.state}`.replace(
+      /, ,/g,
+      ',',
+    )
   }
 
   if (addresses.length === 0) {
     return (
-      <NextUICard className="shadow-lg rounded-xl mt-8">
-        <NextUICardHeader className="px-6 pt-6 pb-2">
-          <div className="flex flex-col space-y-0.5">
-            <h2 className="text-xl font-semibold text-primary">{title}</h2>
+      <NextUICard className='shadow-lg rounded-xl mt-8'>
+        <NextUICardHeader className='px-6 pt-6 pb-2'>
+          <div className='flex flex-col space-y-0.5'>
+            <h2 className='text-xl font-semibold text-primary'>{title}</h2>
           </div>
         </NextUICardHeader>
-        <NextUICardBody className="p-6">
-          <p className="text-foreground-500">You haven't contributed any addresses yet.</p>
+        <NextUICardBody className='p-6'>
+          <p className='text-foreground-500'>
+            You haven't contributed any addresses yet.
+          </p>
         </NextUICardBody>
       </NextUICard>
-    );
+    )
   }
 
   return (
-    <NextUICard className="shadow-lg rounded-xl mt-8">
-      <NextUICardHeader className="px-6 pt-6 pb-2">
-        <div className="flex flex-col space-y-0.5">
-          <h2 className="text-xl font-semibold text-primary">{title}</h2>
-          <p className="text-sm text-foreground-500">View the status of your address contributions.</p>
+    <NextUICard className='shadow-lg rounded-xl mt-8'>
+      <NextUICardHeader className='px-6 pt-6 pb-2'>
+        <div className='flex flex-col space-y-0.5'>
+          <h2 className='text-xl font-semibold text-primary'>{title}</h2>
+          <p className='text-sm text-foreground-500'>
+            View the status of your address contributions.
+          </p>
         </div>
       </NextUICardHeader>
-      <NextUICardBody className="p-0 md:p-2">
-        <ScrollShadow hideScrollBar className="h-[400px] w-full">
-          <NextUITable aria-label="Address Contributions List" removeWrapper>
+      <NextUICardBody className='p-0 md:p-2'>
+        <ScrollShadow hideScrollBar className='h-[400px] w-full'>
+          <NextUITable aria-label='Address Contributions List' removeWrapper>
             <NextUITableHeader>
               <NextUITableColumn>ADDRESS</NextUITableColumn>
-              <NextUITableColumn className={isMobile ? "hidden" : ""}>ADC</NextUITableColumn>
+              <NextUITableColumn className={isMobile ? 'hidden' : ''}>
+                ADC
+              </NextUITableColumn>
               <NextUITableColumn>SUBMITTED</NextUITableColumn>
               <NextUITableColumn>TYPE</NextUITableColumn>
               <NextUITableColumn>STATUS</NextUITableColumn>
-              <NextUITableColumn className={isMobile ? "hidden" : ""}>NOTES/REASON</NextUITableColumn>
+              <NextUITableColumn className={isMobile ? 'hidden' : ''}>
+                NOTES/REASON
+              </NextUITableColumn>
             </NextUITableHeader>
-            <NextUITableBody items={addresses} emptyContent="No contributions found.">
+            <NextUITableBody
+              items={addresses}
+              emptyContent='No contributions found.'
+            >
               {(item) => (
                 <NextUITableRow key={item.id}>
-                  <NextUITableCell className="max-w-xs truncate" title={formatAddress(item.submittedAddress)}>{formatAddress(item.submittedAddress)}</NextUITableCell>
-                  <NextUITableCell className={isMobile ? "hidden font-mono text-xs" : "font-mono text-xs"}>{item.adc || 'N/A'}</NextUITableCell>
-                  <NextUITableCell>{format(new Date(item.submittedAt), "PP")}</NextUITableCell>
-                  <NextUITableCell className="capitalize text-xs font-semibold">{item.propertyType || 'N/A'}</NextUITableCell>
+                  <NextUITableCell
+                    className='max-w-xs truncate'
+                    title={formatAddress(item.submittedAddress)}
+                  >
+                    {formatAddress(item.submittedAddress)}
+                  </NextUITableCell>
+                  <NextUITableCell
+                    className={
+                      isMobile
+                        ? 'hidden font-mono text-xs'
+                        : 'font-mono text-xs'
+                    }
+                  >
+                    {item.adc || 'N/A'}
+                  </NextUITableCell>
                   <NextUITableCell>
-                    <NextUIChip color={getStatusChipColor(item.status)} size="sm" variant="flat">
-                      {item.status.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
+                    {format(new Date(item.submittedAt), 'PP')}
+                  </NextUITableCell>
+                  <NextUITableCell className='capitalize text-xs font-semibold'>
+                    {item.propertyType || 'N/A'}
+                  </NextUITableCell>
+                  <NextUITableCell>
+                    <NextUIChip
+                      color={getStatusChipColor(item.status)}
+                      size='sm'
+                      variant='flat'
+                    >
+                      {item.status
+                        .split('-')
+                        .map(
+                          (word) =>
+                            word.charAt(0).toUpperCase() + word.slice(1),
+                        )
+                        .join(' ')}
                     </NextUIChip>
                   </NextUITableCell>
-                  <NextUITableCell className={isMobile ? "hidden max-w-xs truncate" : "max-w-xs truncate"}>
-                    {item.status === 'pending-review' && item.aiFlaggedReason ? `AI: ${item.aiFlaggedReason}` :
-                      item.status === 'rejected' ? 'Rejected by admin' :
-                        item.status === 'approved' ? 'Approved' : '-'}
+                  <NextUITableCell
+                    className={
+                      isMobile
+                        ? 'hidden max-w-xs truncate'
+                        : 'max-w-xs truncate'
+                    }
+                  >
+                    {item.status === 'pending-review' && item.aiFlaggedReason
+                      ? `AI: ${item.aiFlaggedReason}`
+                      : item.status === 'rejected'
+                        ? 'Rejected by admin'
+                        : item.status === 'approved'
+                          ? 'Approved'
+                          : '-'}
                   </NextUITableCell>
                 </NextUITableRow>
               )}
@@ -93,5 +157,5 @@ export function AddressList({ addresses, title }: AddressListProps) {
         </ScrollShadow>
       </NextUICardBody>
     </NextUICard>
-  );
+  )
 }

@@ -1,31 +1,31 @@
 const BRAND = {
-  name: "AddressData",
-  primary: "#0C213A",
-  secondary: "#79C142",
-  accent: "#FFCC33",
-  text: "#1F2937",
-  surface: "#FFFFFF",
-  border: "#E2E8F0",
-  muted: "#64748B",
-  softBg: "#F8FAFC",
+  name: 'AddressData',
+  primary: '#0C213A',
+  secondary: '#79C142',
+  accent: '#FFCC33',
+  text: '#1F2937',
+  surface: '#FFFFFF',
+  border: '#E2E8F0',
+  muted: '#64748B',
+  softBg: '#F8FAFC',
   logoUrl:
-    "https://res.cloudinary.com/seapane-cloud/seapane-bucket/addressdata/meta/addressdata-logomark.svg",
-  websiteUrl: "https://www.addressdata.ng",
-};
+    'https://res.cloudinary.com/seapane-cloud/seapane-bucket/addressdata/meta/addressdata-logomark.svg',
+  websiteUrl: 'https://www.addressdata.ng',
+}
 
 export interface WrapEmailBodyParams {
-  title: string;
-  preheader?: string;
-  contentHtml: string;
+  title: string
+  preheader?: string
+  contentHtml: string
 }
 
 export function escapeHtml(value: string): string {
   return value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
 }
 
 export function EmailHeader({ title }: { title: string }): string {
@@ -41,7 +41,7 @@ export function EmailHeader({ title }: { title: string }): string {
         </h1>
       </td>
     </tr>
-  `;
+  `
 }
 
 export function EmailFooter(): string {
@@ -57,7 +57,7 @@ export function EmailFooter(): string {
         </p>
       </td>
     </tr>
-  `;
+  `
 }
 
 export function wrapEmailBody({
@@ -65,7 +65,7 @@ export function wrapEmailBody({
   preheader,
   contentHtml,
 }: WrapEmailBodyParams): string {
-  const safePreheader = escapeHtml(preheader ?? title);
+  const safePreheader = escapeHtml(preheader ?? title)
 
   return `
 <!DOCTYPE html>
@@ -96,7 +96,7 @@ export function wrapEmailBody({
     </table>
   </body>
 </html>
-  `;
+  `
 }
 
-export const EMAIL_BRAND = BRAND;
+export const EMAIL_BRAND = BRAND
