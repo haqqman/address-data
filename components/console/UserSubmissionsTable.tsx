@@ -44,6 +44,7 @@ export function UserSubmissionsTable({ submissions }: UserSubmissionsTableProps)
           <NextUITableColumn>USER</NextUITableColumn>
           <NextUITableColumn>SUBMITTED ADDRESS</NextUITableColumn>
           <NextUITableColumn>ADC</NextUITableColumn>
+          <NextUITableColumn>TYPE</NextUITableColumn>
           <NextUITableColumn>STATUS</NextUITableColumn>
           <NextUITableColumn>SUBMITTED AT</NextUITableColumn>
           <NextUITableColumn>REVIEWED AT</NextUITableColumn>
@@ -64,6 +65,7 @@ export function UserSubmissionsTable({ submissions }: UserSubmissionsTableProps)
                 </Tooltip>
               </NextUITableCell>
               <NextUITableCell className="font-mono text-xs">{submission.adc || 'N/A'}</NextUITableCell>
+              <NextUITableCell className="capitalize text-xs font-semibold">{submission.propertyType || "N/A"}</NextUITableCell>
               <NextUITableCell>
                 <NextUIChip size="sm" color={getStatusChipColor(submission.status)} variant="flat">
                   {submission.status.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}

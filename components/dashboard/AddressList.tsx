@@ -65,6 +65,7 @@ export function AddressList({ addresses, title }: AddressListProps) {
               <NextUITableColumn>ADDRESS</NextUITableColumn>
               <NextUITableColumn className={isMobile ? "hidden" : ""}>ADC</NextUITableColumn>
               <NextUITableColumn>SUBMITTED</NextUITableColumn>
+              <NextUITableColumn>TYPE</NextUITableColumn>
               <NextUITableColumn>STATUS</NextUITableColumn>
               <NextUITableColumn className={isMobile ? "hidden" : ""}>NOTES/REASON</NextUITableColumn>
             </NextUITableHeader>
@@ -74,6 +75,7 @@ export function AddressList({ addresses, title }: AddressListProps) {
                   <NextUITableCell className="max-w-xs truncate" title={formatAddress(item.submittedAddress)}>{formatAddress(item.submittedAddress)}</NextUITableCell>
                   <NextUITableCell className={isMobile ? "hidden font-mono text-xs" : "font-mono text-xs"}>{item.adc || 'N/A'}</NextUITableCell>
                   <NextUITableCell>{format(new Date(item.submittedAt), "PP")}</NextUITableCell>
+                  <NextUITableCell className="capitalize text-xs font-semibold">{item.propertyType || 'N/A'}</NextUITableCell>
                   <NextUITableCell>
                     <NextUIChip color={getStatusChipColor(item.status)} size="sm" variant="flat">
                       {item.status.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}

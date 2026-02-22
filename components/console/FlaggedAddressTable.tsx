@@ -70,6 +70,7 @@ export function FlaggedAddressTable({ addresses, onActionComplete }: FlaggedAddr
             <NextUITableColumn>SUBMITTED ADDRESS</NextUITableColumn>
             <NextUITableColumn>GOOGLE MAPS SUGGESTION</NextUITableColumn>
             <NextUITableColumn>AI REASON</NextUITableColumn>
+            <NextUITableColumn>TYPE</NextUITableColumn>
             <NextUITableColumn>SUBMITTED AT</NextUITableColumn>
             <NextUITableColumn className="text-right">ACTIONS</NextUITableColumn>
           </NextUITableHeader>
@@ -113,6 +114,7 @@ export function FlaggedAddressTable({ addresses, onActionComplete }: FlaggedAddr
                     </NextUIChip>
                   )}
                 </NextUITableCell>
+                <NextUITableCell className="capitalize text-xs font-semibold">{submission.propertyType || "N/A"}</NextUITableCell>
                 <NextUITableCell>{format(new Date(submission.submittedAt), "PPp")}</NextUITableCell>
                 <NextUITableCell className="text-right space-x-2">
                   <Tooltip content="Approve Submission" placement="top">

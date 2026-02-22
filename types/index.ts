@@ -33,6 +33,7 @@ export interface Address {
   country: string; 
   latitude?: number;
   longitude?: number;
+  propertyType: "residential" | "commercial";
   status: "verified"; 
   userId?: string; 
   originalSubmissionId?: string; 
@@ -69,6 +70,7 @@ export interface AddressSubmission {
     zipCode?: string;
     country: string;
   };
+  propertyType: "residential" | "commercial";
   adc: string | null; // AddressData Code, null until approved
   googleMapsSuggestion?: string;
   status: "pending-review" | "approved" | "rejected";

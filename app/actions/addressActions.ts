@@ -15,6 +15,7 @@ const addressSchema = z.object({
   lga: z.string().min(1, "LGA is required"),
   state: z.string().min(1, "State is required"),
   zipCode: z.string().optional(),
+  propertyType: z.enum(["residential", "commercial"]),
 }).refine(data => {
     // If state is FCT, the district field becomes required.
     if (data.state === 'FCT') {
@@ -85,6 +86,7 @@ export async function submitAddress({ formData, user }: SubmitAddressParams) {
     lga: formData.get("lga") as string,
     state: formData.get("state") as string,
     zipCode: formData.get("zipCode") as string | undefined,
+    propertyType: formData.get("propertyType") as "residential" | "commercial",
   };
 
   const validation = addressSchema.safeParse(rawFormData);
@@ -147,6 +149,7 @@ export async function submitAddress({ formData, user }: SubmitAddressParams) {
       submittedAddress: submittedAddressDataForDB,
       adc: adc,
       googleMapsSuggestion: googleMapsAddress,
+      propertyType: submittedAddressData.propertyType,
       status: status,
       aiFlaggedReason: aiFlaggedReason || undefined,
       submittedAt: new Date(), 
