@@ -48,7 +48,7 @@ export default function ManageEstatePage() {
   useEffect(() => {
     fetchEstate();
   }, [fetchEstate]);
-  
+
   const formatLocation = (location: Estate['location']) => {
     const parts = [];
     if (location.district) parts.push(location.district);
@@ -63,19 +63,19 @@ export default function ManageEstatePage() {
 
     setIsSubmitting(true);
     setSubmissionStatus(null);
-    
+
     const dataToUpdate: Partial<Estate> = {};
     if (editForm.name !== estate.name) dataToUpdate.name = editForm.name;
     if (editForm.googleMapLink !== (estate.googleMapLink || "")) dataToUpdate.googleMapLink = editForm.googleMapLink;
 
-    if(Object.keys(dataToUpdate).length === 0) {
-        setIsSubmitting(false);
-        setIsEditing(false);
-        return;
+    if (Object.keys(dataToUpdate).length === 0) {
+      setIsSubmitting(false);
+      setIsEditing(false);
+      return;
     }
 
-    const result = await updateEstate(estate.id, dataToUpdate, user.id);
-    
+    const result = await updateEstate(estate.id, dataToUpdate);
+
     if (result.success) {
       setSubmissionStatus({ type: 'success', message: result.message });
       fetchEstate(); // Refresh data
@@ -83,7 +83,7 @@ export default function ManageEstatePage() {
     } else {
       setSubmissionStatus({ type: 'error', message: result.message });
     }
-    
+
     setIsSubmitting(false);
   };
 
@@ -129,111 +129,111 @@ export default function ManageEstatePage() {
     <div className="space-y-8">
       <div>
         <Button
-            variant="light"
-            onPress={() => router.push("/estates")}
-            startContent={<ArrowLeft className="h-4 w-4" />}
-            className="mb-4"
+          variant="light"
+          onPress={() => router.push("/estates")}
+          startContent={<ArrowLeft className="h-4 w-4" />}
+          className="mb-4"
         >
           Back to Estates
         </Button>
         <div className="flex justify-between items-start">
-            <div>
-                <h1 className="text-3xl font-bold tracking-tight text-primary">{estate.name}</h1>
-                <p className="text-foreground-500 font-mono text-sm mt-1">{estate.estateCode}</p>
-            </div>
-            {!isEditing && (
-                 <Button 
-                    color="secondary" 
-                    variant="ghost"
-                    className="text-primary shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out"
-                    startContent={<Edit className="h-4 w-4" />}
-                    onPress={() => setIsEditing(true)}
-                 >
-                    Suggest Improvement
-                </Button>
-            )}
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight text-primary">{estate.name}</h1>
+            <p className="text-foreground-500 font-mono text-sm mt-1">{estate.estateCode}</p>
+          </div>
+          {!isEditing && (
+            <Button
+              color="secondary"
+              variant="ghost"
+              className="text-primary shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out"
+              startContent={<Edit className="h-4 w-4" />}
+              onPress={() => setIsEditing(true)}
+            >
+              Suggest Improvement
+            </Button>
+          )}
         </div>
       </div>
-      
-       {submissionStatus && (
-          <Card className={`mb-6 ${submissionStatus.type === 'success' ? 'bg-success-50 border-success-200' : 'bg-danger-50 border-danger-200'}`}>
-            <CardBody className="p-4">
-              <div className="flex items-center">
-                {submissionStatus.type === 'success' ? <CheckCircle className="h-5 w-5 text-success mr-3" /> : <AlertTriangle className="h-5 w-5 text-danger mr-3" />}
-                <p className={`text-sm font-medium ${submissionStatus.type === 'success' ? 'text-success-700' : 'text-danger-700'}`}>{submissionStatus.message}</p>
-              </div>
-            </CardBody>
-          </Card>
-        )}
+
+      {submissionStatus && (
+        <Card className={`mb-6 ${submissionStatus.type === 'success' ? 'bg-success-50 border-success-200' : 'bg-danger-50 border-danger-200'}`}>
+          <CardBody className="p-4">
+            <div className="flex items-center">
+              {submissionStatus.type === 'success' ? <CheckCircle className="h-5 w-5 text-success mr-3" /> : <AlertTriangle className="h-5 w-5 text-danger mr-3" />}
+              <p className={`text-sm font-medium ${submissionStatus.type === 'success' ? 'text-success-700' : 'text-danger-700'}`}>{submissionStatus.message}</p>
+            </div>
+          </CardBody>
+        </Card>
+      )}
 
       <Card className="shadow-xl rounded-xl">
         <CardHeader>
-            <h2 className="text-xl font-semibold text-primary">Estate Details</h2>
+          <h2 className="text-xl font-semibold text-primary">Estate Details</h2>
         </CardHeader>
         <CardBody className="space-y-4">
-            {isEditing ? (
-                <div className="space-y-4">
-                    <Input
-                        label="Estate Name"
-                        value={editForm.name}
-                        onValueChange={(v) => setEditForm({ ...editForm, name: v })}
-                        variant="bordered"
-                    />
-                    <Input
-                        label="Google Map Link"
-                        value={editForm.googleMapLink}
-                        onValueChange={(v) => setEditForm({ ...editForm, googleMapLink: v })}
-                        variant="bordered"
-                        placeholder="https://maps.app.goo.gl/..."
-                    />
+          {isEditing ? (
+            <div className="space-y-4">
+              <Input
+                label="Estate Name"
+                value={editForm.name}
+                onValueChange={(v) => setEditForm({ ...editForm, name: v })}
+                variant="bordered"
+              />
+              <Input
+                label="Google Map Link"
+                value={editForm.googleMapLink}
+                onValueChange={(v) => setEditForm({ ...editForm, googleMapLink: v })}
+                variant="bordered"
+                placeholder="https://maps.app.goo.gl/..."
+              />
+            </div>
+          ) : (
+            <div className="space-y-3">
+              <div className="flex items-center">
+                <MapPin className="h-5 w-5 text-secondary mr-3" />
+                <span>{formatLocation(estate.location)}</span>
+              </div>
+              {estate.googleMapLink && (
+                <div className="flex items-center">
+                  <Globe className="h-5 w-5 text-secondary mr-3" />
+                  <NextUILink href={estate.googleMapLink} isExternal showAnchorIcon>
+                    View on Google Maps
+                  </NextUILink>
                 </div>
-            ) : (
-                <div className="space-y-3">
-                    <div className="flex items-center">
-                        <MapPin className="h-5 w-5 text-secondary mr-3"/>
-                        <span>{formatLocation(estate.location)}</span>
-                    </div>
-                    {estate.googleMapLink && (
-                        <div className="flex items-center">
-                            <Globe className="h-5 w-5 text-secondary mr-3"/>
-                            <NextUILink href={estate.googleMapLink} isExternal showAnchorIcon>
-                                View on Google Maps
-                            </NextUILink>
-                        </div>
-                    )}
-                    <div className="flex items-center">
-                         <Info className="h-5 w-5 text-secondary mr-3"/>
-                         <span className="mr-2">Source:</span>
-                         <Chip size="sm" variant="flat">{estate.source}</Chip>
-                    </div>
-                </div>
-            )}
+              )}
+              <div className="flex items-center">
+                <Info className="h-5 w-5 text-secondary mr-3" />
+                <span className="mr-2">Source:</span>
+                <Chip size="sm" variant="flat">{estate.source}</Chip>
+              </div>
+            </div>
+          )}
         </CardBody>
         {isEditing && (
-            <CardFooter className="flex justify-end gap-2">
-                <Button variant="light" onPress={() => setIsEditing(false)} disabled={isSubmitting}>
-                    Cancel
-                </Button>
-                <Button color="warning" onPress={handleUpdate} isLoading={isSubmitting} disabled={isSubmitting} className="text-primary">
-                    Submit Improvement
-                </Button>
-            </CardFooter>
+          <CardFooter className="flex justify-end gap-2">
+            <Button variant="light" onPress={() => setIsEditing(false)} disabled={isSubmitting}>
+              Cancel
+            </Button>
+            <Button color="warning" onPress={handleUpdate} isLoading={isSubmitting} disabled={isSubmitting} className="text-primary">
+              Submit Improvement
+            </Button>
+          </CardFooter>
         )}
-         {!isEditing && (
-            <>
-                <Divider/>
-                <CardFooter className="text-xs text-foreground-500 justify-between">
-                    <div>
-                        <p>Created: {format(estate.createdAt, "PPp")}</p>
-                        <p>Created By: {estate.createdBy.startsWith('system') ? 'System' : estate.createdBy}</p>
-                    </div>
-                     <div>
-                        <p>Last Updated: {format(estate.updatedAt, "PPp")}</p>
-                        <p>Updated By: {estate.lastUpdatedBy.startsWith('system') ? 'System' : estate.lastUpdatedBy}</p>
-                    </div>
-                </CardFooter>
-            </>
-         )}
+        {!isEditing && (
+          <>
+            <Divider />
+            <CardFooter className="text-xs text-foreground-500 justify-between">
+              <div>
+                <p>Created: {format(estate.createdAt, "PPp")}</p>
+                <p>Created By: {estate.createdBy.startsWith('system') ? 'System' : estate.createdBy}</p>
+              </div>
+              <div>
+                <p>Last Updated: {format(estate.updatedAt, "PPp")}</p>
+                <p>Updated By: {estate.lastUpdatedBy.startsWith('system') ? 'System' : estate.lastUpdatedBy}</p>
+              </div>
+            </CardFooter>
+          </>
+        )}
       </Card>
     </div>
   );

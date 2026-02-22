@@ -11,12 +11,12 @@ vi.mock('@/ai/genkit', () => ({
 }));
 
 describe('flagAddressDiscrepancies', () => {
-  let flagAddressDiscrepanciesPrompt;
+  let flagAddressDiscrepanciesPrompt: any;
 
   beforeEach(() => {
     // Reset mocks before each test
     vi.clearAllMocks();
-    flagAddressDiscrepanciesPrompt = ai.definePrompt();
+    flagAddressDiscrepanciesPrompt = ai.definePrompt({} as any);
   });
 
   it('should return a discrepant response when the AI prompt throws an error', async () => {
@@ -31,7 +31,7 @@ describe('flagAddressDiscrepancies', () => {
     };
 
     // Mock the prompt to throw an error
-    (flagAddressDiscrepanciesPrompt as vi.Mock).mockRejectedValue(new Error('AI model failed'));
+    (flagAddressDiscrepanciesPrompt as any).mockRejectedValue(new Error('AI model failed'));
 
     // Act
     const result = await flagAddressDiscrepancies(input);

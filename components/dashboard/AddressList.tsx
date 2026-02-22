@@ -13,13 +13,13 @@ interface AddressListProps {
 
 export function AddressList({ addresses, title }: AddressListProps) {
   const isMobile = useIsMobile();
-  
+
   const getStatusChipColor = (status: AddressSubmission['status']): "primary" | "secondary" | "danger" | "default" | "success" | "warning" => {
     switch (status) {
       case "approved":
-        return "success"; 
-      case "pending_review":
-        return "warning"; 
+        return "success";
+      case "pending-review":
+        return "warning";
       case "rejected":
         return "danger";
       default:
@@ -63,27 +63,27 @@ export function AddressList({ addresses, title }: AddressListProps) {
           <NextUITable aria-label="Address Contributions List" removeWrapper>
             <NextUITableHeader>
               <NextUITableColumn>ADDRESS</NextUITableColumn>
-              {!isMobile && <NextUITableColumn>ADC</NextUITableColumn>}
+              <NextUITableColumn className={isMobile ? "hidden" : ""}>ADC</NextUITableColumn>
               <NextUITableColumn>SUBMITTED</NextUITableColumn>
               <NextUITableColumn>STATUS</NextUITableColumn>
-              {!isMobile && <NextUITableColumn>NOTES/REASON</NextUITableColumn>}
+              <NextUITableColumn className={isMobile ? "hidden" : ""}>NOTES/REASON</NextUITableColumn>
             </NextUITableHeader>
             <NextUITableBody items={addresses} emptyContent="No contributions found.">
               {(item) => (
                 <NextUITableRow key={item.id}>
                   <NextUITableCell className="max-w-xs truncate" title={formatAddress(item.submittedAddress)}>{formatAddress(item.submittedAddress)}</NextUITableCell>
-                  {!isMobile && <NextUITableCell className="font-mono text-xs">{item.adc || 'N/A'}</NextUITableCell>}
+                  <NextUITableCell className={isMobile ? "hidden font-mono text-xs" : "font-mono text-xs"}>{item.adc || 'N/A'}</NextUITableCell>
                   <NextUITableCell>{format(new Date(item.submittedAt), "PP")}</NextUITableCell>
                   <NextUITableCell>
                     <NextUIChip color={getStatusChipColor(item.status)} size="sm" variant="flat">
                       {item.status.replace("_", " ").toUpperCase()}
                     </NextUIChip>
                   </NextUITableCell>
-                  {!isMobile && <NextUITableCell className="max-w-xs truncate">
-                    {item.status === 'pending_review' && item.aiFlaggedReason ? `AI: ${item.aiFlaggedReason}` : 
-                     item.status === 'rejected' ? 'Rejected by admin' :
-                     item.status === 'approved' ? 'Approved' : '-'}
-                  </NextUITableCell>}
+                  <NextUITableCell className={isMobile ? "hidden max-w-xs truncate" : "max-w-xs truncate"}>
+                    {item.status === 'pending-review' && item.aiFlaggedReason ? `AI: ${item.aiFlaggedReason}` :
+                      item.status === 'rejected' ? 'Rejected by admin' :
+                        item.status === 'approved' ? 'Approved' : '-'}
+                  </NextUITableCell>
                 </NextUITableRow>
               )}
             </NextUITableBody>

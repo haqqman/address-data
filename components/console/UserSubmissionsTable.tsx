@@ -15,12 +15,12 @@ interface UserSubmissionsTableProps {
 }
 
 export function UserSubmissionsTable({ submissions }: UserSubmissionsTableProps) {
-  
+
   const getStatusChipColor = (status: AddressSubmission['status']): "success" | "warning" | "danger" | "default" => {
     switch (status) {
       case "approved":
         return "success";
-      case "pending_review":
+      case "pending-review":
         return "warning";
       case "rejected":
         return "danger";
@@ -57,11 +57,11 @@ export function UserSubmissionsTable({ submissions }: UserSubmissionsTableProps)
                 <div className="text-xs text-foreground-500">{submission.userEmail || "N/A"}</div>
               </NextUITableCell>
               <NextUITableCell className="max-w-xs">
-                 <Tooltip content={formatFullAddress(submission.submittedAddress)} placement="top-start">
-                    <div className="font-medium truncate">
-                      {formatFullAddress(submission.submittedAddress)}
-                    </div>
-                  </Tooltip>
+                <Tooltip content={formatFullAddress(submission.submittedAddress)} placement="top-start">
+                  <div className="font-medium truncate">
+                    {formatFullAddress(submission.submittedAddress)}
+                  </div>
+                </Tooltip>
               </NextUITableCell>
               <NextUITableCell className="font-mono text-xs">{submission.adc || 'N/A'}</NextUITableCell>
               <NextUITableCell>

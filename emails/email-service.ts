@@ -60,6 +60,7 @@ export async function sendEmail({
         {
           email_address: {
             address: safeTo,
+            name: safeTo,
           },
         },
       ],
