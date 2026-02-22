@@ -69,7 +69,7 @@ export interface AddressSubmission {
     zipCode?: string;
     country: string;
   };
-  adc: string | null; // Address Data Code, null until approved
+  adc: string | null; // AddressData Code, null until approved
   googleMapsSuggestion?: string;
   status: "pending-review" | "approved" | "rejected";
   aiFlaggedReason?: string | null; // Allow null
@@ -121,7 +121,7 @@ export interface Estate {
     district?: string; // Used for FCT districts or other specific areas
   };
   googleMapLink?: string; // Optional
-  source: string; // "Address Data", "Platform", or user-specified
+  source: string; // "AddressData", "Platform", or user-specified
   createdBy: string; // User ID of the creator
   lastUpdatedBy: string; // User ID of the last person to update
   createdAt: Date;

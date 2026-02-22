@@ -25,7 +25,7 @@ export default function ConsoleLayout({ children }: { children: ReactNode }) {
               </Link>
             </p>
             <p className='text-sm'>
-              &copy; {displayYear} Address Data. All Rights Reserved.
+              &copy; {displayYear} AddressData. All Rights Reserved.
             </p>
           </div>
         </footer>

@@ -1,7 +1,7 @@
 
-# Address Data
+# AddressData
 
-**Address Data** is an address intelligence platform purpose-built for Nigeria. It provides developers, businesses, and operations with tools to validate, store, and retrieve Nigerian address data in a structured, efficient, and scalable way.
+**AddressData** is an address intelligence platform purpose-built for Nigeria. It provides developers, businesses, and operations with tools to validate, store, and retrieve Nigerian address data in a structured, efficient, and scalable way.
 
 ## Project Overview
 
@@ -23,7 +23,7 @@ The platform consists of:
 
 ```bash
 git clone <repository_url>
-cd address-data
+cd addressdata
 ```
 
 ### 2. Install Dependencies
@@ -41,7 +41,7 @@ npm install
 3.  Once your project is created, navigate to **Project settings** (click the gear icon next to "Project Overview").
 4.  Under the **"General"** tab, scroll down to **"Your apps"**.
 5.  Click on the **Web icon (`</>`)** to add a new web app.
-6.  Register your app (e.g., "Address Data Web"). You **do not** need to set up Firebase Hosting at this stage if you are just running locally.
+6.  Register your app (e.g., "AddressData Web"). You **do not** need to set up Firebase Hosting at this stage if you are just running locally.
 7.  After registering, Firebase will provide you with a `firebaseConfig` object. You will need these values for your `.env.local` file.
 
 ### 4. Configure Environment Variables

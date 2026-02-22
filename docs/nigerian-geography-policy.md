@@ -1,6 +1,6 @@
 # Nigerian Geography Data Policy
 
-This document outlines the policy and data structure for handling Nigerian geographical information (States, LGAs, Cities, and Districts) within the Address Data platform. This ensures consistency for data submission, API responses, and internal management.
+This document outlines the policy and data structure for handling Nigerian geographical information (States, LGAs, Cities, and Districts) within the AddressData platform. This ensures consistency for data submission, API responses, and internal management.
 
 ## Standard Hierarchy
 

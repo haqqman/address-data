@@ -59,7 +59,7 @@ export default function PortalLayout({
               </a>
             </p>
             <p className="text-sm">
-              &copy; {displayYear !== null ? displayYear : new Date().getFullYear()} Address Data. All Rights Reserved.
+              &copy; {displayYear !== null ? displayYear : new Date().getFullYear()} AddressData. All Rights Reserved.
             </p>
           </div>
         </footer>
@@ -70,8 +70,8 @@ export default function PortalLayout({
   // If not loading and no user, the useEffect will handle the redirect. 
   // Return a spinner for the brief moment before the redirect occurs.
   return (
-     <div className="flex items-center justify-center min-h-screen">
-        <Spinner label="Initializing Session..." color="primary" labelColor="warning" />
-      </div>
+    <div className="flex items-center justify-center min-h-screen">
+      <Spinner label="Initializing Session..." color="primary" labelColor="warning" />
+    </div>
   );
 }

@@ -16,7 +16,7 @@ function welcomeEmailBody({ name }: { name: string }): string {
   return `
     <p style="margin: 0 0 14px; font-size: 16px;">Hi ${safeName},</p>
     <p style="margin: 0 0 14px;">
-      Welcome to Address Data. You now have access to a platform built for accurate Nigerian address validation,
+      Welcome to AddressData. You now have access to a platform built for accurate Nigerian address validation,
       storage, and retrieval.
     </p>
     <p style="margin: 0 0 18px;">
@@ -49,10 +49,10 @@ export async function sendWelcomeEmail({
   try {
     await sendEmail({
       to: email,
-      subject: "Welcome to Address Data",
-      preheader: "Your Address Data account is ready.",
+      subject: "Welcome to AddressData",
+      preheader: "Your AddressData account is ready.",
       htmlBody: welcomeEmailBody({ name }),
-      textBody: `Hi ${name}, welcome to Address Data. Visit https://www.addressdata.ng/dashboard to get started.`,
+      textBody: `Hi ${name}, welcome to AddressData. Visit https://www.addressdata.ng/dashboard to get started.`,
     });
   } catch (error) {
     console.error("[email] Welcome email failed", { email, error });

@@ -2,7 +2,7 @@
 "use client";
 
 import Link from "next/link";
-import { Navbar, NavbarBrand, NavbarContent, NavbarItem, NavbarMenuToggle, NavbarMenu, NavbarMenuItem, Button as NextUIButton, Spinner } from "@nextui-org/react"; 
+import { Navbar, NavbarBrand, NavbarContent, NavbarItem, NavbarMenuToggle, NavbarMenu, NavbarMenuItem, Button as NextUIButton, Spinner } from "@nextui-org/react";
 import Image from "next/image";
 import { useState } from "react";
 import { useAuth } from "@/contexts/auth-context";
@@ -23,9 +23,9 @@ export function PublicHeader() {
     }
     if (user) {
       return (
-        <NextUIButton 
+        <NextUIButton
           as={Link}
-          href="/dashboard" 
+          href="/dashboard"
           color="warning"
           radius="md"
           className="text-primary shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out font-semibold"
@@ -35,9 +35,9 @@ export function PublicHeader() {
       );
     }
     return (
-      <NextUIButton 
+      <NextUIButton
         as={Link}
-        href="/login" 
+        href="/login"
         color="warning"
         radius="md"
         className="text-primary shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out font-semibold"
@@ -48,22 +48,22 @@ export function PublicHeader() {
   };
 
   return (
-    <Navbar 
-      onMenuOpenChange={setIsMenuOpen} 
+    <Navbar
+      onMenuOpenChange={setIsMenuOpen}
       isMenuOpen={isMenuOpen}
       className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
       maxWidth="xl"
     >
       <NavbarContent justify="start">
         <NavbarBrand as={Link} href="/" className="flex items-center space-x-2">
-          <Image 
-            src="https://res.cloudinary.com/seapane-cloud/seapane-bucket/address-data/meta/address-data-logomark.svg" 
-            alt="Address Data Logomark" 
-            width={24} 
+          <Image
+            src="https://res.cloudinary.com/seapane-cloud/seapane-bucket/addressdata/meta/addressdata-logomark.svg"
+            alt="AddressData Logomark"
+            width={24}
             height={24}
             className="text-primary"
           />
-          <span className="font-bold text-lg text-primary">Address Data</span>
+          <span className="font-bold text-lg text-primary">AddressData</span>
         </NavbarBrand>
       </NavbarContent>
 
@@ -106,9 +106,9 @@ export function PublicHeader() {
           </NavbarMenuItem>
         ))}
         <NavbarMenuItem>
-            <div className="mt-4" onClick={() => setIsMenuOpen(false)}>
-              {renderAuthButton()}
-            </div>
+          <div className="mt-4" onClick={() => setIsMenuOpen(false)}>
+            {renderAuthButton()}
+          </div>
         </NavbarMenuItem>
       </NavbarMenu>
     </Navbar>

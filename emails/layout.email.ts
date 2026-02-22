@@ -1,5 +1,5 @@
 const BRAND = {
-  name: "Address Data",
+  name: "AddressData",
   primary: "#0C213A",
   secondary: "#79C142",
   accent: "#FFCC33",
@@ -9,7 +9,7 @@ const BRAND = {
   muted: "#64748B",
   softBg: "#F8FAFC",
   logoUrl:
-    "https://res.cloudinary.com/seapane-cloud/seapane-bucket/address-data/meta/address-data-logomark.svg",
+    "https://res.cloudinary.com/seapane-cloud/seapane-bucket/addressdata/meta/addressdata-logomark.svg",
   websiteUrl: "https://www.addressdata.ng",
 };
 

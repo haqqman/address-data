@@ -89,8 +89,8 @@ export function ConsoleHeader() {
           className='flex items-center space-x-2 mr-6'
         >
           <Image
-            src='https://res.cloudinary.com/seapane-cloud/seapane-bucket/address-data/meta/address-data-logomark.svg'
-            alt='Address Data Logomark'
+            src='https://res.cloudinary.com/seapane-cloud/seapane-bucket/addressdata/meta/addressdata-logomark.svg'
+            alt='AddressData Logomark'
             width={24}
             height={24}
             className='text-primary'

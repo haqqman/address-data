@@ -95,7 +95,7 @@ export default function HomePage() {
           className='relative py-20 md:py-32 bg-gradient-to-br from-background to-primary/5 bg-cover bg-center overflow-hidden'
           style={{
             backgroundImage:
-              "url('https://res.cloudinary.com/seapane-cloud/seapane-bucket/address-data/hero.jpg')",
+              "url('https://res.cloudinary.com/seapane-cloud/seapane-bucket/addressdata/hero.jpg')",
           }}
         >
           <div
@@ -109,8 +109,8 @@ export default function HomePage() {
           <div className='container mx-auto px-4 text-center relative z-10'>
             <div className='flex justify-center mb-6'>
               <Image
-                src='https://res.cloudinary.com/seapane-cloud/seapane-bucket/address-data/meta/address-data-logomark.svg'
-                alt='Address Data Logomark'
+                src='https://res.cloudinary.com/seapane-cloud/seapane-bucket/addressdata/meta/addressdata-logomark.svg'
+                alt='AddressData Logomark'
                 width={64}
                 height={64}
                 className='text-primary'
@@ -118,7 +118,7 @@ export default function HomePage() {
               />
             </div>
             <h1 className='text-4xl md:text-6xl font-bold tracking-tight text-primary'>
-              The Future of Nigerian Address Data
+              The Future of Nigerian AddressData
             </h1>
             <div className='mt-10 max-w-xl mx-auto'>
               <form onSubmit={handleSearchSubmit} className='flex gap-2'>
@@ -146,7 +146,7 @@ export default function HomePage() {
               </form>
             </div>
             <p className='mt-6 text-lg md:text-xl text-foreground/80 max-w-3xl mx-auto'>
-              Address Data provides developers, businesses, and operations with
+              AddressData provides developers, businesses, and operations with
               tools to validate, store, and retrieve Nigerian address data
               efficiently and accurately.
             </p>
@@ -159,7 +159,7 @@ export default function HomePage() {
             <div className='flex flex-col lg:flex-row items-center gap-12'>
               <div className='lg:w-1/2'>
                 <Image
-                  src='https://res.cloudinary.com/seapane-cloud/seapane-bucket/address-data/meta/address-illustration-amico.svg'
+                  src='https://res.cloudinary.com/seapane-cloud/seapane-bucket/addressdata/meta/address-illustration-amico.svg'
                   alt='Features Illustration'
                   width={500}
                   height={450}
@@ -169,7 +169,7 @@ export default function HomePage() {
               </div>
               <div className='lg:w-1/2'>
                 <h2 className='text-3xl md:text-4xl font-bold text-primary mb-4'>
-                  Why Address Data?
+                  Why AddressData?
                 </h2>
                 <p className='text-foreground/80 mb-8 md:mb-12'>
                   Our platform is purpose-built for Nigeria, offering
@@ -247,7 +247,7 @@ export default function HomePage() {
                       icon: (
                         <CheckCircle className='h-5 w-5 text-secondary mr-2' />
                       ),
-                      text: '/lookup-by-code: Fetch full address by Address Data Code.',
+                      text: '/lookup-by-code: Fetch full address by AddressData Code.',
                     },
                     {
                       icon: (
@@ -275,7 +275,7 @@ export default function HomePage() {
               </div>
               <div className='lg:w-1/2'>
                 <Image
-                  src='https://res.cloudinary.com/seapane-cloud/seapane-bucket/address-data/meta/address-illustration-rafiki.svg'
+                  src='https://res.cloudinary.com/seapane-cloud/seapane-bucket/addressdata/meta/address-illustration-rafiki.svg'
                   alt='API illustration'
                   width={600}
                   height={400}
@@ -290,7 +290,7 @@ export default function HomePage() {
         {/* Call to Action Section */}
         <section
           className='relative py-20 md:py-32 bg-cover bg-center'
-          style={{ backgroundImage: "url('/media/address-data-footer.jpg')" }}
+          style={{ backgroundImage: "url('/media/addressdata-footer.jpg')" }}
         >
           <div className='absolute inset-0 bg-primary/80'></div>
           <div className='max-w-7xl mx-auto px-4 text-center relative z-10'>
@@ -298,7 +298,7 @@ export default function HomePage() {
               Ready to Elevate Your Address Handling?
             </h2>
             <p className='text-lg md:text-xl mb-10 max-w-2xl mx-auto text-white/90'>
-              Join Address Data today and experience the difference accurate,
+              Join AddressData today and experience the difference accurate,
               structured address data can make.
             </p>
             <NextUIButton
@@ -329,7 +329,7 @@ export default function HomePage() {
             </a>
           </p>
           <p className='text-sm'>
-            &copy; {new Date().getFullYear()} Address Data. All Rights Reserved.
+            &copy; {new Date().getFullYear()} AddressData. All Rights Reserved.
           </p>
         </div>
       </footer>

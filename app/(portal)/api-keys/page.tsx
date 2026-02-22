@@ -8,7 +8,7 @@ export default function ApiKeysPage() {
     <div className="space-y-8">
       <div className="flex flex-col space-y-1">
         <h1 className="text-3xl font-bold tracking-tight text-primary">API Keys</h1>
-        <p className="text-foreground-500">Manage your API keys for accessing Address Data services.</p>
+        <p className="text-foreground-500">Manage your API keys for accessing AddressData services.</p>
       </div>
       <ApiKeyDisplay />
     </div>

@@ -12,7 +12,7 @@ export interface SendEmailParams {
 }
 
 const ZEPTOMAIL_URL = process.env.ZEPTOMAIL_API_URL || "api.zeptomail.com/";
-const DEFAULT_FROM_NAME = process.env.MAIL_FROM_NAME || "Address Data";
+const DEFAULT_FROM_NAME = process.env.MAIL_FROM_NAME || "AddressData";
 
 function requireEnv(name: "ZEPTOMAIL_API_KEY" | "MAIL_FROM_ADDRESS"): string {
   const value = process.env[name]?.trim();
@@ -77,7 +77,7 @@ export async function sendEmail({
       ...(textBody ? { textbody: textBody } : {}),
       track_clicks: true,
       track_opens: true,
-      client_reference: "address-data-transactional",
+      client_reference: "addressdata-transactional",
     });
 
     console.log(`[email] Sent email to ${safeTo}: ${safeSubject}`);

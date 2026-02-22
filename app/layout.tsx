@@ -2,16 +2,16 @@ import type { Metadata } from 'next';
 import { Lato } from 'next/font/google';
 import '@/styles/globals.css';
 import { AuthProvider } from '@/contexts/auth-context';
-import { Providers } from './providers'; 
+import { Providers } from './providers';
 import Analytics from '@/components/analytics';
 
-const lato = Lato({ 
+const lato = Lato({
   subsets: ['latin'],
   weight: ['400', '700']
 });
 
 export const metadata: Metadata = {
-  title: 'Address Data',
+  title: 'AddressData',
   description: 'Address intelligence platform for Nigeria.',
 };
 

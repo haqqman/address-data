@@ -4,7 +4,7 @@ This blueprint outlines the technical architecture for a Nigerian address verifi
 
 ## 1. Project Overview
 
-**Address Data** is an address intelligence platform purpose-built for Nigeria. It provides developers, businesses, and admins with tools to validate, store, and retrieve Nigerian address data in a structured, efficient, and scalable way. The system supports manual overrides, geolocation comparisons, and machine-readable outputs — all designed to boost accuracy and usability in real-world applications.
+**AddressData** is an address intelligence platform purpose-built for Nigeria. It provides developers, businesses, and admins with tools to validate, store, and retrieve Nigerian address data in a structured, efficient, and scalable way. The system supports manual overrides, geolocation comparisons, and machine-readable outputs — all designed to boost accuracy and usability in real-world applications.
 
 ## 2. Firebase Services Utilized
 
@@ -79,7 +79,7 @@ This blueprint outlines the technical architecture for a Nigerian address verifi
 * **AI-Assisted Review**:
     * If the submitted address matches Google Maps (via Genkit flow), it is auto-approved.
     * If not, it is flagged for manual review in the admin console.
-* **Address Code Assignment**: Each verified address is assigned a unique **Address Data Code** (ADC) (Note: ADC generation logic to be implemented, likely part of the `addressSubmissions` becoming "verified" or moving to a `verifiedAddresses` collection if separated).
+* **Address Code Assignment**: Each verified address is assigned a unique **AddressData Code** (ADC) (Note: ADC generation logic to be implemented, likely part of the `addressSubmissions` becoming "verified" or moving to a `verifiedAddresses` collection if separated).
 
 ---
 
@@ -90,7 +90,7 @@ This blueprint outlines the technical architecture for a Nigerian address verifi
     * Keys enable controlled access to various endpoints (rate-limited).
 * **Endpoints** (Implemented via Cloud Functions or Next.js API Routes if not using Cloud Functions directly for this):
     * `/api/autocomplete`: Suggest addresses from verified Nigerian addresses.
-    * `/api/lookup-by-code`: Fetch full address by **Address Data Code**.
+    * `/api/lookup-by-code`: Fetch full address by **AddressData Code**.
     * `/api/states`: List all Nigerian states, each with their respective LGAs and cities.
     * `/api/states/{stateId}/lgas`: List LGAs for a state.
     * `/api/states/{stateId}/lgas/{lgaId}/cities`: List cities for an LGA.
@@ -120,7 +120,7 @@ This blueprint outlines the technical architecture for a Nigerian address verifi
     * State
     * Zip Code (if applicable)
     * Country
-* Developers are **strongly encouraged** to replicate this structure in their own systems to maximize compatibility with Address Data APIs.
+* Developers are **strongly encouraged** to replicate this structure in their own systems to maximize compatibility with AddressData APIs.
 
 ---
 

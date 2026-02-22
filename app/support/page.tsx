@@ -29,7 +29,7 @@ export default function SupportPage() {
             <NextUICardBody className="space-y-10 pt-0 text-foreground/90">
               <div className="flex justify-center my-6">
                 <Image
-                  src="https://res.cloudinary.com/seapane-cloud/seapane-bucket/address-data/meta/address-illustration-pana.svg" 
+                  src="https://res.cloudinary.com/seapane-cloud/seapane-bucket/addressdata/meta/address-illustration-pana.svg"
                   alt="Support Illustration"
                   width={300}
                   height={250}
@@ -47,8 +47,8 @@ export default function SupportPage() {
                   <NextUIButton
                     as={Link}
                     href="mailto:support@addressdata.ng"
-                    color="warning" 
-                    className="w-full md:w-auto shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out text-primary" 
+                    color="warning"
+                    className="w-full md:w-auto shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out text-primary"
                     radius="md"
                   >
                     support@addressdata.ng
@@ -59,13 +59,13 @@ export default function SupportPage() {
                     <MessageSquare className="mr-2 h-6 w-6 text-secondary" /> Community Forum
                   </h2>
                   <p>
-                    Join our community forum to ask questions, share solutions, and connect with other developers and users of Address Data.
+                    Join our community forum to ask questions, share solutions, and connect with other developers and users of AddressData.
                   </p>
                   <NextUIButton
                     as={Link}
                     href="#"
                     variant="bordered"
-                    color="secondary" 
+                    color="secondary"
                     className="w-full md:w-auto shadow-sm hover:shadow-md hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out"
                     isDisabled
                     radius="md"
@@ -86,7 +86,7 @@ export default function SupportPage() {
                       label="First Name"
                       placeholder="Your First Name"
                       variant="bordered"
-                      classNames={{ label: "text-base text-primary" }} 
+                      classNames={{ label: "text-base text-primary" }}
                     />
                     <NextUIInput
                       id="lastName"
@@ -133,11 +133,11 @@ export default function SupportPage() {
                   <div className="text-center pt-2">
                     <NextUIButton
                       type="submit"
-                      color="warning" 
+                      color="warning"
                       size="lg"
                       isDisabled
                       radius="md"
-                      className="shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out text-primary" 
+                      className="shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out text-primary"
                     >
                       Send Message (Form Inactive)
                     </NextUIButton>
@@ -163,7 +163,7 @@ export default function SupportPage() {
             </a>
           </p>
           <p className="text-sm">
-            &copy; {new Date().getFullYear()} Address Data. All Rights Reserved.
+            &copy; {new Date().getFullYear()} AddressData. All Rights Reserved.
           </p>
         </div>
       </footer>

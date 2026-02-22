@@ -1,6 +1,6 @@
 # Email Series
 
-This document tracks active outbound email flows for the Address Data app.
+This document tracks active outbound email flows for the AddressData app.
 
 ## Transactional
 

@@ -17,7 +17,7 @@ export default function AboutPage() {
               <div className="inline-flex items-center justify-center rounded-full bg-secondary/10 p-3 mb-4">
                 <Info className="h-10 w-10 text-secondary" />
               </div>
-              <h1 className="text-3xl font-bold text-primary">About Address Data</h1>
+              <h1 className="text-3xl font-bold text-primary">About AddressData</h1>
               <p className="text-lg text-muted-foreground mt-1">
                 Revolutionizing Address Intelligence in Nigeria.
               </p>
@@ -25,15 +25,15 @@ export default function AboutPage() {
             <NextUICardBody className="space-y-6 text-lg pt-0">
               <div className="flex justify-center my-6">
                 <Image
-                  src="https://res.cloudinary.com/seapane-cloud/seapane-bucket/address-data/meta/address-illustration-pana.svg"
-                  alt="About Address Data Illustration"
+                  src="https://res.cloudinary.com/seapane-cloud/seapane-bucket/addressdata/meta/address-illustration-pana.svg"
+                  alt="About AddressData Illustration"
                   width={300}
                   height={250}
                   data-ai-hint="team collaboration"
                 />
               </div>
               <p className="text-foreground/90">
-                <strong className="text-primary">Address Data</strong> is an address intelligence platform purpose-built for Nigeria.
+                <strong className="text-primary">AddressData</strong> is an address intelligence platform purpose-built for Nigeria.
                 It provides developers, businesses, and admins with tools to validate, store, and retrieve
                 Nigerian address data in a structured, efficient, and scalable way.
               </p>
@@ -55,10 +55,10 @@ export default function AboutPage() {
                 <li>Continuously improve our platform based on user feedback and technological advancements.</li>
               </ul>
               <div className="flex justify-center pt-6">
-                <Image 
-                  src="https://res.cloudinary.com/seapane-cloud/seapane-bucket/address-data/meta/address-data-logomark.svg" 
-                  alt="Address Data Logomark" 
-                  width={48} 
+                <Image
+                  src="https://res.cloudinary.com/seapane-cloud/seapane-bucket/addressdata/meta/addressdata-logomark.svg"
+                  alt="AddressData Logomark"
+                  width={48}
                   height={48}
                   className="text-primary" // SVG fill
                 />
@@ -81,7 +81,7 @@ export default function AboutPage() {
             </a>
           </p>
           <p className="text-sm">
-            &copy; {new Date().getFullYear()} Address Data. All Rights Reserved.
+            &copy; {new Date().getFullYear()} AddressData. All Rights Reserved.
           </p>
         </div>
       </footer>
@@ -89,4 +89,4 @@ export default function AboutPage() {
   );
 }
 
-    
+
