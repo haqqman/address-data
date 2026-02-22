@@ -17,7 +17,7 @@ import { useState } from 'react'
 import { useAuth } from '@/contexts/auth-context'
 
 const menuItems = [
-  { name: 'About', href: '/about' },
+  { name: 'About', href: '/' },
   { name: 'Documentation', href: '/docs' },
   { name: 'Get Help', href: '/support' },
 ]
