@@ -1,7 +1,7 @@
 
 "use client";
 
-import { PublicHeader } from "@/components/layout/PublicHeader";
+import { SiteHeader } from "@/components/layout/header";
 import { Card as NextUICard, CardHeader as NextUICardHeader, CardBody as NextUICardBody, Snippet, Link as NextUILink, Divider as NextUIDivider, Code } from "@nextui-org/react";
 import { BookOpen, Code2, Zap, ShieldCheck, MapPinned, HelpCircle, Layers, AlertTriangle, Tag, Building, Map as MapIcon } from "lucide-react";
 import Image from "next/image";
@@ -100,7 +100,7 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <PublicHeader />
+      <SiteHeader />
       <main className="flex-grow max-w-7xl mx-auto px-4 py-12">
         <div className="max-w-4xl mx-auto">
           <NextUICard className="shadow-xl rounded-xl p-2 md:p-4 bg-background">

@@ -13,7 +13,7 @@ const menuItems = [
   { name: "Get Help", href: "/support" },
 ];
 
-export function PublicHeader() {
+export function SiteHeader() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { user, loading } = useAuth();
 

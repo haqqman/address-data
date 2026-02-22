@@ -32,7 +32,7 @@ const navItems = [
   { href: "/api-keys", label: "API Keys", icon: <KeyRound className="mr-2 h-4 w-4" /> },
 ];
 
-export function AppHeader() {
+export function Topbar() {
   const pathname = usePathname();
   const { user, signOut } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);

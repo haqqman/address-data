@@ -3,7 +3,7 @@
 
 import type { ReactNode } from 'react';
 import { useEffect, useState } from 'react';
-import { AppHeader } from "@/components/layout/AppHeader";
+import { Topbar } from "@/components/layout/portal/topbar";
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '@/contexts/auth-context';
 import { Spinner } from "@nextui-org/react";
@@ -43,7 +43,7 @@ export default function PortalLayout({
   if (user) {
     return (
       <div className="flex flex-col min-h-screen">
-        <AppHeader />
+        <Topbar />
         <main className="flex-grow mx-auto px-4 py-8 w-full max-w-6xl">
           {children}
         </main>

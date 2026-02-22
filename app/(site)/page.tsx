@@ -21,7 +21,7 @@ import {
   Layers,
   Search,
 } from 'lucide-react'
-import { PublicHeader } from '@/components/layout/PublicHeader'
+import { SiteHeader } from '@/components/layout/header'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
@@ -88,7 +88,7 @@ export default function HomePage() {
 
   return (
     <div className='flex flex-col min-h-screen'>
-      <PublicHeader />
+      <SiteHeader />
       <main className='flex-grow'>
         {/* Hero Section */}
         <section

@@ -1,7 +1,7 @@
 // app/support/page.tsx
 "use client";
 
-import { PublicHeader } from "@/components/layout/PublicHeader";
+import { SiteHeader } from "@/components/layout/header";
 import { Card as NextUICard, CardHeader as NextUICardHeader, CardBody as NextUICardBody, Button as NextUIButton, Input as NextUIInput, Textarea as NextUITextarea } from "@nextui-org/react";
 import { LifeBuoy, Mail, MessageSquare } from "lucide-react";
 import Link from "next/link";
@@ -13,7 +13,7 @@ export default function SupportPage() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <PublicHeader />
+      <SiteHeader />
       <main className="flex-grow max-w-7xl mx-auto px-4 py-12">
         <div className="max-w-3xl mx-auto">
           <NextUICard className="shadow-xl rounded-xl p-2 bg-background">

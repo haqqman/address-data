@@ -3,7 +3,7 @@
 
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState, Suspense } from "react";
-import { PublicHeader } from "@/components/layout/PublicHeader";
+import { SiteHeader } from "@/components/layout/header";
 import { Card, CardHeader, CardBody, Spinner, Divider, Link as NextUILink, Chip } from "@nextui-org/react";
 import { searchByTerm } from "@/app/actions/searchActions";
 import type { AddressSubmission, Estate } from "@/types";
@@ -149,7 +149,7 @@ function SearchResults() {
 export default function SearchPage() {
   return (
     <div className="flex flex-col min-h-screen">
-      <PublicHeader />
+      <SiteHeader />
       <Suspense fallback={<div className="flex-grow flex justify-center items-center"><Spinner label="Loading search..." color="warning" /></div>}>
         <SearchResults />
       </Suspense>

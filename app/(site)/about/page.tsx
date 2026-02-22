@@ -1,7 +1,7 @@
 
 "use client";
 
-import { PublicHeader } from "@/components/layout/PublicHeader";
+import { SiteHeader } from "@/components/layout/header";
 import { Card as NextUICard, CardHeader as NextUICardHeader, CardBody as NextUICardBody } from "@nextui-org/react";
 import { Info } from "lucide-react";
 import Image from "next/image";
@@ -9,7 +9,7 @@ import Image from "next/image";
 export default function AboutPage() {
   return (
     <div className="flex flex-col min-h-screen">
-      <PublicHeader />
+      <SiteHeader />
       <main className="flex-grow max-w-7xl mx-auto px-4 py-12">
         <div className="max-w-3xl mx-auto">
           <NextUICard className="shadow-xl rounded-xl p-2 bg-background">

@@ -4,12 +4,12 @@
 import Link from 'next/link';
 import { Button as NextUIButton } from "@nextui-org/react";
 import { SearchX } from 'lucide-react';
-import { PublicHeader } from '@/components/layout/PublicHeader';
+import { SiteHeader } from '@/components/layout/header';
 
 export default function NotFound() {
   return (
     <div className="flex flex-col min-h-screen">
-      <PublicHeader />
+      <SiteHeader />
       <main className="flex-grow flex items-center justify-center bg-primary/5">
         <div className="text-center p-8">
           <div className="inline-flex items-center justify-center rounded-full bg-danger-100 p-4 mb-6">
