@@ -2,12 +2,12 @@
 
 import { SiteHeader } from '@/components/layout/header'
 import {
-  Card as NextUICard,
-  CardHeader as NextUICardHeader,
-  CardBody as NextUICardBody,
+  Card,
+  CardHeader,
+  CardBody,
   Snippet,
-  Link as NextUILink,
-  Divider as NextUIDivider,
+  Link,
+  Divider,
   Code,
 } from '@heroui/react'
 import {
@@ -121,8 +121,8 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
       <SiteHeader />
       <main className='flex-grow max-w-7xl mx-auto px-4 py-12'>
         <div className='max-w-4xl mx-auto'>
-          <NextUICard className='shadow-xl rounded-xl p-2 md:p-4 bg-background'>
-            <NextUICardHeader className='flex flex-col items-center text-center pt-6 pb-4'>
+          <Card className='shadow-xl rounded-xl p-2 md:p-4 bg-background'>
+            <CardHeader className='flex flex-col items-center text-center pt-6 pb-4'>
               <div className='inline-flex items-center justify-center rounded-full bg-secondary/10 p-3 mb-4'>
                 <BookOpen className='h-10 w-10 text-secondary' />
               </div>
@@ -132,8 +132,8 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
               <p className='text-lg text-muted-foreground mt-1'>
                 Integrate AddressData into your applications seamlessly.
               </p>
-            </NextUICardHeader>
-            <NextUICardBody className='space-y-10 text-lg pt-0 text-foreground/90'>
+            </CardHeader>
+            <CardBody className='space-y-10 text-lg pt-0 text-foreground/90'>
               <div className='flex justify-center my-6'>
                 <Image
                   src='https://res.cloudinary.com/seapane-cloud/seapane-bucket/addressdata/meta/address-illustration-cuate.svg'
@@ -161,7 +161,7 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
                 </p>
               </section>
 
-              <NextUIDivider />
+              <Divider />
 
               <section id='authentication'>
                 <h2 className='text-2xl font-semibold mb-3 flex items-center text-primary'>
@@ -189,7 +189,7 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
                 </Snippet>
               </section>
 
-              <NextUIDivider />
+              <Divider />
 
               <section id='rate-limiting-pricing'>
                 <h2 className='text-2xl font-semibold mb-3 flex items-center text-primary'>
@@ -227,7 +227,7 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
                 </p>
               </section>
 
-              <NextUIDivider />
+              <Divider />
 
               <section id='base-url'>
                 <h2 className='text-2xl font-semibold mb-3 flex items-center text-primary'>
@@ -246,7 +246,7 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
                 </Snippet>
               </section>
 
-              <NextUIDivider />
+              <Divider />
 
               <section id='address-endpoints'>
                 <h2 className='text-2xl font-semibold mb-6 flex items-center text-primary'>
@@ -344,7 +344,7 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
                 </div>
               </section>
 
-              <NextUIDivider />
+              <Divider />
 
               <section id='estate-endpoints'>
                 <h2 className='text-2xl font-semibold mb-6 flex items-center text-primary'>
@@ -432,7 +432,7 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
                 </div>
               </section>
 
-              <NextUIDivider />
+              <Divider />
 
               <section id='geography-endpoints'>
                 <h2 className='text-2xl font-semibold mb-6 flex items-center text-primary'>
@@ -568,7 +568,7 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
                 </div>
               </section>
 
-              <NextUIDivider />
+              <Divider />
 
               <section id='address-object'>
                 <h2 className='text-2xl font-semibold mb-3 flex items-center text-primary'>
@@ -604,7 +604,7 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
                 </Snippet>
               </section>
 
-              <NextUIDivider />
+              <Divider />
 
               <section id='error-codes'>
                 <h2 className='text-2xl font-semibold mb-3 flex items-center text-primary'>
@@ -651,7 +651,7 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
                 </p>
               </section>
 
-              <NextUIDivider />
+              <Divider />
 
               <section id='support' className='text-center'>
                 <h2 className='text-2xl font-semibold mb-4 flex items-center justify-center text-primary'>
@@ -662,7 +662,7 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
                   If you have any questions, encounter issues, or need
                   assistance with integration, please visit our support page.
                 </p>
-                <NextUILink
+                <Link
                   href='/support'
                   isBlock
                   showAnchorIcon
@@ -670,10 +670,10 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
                   className='text-lg mt-3 inline-block'
                 >
                   Go to Support
-                </NextUILink>
+                </Link>
               </section>
-            </NextUICardBody>
-          </NextUICard>
+            </CardBody>
+          </Card>
         </div>
       </main>
       <Footer />
