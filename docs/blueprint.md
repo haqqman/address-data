@@ -29,7 +29,7 @@ This blueprint outlines the technical architecture for a Nigerian address verifi
         * `userEmail`: Email of the submitter.
         * `submittedAddress`: Object containing `streetAddress`, `areaDistrict`, `city`, `lga`, `state`, `zipCode` (optional), `country` (default "Nigeria").
         * `googleMapsSuggestion` (optional): Address string from Google Maps.
-        * `status`: Enum ('pending_review', 'approved', 'rejected').
+        * `status`: Enum ('pending_review', 'approved', 'verified', 'rejected'). (Note: 'verified' is used for Estates).
         * `aiFlaggedReason` (optional): Reason if AI flagged a discrepancy.
         * `submittedAt`: Server timestamp.
         * `reviewedAt` (optional): Server timestamp of review.

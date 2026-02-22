@@ -7,7 +7,7 @@ import { getEstateById, updateEstate } from "@/app/actions/estateActions";
 import type { Estate } from "@/types";
 import { useAuth } from "@/contexts/auth-context";
 import { Card, CardHeader, CardBody, CardFooter, Skeleton, Button, Input, Link as NextUILink, Divider, Chip } from "@nextui-org/react";
-import { AlertTriangle, ArrowLeft, Edit, MapPin, Globe, CheckCircle, Info } from "lucide-react";
+import { AlertTriangle, ArrowLeft, Edit, MapPin, Globe, CheckCircle, Info, XCircle } from "lucide-react";
 import { format } from "date-fns";
 
 export default function ManageEstatePage() {
@@ -87,6 +87,23 @@ export default function ManageEstatePage() {
     setIsSubmitting(false);
   };
 
+  const handleStatusUpdate = async (newStatus: "verified" | "rejected") => {
+    if (!estate || !user) return;
+
+    setIsSubmitting(true);
+    setSubmissionStatus(null);
+
+    const result = await updateEstate(estate.id, { status: newStatus });
+
+    if (result.success) {
+      setSubmissionStatus({ type: 'success', message: `Estate ${newStatus === 'verified' ? 'verified' : 'rejected'} successfully.` });
+      fetchEstate();
+    } else {
+      setSubmissionStatus({ type: 'error', message: result.message });
+    }
+    setIsSubmitting(false);
+  };
+
 
   if (isLoading) {
     return (
@@ -138,19 +155,51 @@ export default function ManageEstatePage() {
         </Button>
         <div className="flex justify-between items-start">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight text-primary">{estate.name}</h1>
+            <div className="flex items-center gap-2">
+              <h1 className="text-3xl font-bold tracking-tight text-primary">{estate.name}</h1>
+              <Chip size="sm" variant="flat" color={
+                estate.status === 'verified' ? 'success' :
+                  estate.status === 'pending-review' ? 'warning' : 'danger'
+              }>
+                {estate.status.replace(/-/g, " ").toUpperCase()}
+              </Chip>
+            </div>
             <p className="text-foreground-500 font-mono text-sm mt-1">{estate.estateCode}</p>
           </div>
           {!isEditing && (
-            <Button
-              color="secondary"
-              variant="ghost"
-              className="text-primary shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out"
-              startContent={<Edit className="h-4 w-4" />}
-              onPress={() => setIsEditing(true)}
-            >
-              Suggest Improvement
-            </Button>
+            <div className="flex items-center gap-3">
+              {['cto', 'administrator', 'manager'].includes(user?.role || '') && estate.status === 'pending-review' && (
+                <div className="flex gap-2">
+                  <Button
+                    color="success"
+                    variant="flat"
+                    startContent={<CheckCircle className="h-4 w-4" />}
+                    onPress={() => handleStatusUpdate('verified')}
+                    isLoading={isSubmitting}
+                  >
+                    Verify Estate
+                  </Button>
+                  <Button
+                    color="danger"
+                    variant="flat"
+                    startContent={<XCircle className="h-4 w-4" />}
+                    onPress={() => handleStatusUpdate('rejected')}
+                    isLoading={isSubmitting}
+                  >
+                    Reject
+                  </Button>
+                </div>
+              )}
+              <Button
+                color="secondary"
+                variant="ghost"
+                className="text-primary shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out"
+                startContent={<Edit className="h-4 w-4" />}
+                onPress={() => setIsEditing(true)}
+              >
+                Suggest Improvement
+              </Button>
+            </div>
           )}
         </div>
       </div>

@@ -58,7 +58,7 @@ async function searchEstates(term: string): Promise<Estate[]> {
   
   const query = estatesCol.where(
     Filter.and(
-        Filter.where("status", "==", "approved"),
+        Filter.where("status", "==", "verified"),
         Filter.or(
             Filter.where("estateCode", "==", term.toUpperCase()),
             Filter.where("name", ">=", term),
