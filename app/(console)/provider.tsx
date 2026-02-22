@@ -4,7 +4,7 @@ import { type ReactNode, useEffect } from 'react'
 import { useAuth } from '@/contexts/auth-context'
 import { Spinner } from '@nextui-org/react'
 import { useRouter, usePathname } from 'next/navigation'
-import { ConsoleHeader } from '@/scaffold/console/header'
+import { ConsoleTopbar } from '@/components/layout/console/topbar'
 import Link from 'next/link'
 import type { User } from '@/types'
 
@@ -52,15 +52,13 @@ export function ConsoleProvider({ children }: { children: ReactNode }) {
     )
   }
 
-  // Login page — render children only, no header/footer chrome
   if (isOnLoginPage) {
     return <>{children}</>
   }
 
-  // Authenticated console pages — render full shell with header and footer
   return (
     <div className='flex flex-col min-h-screen'>
-      <ConsoleHeader />
+      <ConsoleTopbar />
       <main className='flex-grow max-w-7xl mx-auto px-4 py-8'>{children}</main>
       <footer className='py-8 border-t bg-background'>
         <div className='max-w-7xl mx-auto px-4 text-center text-muted-foreground'>

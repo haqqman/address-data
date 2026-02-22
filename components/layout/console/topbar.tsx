@@ -62,7 +62,7 @@ const baseNavItems: NavItem[] = [
   },
 ]
 
-export function ConsoleHeader() {
+export function ConsoleTopbar() {
   const pathname = usePathname()
   const { user, signOut } = useAuth()
   const router = useRouter()
