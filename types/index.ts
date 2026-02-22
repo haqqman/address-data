@@ -113,7 +113,7 @@ export interface Estate {
   id: string; // The document ID in Firestore
   estateCode?: string; // Format: [StateCode]-[LGACode]-[EstateNumber] - Now optional until approval
   name: string;
-  status: "pending-review" | "approved" | "rejected";
+  status: "pending-review" | "verified" | "rejected";
   location: {
     state: string;
     lga: string;

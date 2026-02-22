@@ -80,7 +80,7 @@ export default function EstatesPage() {
 
   const getStatusChipColor = (status: Estate['status']): "success" | "warning" | "danger" | "default" => {
     switch (status) {
-      case "approved":
+      case "verified":
         return "success";
       case "pending-review":
         return "warning";

@@ -182,11 +182,11 @@ export async function updateEstate(estateId: string, dataToUpdate: Partial<Omit<
              return { success: false, message: "You do not have permission to update this estate." };
         }
 
-        const isApproving = 'status' in dataToUpdate && dataToUpdate.status === 'approved';
+        const isApproving = 'status' in dataToUpdate && dataToUpdate.status === 'verified';
         
         // Only console users can approve
         if (isApproving && !isConsoleUser) {
-             return { success: false, message: "Only administrators can approve estates." };
+             return { success: false, message: "Only administrators can verify estates." };
         }
 
         // Generate estate code only if it's being approved for the first time and doesn't have one
