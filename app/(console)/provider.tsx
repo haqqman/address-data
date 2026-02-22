@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/auth-context'
 import { Spinner } from '@nextui-org/react'
 import { useRouter, usePathname } from 'next/navigation'
 import { ConsoleTopbar } from '@/components/layout/console/topbar'
+import { Footer } from '@/components/layout/footer'
 import Link from 'next/link'
 import type { User } from '@/types'
 
@@ -18,7 +19,6 @@ export function ConsoleProvider({ children }: { children: ReactNode }) {
 
   const isOnLoginPage = pathname === LOGIN_PAGE
   const isAuthorized = !!user && CONSOLE_ROLES.includes(user.role)
-  const displayYear = new Date().getFullYear()
 
   useEffect(() => {
     if (!loading && !isOnLoginPage && !isAuthorized) {
@@ -56,24 +56,7 @@ export function ConsoleProvider({ children }: { children: ReactNode }) {
     <div className='flex flex-col min-h-screen'>
       <ConsoleTopbar />
       <main className='flex-grow max-w-7xl mx-auto px-4 py-8'>{children}</main>
-      <footer className='py-8 border-t bg-background'>
-        <div className='max-w-7xl mx-auto px-4 text-center text-muted-foreground'>
-          <p className='mb-2'>
-            Built for Nigeria, for developers. Powered by{' '}
-            <Link
-              href='https://seapane.com'
-              target='_blank'
-              rel='noopener noreferrer'
-              className='text-primary hover:text-secondary no-underline'
-            >
-              Seapane
-            </Link>
-          </p>
-          <p className='text-sm'>
-            &copy; {displayYear} AddressData. All Rights Reserved.
-          </p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   )
 }

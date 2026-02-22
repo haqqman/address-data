@@ -1,13 +1,13 @@
 import type { Metadata } from 'next'
-import { Lato } from 'next/font/google'
+import { Urbanist } from 'next/font/google'
 import '@/styles/globals.css'
 import { AuthProvider } from '@/contexts/auth-context'
 import { Providers } from './providers'
 import Analytics from '@/components/analytics'
 
-const lato = Lato({
+const urbanist = Urbanist({
   subsets: ['latin'],
-  weight: ['400', '700'],
+  weight: ['400', '500', '600', '700'],
 })
 
 export const metadata: Metadata = {
@@ -22,7 +22,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='en' suppressHydrationWarning>
-      <body className={lato.className}>
+      <body className={urbanist.className}>
         <Providers>
           <AuthProvider>{children}</AuthProvider>
         </Providers>

@@ -23,6 +23,7 @@ import {
   Building,
   Map as MapIcon,
 } from 'lucide-react'
+import { Footer } from '@/components/layout/footer'
 import Image from 'next/image'
 
 const API_BASE_URL = 'https://api.addressdata.ng/v1'
@@ -675,24 +676,7 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
           </NextUICard>
         </div>
       </main>
-      <footer className='py-8 border-t bg-background'>
-        <div className='max-w-7xl mx-auto px-4 text-center text-muted-foreground'>
-          <p className='mb-2'>
-            Built for Nigeria, for developers. Powered by{' '}
-            <a
-              href='https://seapane.com'
-              target='_blank'
-              rel='noopener noreferrer'
-              className='text-primary hover:text-secondary no-underline'
-            >
-              Seapane
-            </a>
-          </p>
-          <p className='text-sm'>
-            &copy; {new Date().getFullYear()} AddressData. All Rights Reserved.
-          </p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   )
 }
