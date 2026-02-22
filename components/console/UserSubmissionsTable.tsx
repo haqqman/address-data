@@ -66,7 +66,7 @@ export function UserSubmissionsTable({ submissions }: UserSubmissionsTableProps)
               <NextUITableCell className="font-mono text-xs">{submission.adc || 'N/A'}</NextUITableCell>
               <NextUITableCell>
                 <NextUIChip size="sm" color={getStatusChipColor(submission.status)} variant="flat">
-                  {submission.status.replace("_", " ").toUpperCase()}
+                  {submission.status.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
                 </NextUIChip>
               </NextUITableCell>
               <NextUITableCell>{format(new Date(submission.submittedAt), "PPp")}</NextUITableCell>

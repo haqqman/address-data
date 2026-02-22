@@ -178,7 +178,7 @@ export default function EstatesPage() {
                     <TableCell>{item.location.city || item.location.district}</TableCell>
                     <TableCell>
                       <Chip size="sm" variant="flat" color={getStatusChipColor(item.status)}>
-                        {item.status.replace(/-/g, " ").toUpperCase()}
+                        {item.status.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
                       </Chip>
                     </TableCell>
                     <TableCell>

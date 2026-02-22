@@ -161,7 +161,7 @@ export default function ManageEstatePage() {
                 estate.status === 'verified' ? 'success' :
                   estate.status === 'pending-review' ? 'warning' : 'danger'
               }>
-                {estate.status.replace(/-/g, " ").toUpperCase()}
+                {estate.status.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
               </Chip>
             </div>
             <p className="text-foreground-500 font-mono text-sm mt-1">{estate.estateCode}</p>

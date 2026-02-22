@@ -76,7 +76,7 @@ export function AddressList({ addresses, title }: AddressListProps) {
                   <NextUITableCell>{format(new Date(item.submittedAt), "PP")}</NextUITableCell>
                   <NextUITableCell>
                     <NextUIChip color={getStatusChipColor(item.status)} size="sm" variant="flat">
-                      {item.status.replace("_", " ").toUpperCase()}
+                      {item.status.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
                     </NextUIChip>
                   </NextUITableCell>
                   <NextUITableCell className={isMobile ? "hidden max-w-xs truncate" : "max-w-xs truncate"}>
