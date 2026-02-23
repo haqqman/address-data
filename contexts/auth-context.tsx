@@ -94,9 +94,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // New user registration
       if (useConsoleCollection) {
         // Prevent social logins from creating a console user profile directly
-        throw new Error(
-          'Social logins are not permitted for initial console access. Please use email/password.',
+        const isPassword = firebaseUser.providerData.some(
+          (p) => p.providerId === 'password'
         )
+        if (!isPassword && firebaseUser.providerData.length > 0) {
+          throw new Error(
+            'Social logins are not permitted for initial console access. Please use email/password.',
+          )
+        }
       }
 
       const userFirstName =
@@ -115,7 +120,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         lastName: userLastName,
         displayName:
           firebaseUser.displayName || `${userFirstName} ${userLastName}`.trim(),
-        role: 'user', // New social log-ups are always 'user' role
+        role: determinedRole, // Assign correct role instead of hardcoding 'user'
         authProvider: firebaseUser.providerData[0]?.providerId || 'unknown',
         phoneNumber: firebaseUser.phoneNumber || null,
         createdAt: serverTimestamp(),
@@ -231,17 +236,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       consoleDocSnap = await getDoc(consoleDocRef)
     }
 
-    // If it's a console login attempt, the user MUST exist in `consoleUsers`.
+    // If it's a console login attempt, the user MUST exist in `consoleUsers` or be a valid haqqman email trying to create one.
     if (isConsoleAttempt && (!consoleDocSnap || !consoleDocSnap.exists())) {
-      console.warn(
-        '[AuthProvider] Console login attempted by non-console user.',
-      )
-      await firebaseSignOut(auth!)
-      setUser(null)
-      setLoading(false)
-      const authError = new Error('Access Denied. Not a valid console user.')
-      ;(authError as any).code = 'auth/unauthorized-console-user'
-      throw authError
+      if (!isHaqqmanEmail) {
+        console.warn(
+          '[AuthProvider] Console login attempted by non-console user.',
+        )
+        await firebaseSignOut(auth!)
+        setUser(null)
+        setLoading(false)
+        const authError = new Error('Access Denied. Not a valid console user.')
+          ; (authError as any).code = 'auth/unauthorized-console-user'
+        throw authError
+      }
     }
 
     try {
