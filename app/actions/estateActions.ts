@@ -143,9 +143,7 @@ export async function getEstates(status?: Estate['status']): Promise<Estate[]> {
     let query
 
     if (status) {
-      query = estatesCol
-        .where('status', '==', status)
-        .orderBy('createdAt', 'desc')
+      query = estatesCol.where('status', '==', status)
     } else {
       query = estatesCol.orderBy('createdAt', 'desc')
     }
@@ -155,6 +153,16 @@ export async function getEstates(status?: Estate['status']): Promise<Estate[]> {
     querySnapshot.forEach((doc) => {
       estates.push({ id: doc.id, ...convertTimestamps(doc.data()) } as Estate)
     })
+
+    // If we queried by status, sort the results manually since we omitted orderBy to avoid index errors
+    if (status) {
+      estates.sort((a, b) => {
+        const timeA = a.createdAt?.getTime?.() || 0
+        const timeB = b.createdAt?.getTime?.() || 0
+        return timeB - timeA
+      })
+    }
+
     return estates
   } catch (error) {
     console.error('Error fetching estates from Firestore:', error)
