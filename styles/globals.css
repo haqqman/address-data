@@ -2,8 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* HeroUI's Tailwind plugin and Provider handle theming */
-
 @layer base {
   body {
     background-color: hsl(var(--heroui-background));

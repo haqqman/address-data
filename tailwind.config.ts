@@ -1,7 +1,7 @@
 import type { Config } from 'tailwindcss'
 import { heroui } from '@heroui/theme'
 
-export default {
+const config: Config = {
   darkMode: 'class',
   content: [
     './pages/**/*.{js,ts,jsx,tsx,mdx}',
@@ -11,8 +11,6 @@ export default {
   ],
   theme: {
     extend: {
-      // ShadCN specific theme extensions were previously removed.
-      // HeroUI handles this through its plugin and theme configuration below.
     },
   },
   plugins: [
@@ -82,4 +80,5 @@ export default {
       },
     }),
   ],
-} satisfies Config
+}
+export default config
