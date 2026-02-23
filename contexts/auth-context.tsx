@@ -187,12 +187,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 appUser.lastLogin = appUser.lastLogin.toDate()
               setUser(appUser)
             } else {
-              // This can happen if auth record exists but Firestore doc was deleted.
+              // First login may not have a profile document yet.
+              // Bootstrap it instead of immediately signing out.
               console.warn(
                 `[AuthProvider] User ${firebaseUser.uid} authenticated but not found in any user collection.`,
               )
-              setUser(null)
-              await firebaseSignOut(auth!)
+              const appUser = await syncUserWithFirestore(firebaseUser)
+              setUser(appUser)
             }
           } catch (error) {
             console.error(
