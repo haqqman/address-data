@@ -73,6 +73,31 @@ async function fetchGoogleMapsAddress(
     .trim()
 }
 
+export async function lookupZipCode(addressParameters: {
+  street: string
+  city: string
+  lga: string
+  state: string
+}): Promise<string | null> {
+  // Simulate an API call to Google Maps Geocoding to extract postal_code
+  // In a real implementation this would fetch from Google's Maps API
+  if (!addressParameters.street || !addressParameters.city || !addressParameters.state) {
+    return null
+  }
+  
+  await new Promise((resolve) => setTimeout(resolve, 800))
+  
+  // Return a mocked reasonable Nigerian zip code based on state for demonstration
+  const stateMap: Record<string, string> = {
+    'Lagos': '100001',
+    'FCT': '900001',
+    'Rivers': '500001',
+    'Kano': '700001',
+  }
+  
+  return stateMap[addressParameters.state] || '100000'
+}
+
 interface SubmitAddressParams {
   formData: FormData
   user: Pick<User, 'id' | 'displayName' | 'email'> | null

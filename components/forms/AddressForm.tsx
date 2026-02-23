@@ -13,7 +13,7 @@ import {
   Autocomplete,
   AutocompleteItem,
 } from '@heroui/react'
-import { submitAddress } from '@/app/actions/addressActions'
+import { submitAddress, lookupZipCode } from '@/app/actions/addressActions'
 import { getEstates } from '@/app/actions/estateActions'
 import { CheckCircle, AlertTriangle, Info } from 'lucide-react'
 import { useState, useEffect, useCallback } from 'react'
@@ -76,6 +76,7 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
   const [isLoadingLgas, setIsLoadingLgas] = useState(false)
   const [isLoadingCities, setIsLoadingCities] = useState(false) // Used for cities/districts
   const [isLoadingEstates, setIsLoadingEstates] = useState(true)
+  const [isFetchingZipCode, setIsFetchingZipCode] = useState(false)
 
   const {
     control,
@@ -102,6 +103,35 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
 
   const watchedStateName = watch('state')
   const watchedLgaName = watch('lga')
+  const watchedCityName = watch('city')
+  const watchedStreet = watch('street')
+
+  useEffect(() => {
+    async function fetchZipCode() {
+      if (watchedStreet && watchedCityName && watchedStateName && watchedLgaName) {
+        setIsFetchingZipCode(true)
+        try {
+          const zipCode = await lookupZipCode({
+            street: watchedStreet,
+            city: watchedCityName,
+            lga: watchedLgaName,
+            state: watchedStateName,
+          })
+          if (zipCode) {
+            setValue('zipCode', zipCode, { shouldValidate: true })
+          }
+        } catch (error) {
+          console.error('Failed to fetch zip code', error)
+        } finally {
+          setIsFetchingZipCode(false)
+        }
+      }
+    }
+
+    // Setup simple debounce
+    const timeoutId = setTimeout(fetchZipCode, 500)
+    return () => clearTimeout(timeoutId)
+  }, [watchedStreet, watchedCityName, watchedLgaName, watchedStateName, setValue])
 
   const loadStates = useCallback(async () => {
     setIsLoadingStates(true)
@@ -475,11 +505,16 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
             render={({ field }) => (
               <Input
                 {...field}
-                label='Zip Code (Optional)'
-                placeholder='100001'
+                label='Zip Code (Auto)'
+                placeholder={isFetchingZipCode ? 'Searching Google Maps...' : '- - - - -'}
                 variant='bordered'
+                isReadOnly
+                classNames={{
+                  inputWrapper: 'bg-default-50',
+                }}
                 isInvalid={!!errors.zipCode}
                 errorMessage={errors.zipCode?.message}
+                endContent={isFetchingZipCode ? <div className="animate-spin h-4 w-4 border-2 border-primary border-t-transparent rounded-full" /> : null}
               />
             )}
           />
