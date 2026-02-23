@@ -12,6 +12,7 @@ import {
   SelectItem,
 } from '@heroui/react'
 import { submitAddress } from '@/app/actions/addressActions'
+import { getEstates } from '@/app/actions/estateActions'
 import { CheckCircle, AlertTriangle, Info } from 'lucide-react'
 import { useState, useEffect, useCallback } from 'react'
 import { useAuth } from '@/contexts/auth-context'
@@ -20,10 +21,12 @@ import {
   getLgasForState,
   getCitiesForLga,
 } from '@/app/actions/geographyActions'
-import type { GeographyState, GeographyLGA, GeographyCity } from '@/types'
+import type { GeographyState, GeographyLGA, GeographyCity, Estate } from '@/types'
 
 const addressSchema = z
   .object({
+    estateId: z.string().optional(),
+    estateName: z.string().optional(),
     street: z.string().min(1, 'Street is required'),
     areaDistrict: z.string().optional(),
     city: z.string().min(1, 'City is required'),
@@ -65,10 +68,12 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
   const [states, setStates] = useState<GeographyState[]>([])
   const [lgas, setLgas] = useState<GeographyLGA[]>([])
   const [cities, setCities] = useState<GeographyCity[]>([]) // Will also hold districts
+  const [estates, setEstates] = useState<Estate[]>([])
 
   const [isLoadingStates, setIsLoadingStates] = useState(true)
   const [isLoadingLgas, setIsLoadingLgas] = useState(false)
   const [isLoadingCities, setIsLoadingCities] = useState(false) // Used for cities/districts
+  const [isLoadingEstates, setIsLoadingEstates] = useState(true)
 
   const {
     control,
@@ -81,6 +86,8 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
   } = useForm<AddressFormValues>({
     resolver: zodResolver(addressSchema),
     defaultValues: {
+      estateId: '',
+      estateName: '',
       street: '',
       areaDistrict: '',
       city: '',
@@ -106,9 +113,22 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
     }
   }, [])
 
+  const loadEstates = useCallback(async () => {
+    setIsLoadingEstates(true)
+    try {
+      const fetchedEstates = await getEstates('verified')
+      setEstates(fetchedEstates)
+    } catch (error) {
+      console.error('Failed to load estates', error)
+    } finally {
+      setIsLoadingEstates(false)
+    }
+  }, [])
+
   useEffect(() => {
     loadStates()
-  }, [loadStates])
+    loadEstates()
+  }, [loadStates, loadEstates])
 
   const loadLgas = useCallback(async (stateId: string) => {
     setIsLoadingLgas(true)
@@ -266,21 +286,62 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
             </CardBody>
           </Card>
         )}
-        <Controller
-          name='street'
-          control={control}
-          render={({ field }) => (
-            <Input
-              {...field}
-              label='Street'
-              placeholder='123 Main Street'
-              variant='bordered'
-              isInvalid={!!errors.street}
-              errorMessage={errors.street?.message}
-              fullWidth
-            />
-          )}
-        />
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+          <Controller
+            name='estateId'
+            control={control}
+            render={({ field }) => (
+              <Select
+                {...field}
+                label='Estate (Optional)'
+                placeholder='Select an estate'
+                variant='bordered'
+                isLoading={isLoadingEstates}
+                selectedKeys={field.value ? [field.value] : []}
+                onChange={(e) => {
+                  const val = e.target.value === 'none' ? '' : e.target.value
+                  field.onChange(val)
+                  const selectedEstate = estates.find(est => est.id === val)
+                  setValue('estateName', selectedEstate ? selectedEstate.name : '', { shouldValidate: false })
+                }}
+              >
+                {[
+                  <SelectItem key="none">
+                    None
+                  </SelectItem>,
+                  ...estates.map((estate) => (
+                    <SelectItem key={estate.id}>
+                      {estate.name}
+                    </SelectItem>
+                  ))
+                ]}
+              </Select>
+            )}
+          />
+          <Controller
+            name='propertyType'
+            control={control}
+            render={({ field }) => (
+              <Select
+                {...field}
+                label='Property Type'
+                placeholder='Select property type'
+                variant='bordered'
+                isInvalid={!!errors.propertyType}
+                errorMessage={errors.propertyType?.message}
+                selectedKeys={[field.value]}
+                onChange={(e) => field.onChange(e.target.value)}
+              >
+                <SelectItem key='residential'>
+                  Residential
+                </SelectItem>
+                <SelectItem key='commercial'>
+                  Commercial
+                </SelectItem>
+              </Select>
+            )}
+          />
+        </div>
         <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
           <Select
             label='State'
@@ -359,7 +420,7 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
             render={({ field }) => (
               <Select
                 {...field}
-                label='District'
+                label='District (FCT Only)'
                 placeholder='Select a district'
                 variant='bordered'
                 isInvalid={!!errors.areaDistrict}
@@ -372,9 +433,6 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
                 }
                 selectedKeys={field.value ? [field.value] : []}
                 onChange={(e) => field.onChange(e.target.value)}
-                description={
-                  watchedStateName !== 'FCT' ? 'Only available for FCT' : ''
-                }
               >
                 {cities.map((district) => (
                   <SelectItem key={district.name}>
@@ -387,6 +445,21 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
         </div>
         <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
           <Controller
+            name='street'
+            control={control}
+            render={({ field }) => (
+              <Input
+                {...field}
+                label='Street'
+                placeholder='123 Main Street'
+                variant='bordered'
+                isInvalid={!!errors.street}
+                errorMessage={errors.street?.message}
+                fullWidth
+              />
+            )}
+          />
+          <Controller
             name='zipCode'
             control={control}
             render={({ field }) => (
@@ -398,29 +471,6 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
                 isInvalid={!!errors.zipCode}
                 errorMessage={errors.zipCode?.message}
               />
-            )}
-          />
-          <Controller
-            name='propertyType'
-            control={control}
-            render={({ field }) => (
-              <Select
-                {...field}
-                label='Property Type'
-                placeholder='Select property type'
-                variant='bordered'
-                isInvalid={!!errors.propertyType}
-                errorMessage={errors.propertyType?.message}
-                selectedKeys={[field.value]}
-                onChange={(e) => field.onChange(e.target.value)}
-              >
-                <SelectItem key='residential'>
-                  Residential
-                </SelectItem>
-                <SelectItem key='commercial'>
-                  Commercial
-                </SelectItem>
-              </Select>
             )}
           />
         </div>

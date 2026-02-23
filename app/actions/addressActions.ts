@@ -9,6 +9,8 @@ import { Timestamp } from 'firebase-admin/firestore'
 
 const addressSchema = z
   .object({
+    estateId: z.string().optional(),
+    estateName: z.string().optional(),
     street: z.string().min(1, 'Street is required'),
     areaDistrict: z.string().optional(),
     city: z.string().min(1, 'City is required'),
@@ -92,6 +94,8 @@ export async function submitAddress({ formData, user }: SubmitAddressParams) {
   }
 
   const rawFormData = {
+    estateId: formData.get('estateId') as string | undefined,
+    estateName: formData.get('estateName') as string | undefined,
     street: formData.get('street') as string,
     areaDistrict: formData.get('areaDistrict') as string,
     city: formData.get('city') as string,
@@ -116,6 +120,7 @@ export async function submitAddress({ formData, user }: SubmitAddressParams) {
 
   try {
     const userSubmittedString = [
+      submittedAddressData.estateName,
       submittedAddressData.street,
       submittedAddressData.areaDistrict,
       submittedAddressData.city,
@@ -150,6 +155,8 @@ export async function submitAddress({ formData, user }: SubmitAddressParams) {
     }
 
     const submittedAddressDataForDB = {
+      estateId: submittedAddressData.estateId || null,
+      estateName: submittedAddressData.estateName || null,
       streetAddress: submittedAddressData.street,
       areaDistrict: submittedAddressData.areaDistrict || '',
       city: submittedAddressData.city,

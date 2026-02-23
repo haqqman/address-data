@@ -60,6 +60,8 @@ export interface AddressSubmission {
   userName?: string
   userEmail?: string
   submittedAddress: {
+    estateId?: string | null
+    estateName?: string | null
     streetAddress: string
     areaDistrict: string
     city: string

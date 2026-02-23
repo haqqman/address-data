@@ -196,8 +196,7 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
                 <strong>Authentication Example:</strong>
               </p>
               <Code
-                className='text-sm max-w-full block whitespace-pre p-4 rounded-lg bg-default-100/50'
-                color='secondary'
+                className='text-sm max-w-full block whitespace-pre p-4 rounded-lg bg-[#0F172A] text-slate-50 border border-slate-800 shadow-sm'
               >
                 {authExample}
               </Code>
@@ -250,8 +249,7 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
               </h2>
               <p>All API endpoints are relative to the following base URL:</p>
               <Code
-                className='mt-2 text-base max-w-full block whitespace-pre p-4 rounded-lg bg-default-100/50'
-                color='secondary'
+                className='mt-2 text-base max-w-full block whitespace-pre p-4 rounded-lg bg-[#0F172A] text-slate-50 border border-slate-800 shadow-sm'
               >
                 {API_BASE_URL}
               </Code>
@@ -289,8 +287,7 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
                     <strong>Example Request:</strong>
                   </p>
                   <Code
-                    className='text-sm max-w-full block whitespace-pre p-4 rounded-lg bg-default-100/50'
-                    color='secondary'
+                    className='text-sm max-w-full block whitespace-pre p-4 rounded-lg bg-[#0F172A] text-slate-50 border border-slate-800 shadow-sm'
                   >
                     {autocompleteRequest}
                   </Code>
@@ -298,8 +295,7 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
                     <strong>Example Success Response (200 OK):</strong>
                   </p>
                   <Code
-                    className='text-sm max-w-full block whitespace-pre p-4 rounded-lg bg-default-100/50'
-                    color='secondary'
+                    className='text-sm max-w-full block whitespace-pre p-4 rounded-lg bg-[#0F172A] text-slate-50 border border-slate-800 shadow-sm'
                   >
                     {autocompleteResponse}
                   </Code>
@@ -329,8 +325,7 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
                     <strong>Example Request:</strong>
                   </p>
                   <Code
-                    className='text-sm max-w-full block whitespace-pre p-4 rounded-lg bg-default-100/50'
-                    color='secondary'
+                    className='text-sm max-w-full block whitespace-pre p-4 rounded-lg bg-[#0F172A] text-slate-50 border border-slate-800 shadow-sm'
                   >
                     {lookupByCodeRequest}
                   </Code>
@@ -338,8 +333,7 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
                     <strong>Example Success Response (200 OK):</strong>
                   </p>
                   <Code
-                    className='text-sm max-w-full block whitespace-pre p-4 rounded-lg bg-default-100/50'
-                    color='secondary'
+                    className='text-sm max-w-full block whitespace-pre p-4 rounded-lg bg-[#0F172A] text-slate-50 border border-slate-800 shadow-sm'
                   >
                     {addressObjectStructure}
                   </Code>
@@ -369,8 +363,7 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
                     <strong>Example Request:</strong>
                   </p>
                   <Code
-                    className='text-sm max-w-full block whitespace-pre p-4 rounded-lg bg-default-100/50'
-                    color='secondary'
+                    className='text-sm max-w-full block whitespace-pre p-4 rounded-lg bg-[#0F172A] text-slate-50 border border-slate-800 shadow-sm'
                   >
                     {listEstatesRequest}
                   </Code>
@@ -378,8 +371,7 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
                     <strong>Example Success Response (200 OK):</strong>
                   </p>
                   <Code
-                    className='text-sm max-w-full block whitespace-pre p-4 rounded-lg bg-default-100/50'
-                    color='secondary'
+                    className='text-sm max-w-full block whitespace-pre p-4 rounded-lg bg-[#0F172A] text-slate-50 border border-slate-800 shadow-sm'
                   >
                     {listEstatesResponse}
                   </Code>
@@ -409,8 +401,7 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
                     <strong>Example Request:</strong>
                   </p>
                   <Code
-                    className='text-sm max-w-full block whitespace-pre p-4 rounded-lg bg-default-100/50'
-                    color='secondary'
+                    className='text-sm max-w-full block whitespace-pre p-4 rounded-lg bg-[#0F172A] text-slate-50 border border-slate-800 shadow-sm'
                   >
                     {lookupEstateByCodeRequest}
                   </Code>
@@ -418,8 +409,7 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
                     <strong>Example Success Response (200 OK):</strong>
                   </p>
                   <Code
-                    className='text-sm max-w-full block whitespace-pre p-4 rounded-lg bg-default-100/50'
-                    color='secondary'
+                    className='text-sm max-w-full block whitespace-pre p-4 rounded-lg bg-[#0F172A] text-slate-50 border border-slate-800 shadow-sm'
                   >
                     {estateObjectStructure}
                   </Code>
@@ -449,8 +439,7 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
                     <strong>Example Request:</strong>
                   </p>
                   <Code
-                    className='text-sm max-w-full block whitespace-pre p-4 rounded-lg bg-default-100/50'
-                    color='secondary'
+                    className='text-sm max-w-full block whitespace-pre p-4 rounded-lg bg-[#0F172A] text-slate-50 border border-slate-800 shadow-sm'
                   >
                     {statesRequest}
                   </Code>
@@ -458,8 +447,7 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
                     <strong>Example Success Response (200 OK):</strong>
                   </p>
                   <Code
-                    className='text-sm max-w-full block whitespace-pre p-4 rounded-lg bg-default-100/50'
-                    color='secondary'
+                    className='text-sm max-w-full block whitespace-pre p-4 rounded-lg bg-[#0F172A] text-slate-50 border border-slate-800 shadow-sm'
                   >
                     {statesResponse}
                   </Code>
@@ -489,8 +477,7 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
                     <strong>Example Request:</strong>
                   </p>
                   <Code
-                    className='text-sm max-w-full block whitespace-pre p-4 rounded-lg bg-default-100/50'
-                    color='secondary'
+                    className='text-sm max-w-full block whitespace-pre p-4 rounded-lg bg-[#0F172A] text-slate-50 border border-slate-800 shadow-sm'
                   >
                     {lgasRequest}
                   </Code>
@@ -498,8 +485,7 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
                     <strong>Example Success Response (200 OK):</strong>
                   </p>
                   <Code
-                    className='text-sm max-w-full block whitespace-pre p-4 rounded-lg bg-default-100/50'
-                    color='secondary'
+                    className='text-sm max-w-full block whitespace-pre p-4 rounded-lg bg-[#0F172A] text-slate-50 border border-slate-800 shadow-sm'
                   >
                     {lgasResponse}
                   </Code>
@@ -533,8 +519,7 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
                     <strong>Example Request:</strong>
                   </p>
                   <Code
-                    className='text-sm max-w-full block whitespace-pre p-4 rounded-lg bg-default-100/50'
-                    color='secondary'
+                    className='text-sm max-w-full block whitespace-pre p-4 rounded-lg bg-[#0F172A] text-slate-50 border border-slate-800 shadow-sm'
                   >
                     {citiesRequest}
                   </Code>
@@ -542,8 +527,7 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
                     <strong>Example Success Response (200 OK):</strong>
                   </p>
                   <Code
-                    className='text-sm max-w-full block whitespace-pre p-4 rounded-lg bg-default-100/50'
-                    color='secondary'
+                    className='text-sm max-w-full block whitespace-pre p-4 rounded-lg bg-[#0F172A] text-slate-50 border border-slate-800 shadow-sm'
                   >
                     {citiesResponse}
                   </Code>
@@ -567,8 +551,7 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
                 Address Object
               </h4>
               <Code
-                className='text-sm max-w-full block whitespace-pre p-4 rounded-lg bg-default-100/50'
-                color='secondary'
+                className='text-sm max-w-full block whitespace-pre p-4 rounded-lg bg-[#0F172A] text-slate-50 border border-slate-800 shadow-sm'
               >
                 {addressObjectStructure}
               </Code>
@@ -576,8 +559,7 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
                 Estate Object
               </h4>
               <Code
-                className='text-sm max-w-full block whitespace-pre p-4 rounded-lg bg-default-100/50'
-                color='secondary'
+                className='text-sm max-w-full block whitespace-pre p-4 rounded-lg bg-[#0F172A] text-slate-50 border border-slate-800 shadow-sm'
               >
                 {estateObjectStructure}
               </Code>
