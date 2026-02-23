@@ -4,12 +4,11 @@
 
 @layer base {
   body {
-    @apply bg-background text-foreground;
+    background-color: hsl(var(--heroui-background));
+    color: hsl(var(--heroui-foreground));
   }
 
   h1, h2, h3 {
-    /* Apply the primary color from the theme to headings */
-    /* This requires that 'primary' in tailwind.config.ts is correctly defined */
-    @apply text-primary; 
+    color: hsl(var(--heroui-primary));
   }
 }
