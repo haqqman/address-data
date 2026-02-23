@@ -9,15 +9,15 @@ import {
   CardHeader,
   CardBody,
   CardFooter,
-  Button as NextUIButton,
+  Button,
   Modal,
   ModalContent,
   ModalHeader,
   ModalBody,
   ModalFooter,
-  Input as NextUIInput,
-  Select as NextUISelect,
-  SelectItem as NextUISelectItem,
+  Input,
+  Select,
+  SelectItem,
   useDisclosure,
   Table,
   TableHeader,
@@ -259,14 +259,14 @@ export default function TeamManagementPage() {
               CTO)
             </p>
           </div>
-          <NextUIButton
+          <Button
             onPress={handleOpenAddModal}
             color='warning'
             className='text-primary shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out'
             startContent={<PlusCircle className='h-4 w-4' />}
           >
             Add New Console User
-          </NextUIButton>
+          </Button>
         </div>
 
         <Card className='shadow-xl rounded-xl bg-background'>
@@ -339,7 +339,7 @@ export default function TeamManagementPage() {
                       <TableCell>
                         <div className='flex items-center'>
                           <Tooltip content='Edit User Details'>
-                            <NextUIButton
+                            <Button
                               isIconOnly
                               size='sm'
                               variant='light'
@@ -347,7 +347,7 @@ export default function TeamManagementPage() {
                               onPress={() => handleOpenEditModal(item)}
                             >
                               <Edit className='h-4 w-4' />
-                            </NextUIButton>
+                            </Button>
                           </Tooltip>
                           <Tooltip
                             content={
@@ -356,7 +356,7 @@ export default function TeamManagementPage() {
                                 : 'Delete User Profile'
                             }
                           >
-                            <NextUIButton
+                            <Button
                               isIconOnly
                               size='sm'
                               variant='light'
@@ -365,7 +365,7 @@ export default function TeamManagementPage() {
                               isDisabled={user?.id === item.id}
                             >
                               <Trash2 className='h-4 w-4' />
-                            </NextUIButton>
+                            </Button>
                           </Tooltip>
                         </div>
                       </TableCell>
@@ -414,7 +414,7 @@ export default function TeamManagementPage() {
                   corresponding profile in the `consoleUsers` collection.
                 </p>
                 <div className='space-y-4 pt-2'>
-                  <NextUIInput
+                  <Input
                     isRequired
                     label='Email'
                     placeholder='new.user@haqqman.com'
@@ -424,7 +424,7 @@ export default function TeamManagementPage() {
                     }
                     variant='bordered'
                   />
-                  <NextUIInput
+                  <Input
                     isRequired
                     type='password'
                     label='Password'
@@ -436,7 +436,7 @@ export default function TeamManagementPage() {
                     variant='bordered'
                   />
                   <div className='flex gap-4'>
-                    <NextUIInput
+                    <Input
                       isRequired
                       label='First Name'
                       value={addForm.firstName}
@@ -445,7 +445,7 @@ export default function TeamManagementPage() {
                       }
                       variant='bordered'
                     />
-                    <NextUIInput
+                    <Input
                       isRequired
                       label='Last Name'
                       value={addForm.lastName}
@@ -455,7 +455,7 @@ export default function TeamManagementPage() {
                       variant='bordered'
                     />
                   </div>
-                  <NextUIInput
+                  <Input
                     label='Phone Number'
                     value={addForm.phoneNumber}
                     onValueChange={(v) =>
@@ -463,7 +463,7 @@ export default function TeamManagementPage() {
                     }
                     variant='bordered'
                   />
-                  <NextUISelect
+                  <Select
                     isRequired
                     label='Role'
                     placeholder='Select a role'
@@ -477,27 +477,27 @@ export default function TeamManagementPage() {
                     variant='bordered'
                     color='secondary'
                   >
-                    <NextUISelectItem key='manager'>
+                    <SelectItem key='manager'>
                       Manager
-                    </NextUISelectItem>
-                    <NextUISelectItem key='administrator'>
+                    </SelectItem>
+                    <SelectItem key='administrator'>
                       Administrator
-                    </NextUISelectItem>
-                    <NextUISelectItem key='cto'>
+                    </SelectItem>
+                    <SelectItem key='cto'>
                       CTO
-                    </NextUISelectItem>
-                  </NextUISelect>
+                    </SelectItem>
+                  </Select>
                 </div>
               </ModalBody>
               <ModalFooter>
-                <NextUIButton
+                <Button
                   variant='light'
                   onPress={onClose}
                   disabled={isSubmitting}
                 >
                   Cancel
-                </NextUIButton>
-                <NextUIButton
+                </Button>
+                <Button
                   color='warning'
                   onPress={handleCreateUser}
                   isLoading={isSubmitting}
@@ -505,7 +505,7 @@ export default function TeamManagementPage() {
                   className='text-primary'
                 >
                   Create User
-                </NextUIButton>
+                </Button>
               </ModalFooter>
             </>
           )}
@@ -547,7 +547,7 @@ export default function TeamManagementPage() {
                   <span className='font-bold'>{editingUser?.email}</span>.
                 </p>
                 <div className='space-y-4 pt-2'>
-                  <NextUIInput
+                  <Input
                     label='First Name'
                     value={editForm.firstName}
                     onValueChange={(v) =>
@@ -555,7 +555,7 @@ export default function TeamManagementPage() {
                     }
                     variant='bordered'
                   />
-                  <NextUIInput
+                  <Input
                     label='Last Name'
                     value={editForm.lastName}
                     onValueChange={(v) =>
@@ -563,7 +563,7 @@ export default function TeamManagementPage() {
                     }
                     variant='bordered'
                   />
-                  <NextUIInput
+                  <Input
                     label='Phone Number'
                     value={editForm.phoneNumber}
                     onValueChange={(v) =>
@@ -571,7 +571,7 @@ export default function TeamManagementPage() {
                     }
                     variant='bordered'
                   />
-                  <NextUISelect
+                  <Select
                     label='Role'
                     placeholder='Select a role'
                     selectedKeys={[editForm.role]}
@@ -585,27 +585,27 @@ export default function TeamManagementPage() {
                     color='secondary'
                     isDisabled={user?.id === editingUser?.id}
                   >
-                    <NextUISelectItem key='manager'>
+                    <SelectItem key='manager'>
                       Manager
-                    </NextUISelectItem>
-                    <NextUISelectItem key='administrator'>
+                    </SelectItem>
+                    <SelectItem key='administrator'>
                       Administrator
-                    </NextUISelectItem>
-                    <NextUISelectItem key='cto'>
+                    </SelectItem>
+                    <SelectItem key='cto'>
                       CTO
-                    </NextUISelectItem>
-                  </NextUISelect>
+                    </SelectItem>
+                  </Select>
                 </div>
               </ModalBody>
               <ModalFooter>
-                <NextUIButton
+                <Button
                   variant='light'
                   onPress={onClose}
                   disabled={isSubmitting}
                 >
                   Cancel
-                </NextUIButton>
-                <NextUIButton
+                </Button>
+                <Button
                   color='warning'
                   onPress={handleUpdateUser}
                   isLoading={isSubmitting}
@@ -613,7 +613,7 @@ export default function TeamManagementPage() {
                   className='text-primary'
                 >
                   Save Changes
-                </NextUIButton>
+                </Button>
               </ModalFooter>
             </>
           )}
@@ -647,14 +647,14 @@ export default function TeamManagementPage() {
                 </p>
               </ModalBody>
               <ModalFooter>
-                <NextUIButton
+                <Button
                   variant='light'
                   onPress={onClose}
                   disabled={isSubmitting}
                 >
                   Cancel
-                </NextUIButton>
-                <NextUIButton
+                </Button>
+                <Button
                   color='danger'
                   onPress={handleDeleteUser}
                   isLoading={isSubmitting}
@@ -662,7 +662,7 @@ export default function TeamManagementPage() {
                   className='text-white'
                 >
                   Delete User Profile
-                </NextUIButton>
+                </Button>
               </ModalFooter>
             </>
           )}

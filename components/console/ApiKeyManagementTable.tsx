@@ -2,14 +2,14 @@
 
 import type { APIKey } from '@/types'
 import {
-  Table as NextUITable,
-  TableHeader as NextUITableHeader,
-  TableColumn as NextUITableColumn,
-  TableBody as NextUITableBody,
-  TableRow as NextUITableRow,
-  TableCell as NextUITableCell,
-  Chip as NextUIChip,
-  Button as NextUIButton,
+  Table,
+  TableHeader,
+  TableColumn,
+  TableBody,
+  TableRow,
+  TableCell,
+  Chip,
+  Button,
   ScrollShadow,
   Tooltip,
   useDisclosure,
@@ -18,7 +18,7 @@ import {
   ModalHeader,
   ModalBody,
   ModalFooter,
-  Input as NextUIInput,
+  Input,
 } from '@heroui/react'
 import { format } from 'date-fns'
 import {
@@ -127,55 +127,55 @@ export function ApiKeyManagementTable({
         hideScrollBar
         className='h-[600px] w-full border shadow-md rounded-lg'
       >
-        <NextUITable aria-label='API Key Management Table' removeWrapper>
-          <NextUITableHeader>
-            <NextUITableColumn>USER</NextUITableColumn>
-            <NextUITableColumn>KEY NAME / ID</NextUITableColumn>
-            <NextUITableColumn>PUBLIC KEY PREFIX</NextUITableColumn>
-            <NextUITableColumn>STATUS</NextUITableColumn>
-            <NextUITableColumn>CREATED AT</NextUITableColumn>
-            <NextUITableColumn>LAST USED</NextUITableColumn>
-            <NextUITableColumn className='text-right'>
+        <Table aria-label='API Key Management Table' removeWrapper>
+          <TableHeader>
+            <TableColumn>USER</TableColumn>
+            <TableColumn>KEY NAME / ID</TableColumn>
+            <TableColumn>PUBLIC KEY PREFIX</TableColumn>
+            <TableColumn>STATUS</TableColumn>
+            <TableColumn>CREATED AT</TableColumn>
+            <TableColumn>LAST USED</TableColumn>
+            <TableColumn className='text-right'>
               ACTIONS
-            </NextUITableColumn>
-          </NextUITableHeader>
-          <NextUITableBody items={apiKeys} emptyContent='No API keys found.'>
+            </TableColumn>
+          </TableHeader>
+          <TableBody items={apiKeys} emptyContent='No API keys found.'>
             {(key) => (
-              <NextUITableRow key={key.id}>
-                <NextUITableCell>
+              <TableRow key={key.id}>
+                <TableCell>
                   <div>{key.userName || 'N/A'}</div>
                   <div className='text-xs text-foreground-500'>
                     {key.userEmail || key.userId}
                   </div>
-                </NextUITableCell>
-                <NextUITableCell>
+                </TableCell>
+                <TableCell>
                   <div>{key.name || 'Untitled Key'}</div>
                   <div className='text-xs text-foreground-500'>{key.id}</div>
-                </NextUITableCell>
-                <NextUITableCell className='font-mono'>
+                </TableCell>
+                <TableCell className='font-mono'>
                   {key.publicKey.substring(0, 12)}...
-                </NextUITableCell>
-                <NextUITableCell>
-                  <NextUIChip
+                </TableCell>
+                <TableCell>
+                  <Chip
                     size='sm'
                     color={key.isActive ? 'success' : 'danger'}
                     variant='flat'
                   >
                     {key.isActive ? 'Active' : 'Revoked'}
-                  </NextUIChip>
-                </NextUITableCell>
-                <NextUITableCell>
+                  </Chip>
+                </TableCell>
+                <TableCell>
                   {format(new Date(key.createdAt), 'PPp')}
-                </NextUITableCell>
-                <NextUITableCell>
+                </TableCell>
+                <TableCell>
                   {key.lastUsedAt
                     ? format(new Date(key.lastUsedAt), 'PPp')
                     : 'Never'}
-                </NextUITableCell>
-                <NextUITableCell className='text-right space-x-1'>
+                </TableCell>
+                <TableCell className='text-right space-x-1'>
                   {key.isActive ? (
                     <Tooltip content='Revoke Key' placement='top'>
-                      <NextUIButton
+                      <Button
                         isIconOnly
                         size='sm'
                         variant='light'
@@ -184,11 +184,11 @@ export function ApiKeyManagementTable({
                         aria-label='Revoke API Key'
                       >
                         <ShieldOff className='h-4 w-4' />
-                      </NextUIButton>
+                      </Button>
                     </Tooltip>
                   ) : (
                     <Tooltip content='Reactivate Key' placement='top'>
-                      <NextUIButton
+                      <Button
                         isIconOnly
                         size='sm'
                         variant='light'
@@ -197,12 +197,12 @@ export function ApiKeyManagementTable({
                         aria-label='Reactivate API Key'
                       >
                         <ShieldCheck className='h-4 w-4' />
-                      </NextUIButton>
+                      </Button>
                     </Tooltip>
                   )}
 
                   <Tooltip content='Delete Key' placement='top'>
-                    <NextUIButton
+                    <Button
                       isIconOnly
                       size='sm'
                       variant='light'
@@ -211,13 +211,13 @@ export function ApiKeyManagementTable({
                       aria-label='Delete API Key'
                     >
                       <Trash2 className='h-4 w-4' />
-                    </NextUIButton>
+                    </Button>
                   </Tooltip>
-                </NextUITableCell>
-              </NextUITableRow>
+                </TableCell>
+              </TableRow>
             )}
-          </NextUITableBody>
-        </NextUITable>
+          </TableBody>
+        </Table>
       </ScrollShadow>
 
       <Modal
@@ -244,16 +244,16 @@ export function ApiKeyManagementTable({
                 <p>This will prevent it from being used to access the API.</p>
               </ModalBody>
               <ModalFooter>
-                <NextUIButton variant='light' onPress={onClose}>
+                <Button variant='light' onPress={onClose}>
                   Cancel
-                </NextUIButton>
-                <NextUIButton
+                </Button>
+                <Button
                   color='warning'
                   onPress={handleRevoke}
                   className='shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out'
                 >
                   Revoke Key
-                </NextUIButton>
+                </Button>
               </ModalFooter>
             </>
           )}
@@ -284,16 +284,16 @@ export function ApiKeyManagementTable({
                 <p>This will allow it to be used to access the API again.</p>
               </ModalBody>
               <ModalFooter>
-                <NextUIButton variant='light' onPress={onClose}>
+                <Button variant='light' onPress={onClose}>
                   Cancel
-                </NextUIButton>
-                <NextUIButton
+                </Button>
+                <Button
                   color='success'
                   onPress={handleReactivate}
                   className='text-white shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out'
                 >
                   Reactivate Key
-                </NextUIButton>
+                </Button>
               </ModalFooter>
             </>
           )}
@@ -328,16 +328,16 @@ export function ApiKeyManagementTable({
                 <p className='text-danger-500'>This action cannot be undone.</p>
               </ModalBody>
               <ModalFooter>
-                <NextUIButton variant='light' onPress={onClose}>
+                <Button variant='light' onPress={onClose}>
                   Cancel
-                </NextUIButton>
-                <NextUIButton
+                </Button>
+                <Button
                   color='danger'
                   onPress={handleDelete}
                   className='text-white shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out'
                 >
                   Delete Key
-                </NextUIButton>
+                </Button>
               </ModalFooter>
             </>
           )}

@@ -2,13 +2,13 @@
 
 import Link from 'next/link'
 import {
-  Button as NextUIButton,
+  Button,
   Dropdown,
   DropdownTrigger,
   DropdownMenu,
   DropdownItem,
   DropdownSection,
-  User as NextUIUser,
+  User,
   Navbar,
   NavbarBrand,
   NavbarContent,
@@ -99,7 +99,7 @@ export function Topbar() {
       <NavbarContent className='hidden sm:flex gap-1' justify='center'>
         {navItems.map((item) => (
           <NavbarItem key={item.href} isActive={pathname.startsWith(item.href)}>
-            <NextUIButton
+            <Button
               variant='ghost'
               as={Link}
               href={item.href}
@@ -113,7 +113,7 @@ export function Topbar() {
               startContent={item.icon}
             >
               {item.label}
-            </NextUIButton>
+            </Button>
           </NavbarItem>
         ))}
       </NavbarContent>
@@ -122,13 +122,13 @@ export function Topbar() {
         {user && (
           <Dropdown placement='bottom-end' backdrop='blur'>
             <DropdownTrigger>
-              <NextUIButton
+              <Button
                 isIconOnly
                 variant='ghost'
                 className='relative h-8 w-8 rounded-full'
               >
                 <UserCircle className='h-7 w-7 text-primary' />
-              </NextUIButton>
+              </Button>
             </DropdownTrigger>
             <DropdownMenu aria-label='User Actions' variant='flat'>
               <DropdownSection showDivider>
@@ -137,7 +137,7 @@ export function Topbar() {
                   key='profile'
                   className='h-14 gap-2 opacity-100 cursor-default'
                 >
-                  <NextUIUser
+                  <User
                     name={user.displayName || user.email?.split('@')[0]}
                     description={user.email}
                     avatarProps={{

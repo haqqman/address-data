@@ -3,11 +3,11 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import {
-  Button as NextUIButton,
-  Card as NextUICard,
-  CardHeader as NextUICardHeader,
-  CardBody as NextUICardBody,
-  Input as NextUIInput,
+  Button,
+  Card,
+  CardHeader,
+  CardBody,
+  Input,
 } from '@heroui/react'
 import {
   CheckCircle,
@@ -122,7 +122,7 @@ export default function HomePage() {
             </h1>
             <div className='mt-10 max-w-xl mx-auto'>
               <form onSubmit={handleSearchSubmit} className='flex gap-2'>
-                <NextUIInput
+                <Input
                   aria-label='Search by Address or Estate Code'
                   placeholder='Enter address or estate code'
                   variant='bordered'
@@ -133,7 +133,7 @@ export default function HomePage() {
                     inputWrapper: 'bg-background/80 backdrop-blur-sm',
                   }}
                 />
-                <NextUIButton
+                <Button
                   isIconOnly
                   type='submit'
                   size='lg'
@@ -142,7 +142,7 @@ export default function HomePage() {
                   className='text-primary'
                 >
                   <Search className='h-5 w-5' />
-                </NextUIButton>
+                </Button>
               </form>
             </div>
             <p className='mt-6 text-lg md:text-xl text-foreground/80 max-w-3xl mx-auto'>
@@ -197,27 +197,27 @@ export default function HomePage() {
             </div>
             <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-16'>
               {features.slice(4).map((feature, index) => (
-                <NextUICard
+                <Card
                   key={index}
                   isHoverable
                   shadow='md'
                   radius='lg'
                   className='transition-shadow bg-background hover:shadow-primary/20'
                 >
-                  <NextUICardHeader className='flex flex-col items-center pt-6 pb-2'>
+                  <CardHeader className='flex flex-col items-center pt-6 pb-2'>
                     <div className='flex items-center justify-center w-16 h-16 bg-secondary/10 rounded-full mb-4'>
                       {feature.icon}
                     </div>
                     <h3 className='font-bold text-xl text-center text-primary'>
                       {feature.title}
                     </h3>
-                  </NextUICardHeader>
-                  <NextUICardBody className='pt-0 pb-6 text-center'>
+                  </CardHeader>
+                  <CardBody className='pt-0 pb-6 text-center'>
                     <p className='text-sm text-foreground/70'>
                       {feature.description}
                     </p>
-                  </NextUICardBody>
-                </NextUICard>
+                  </CardBody>
+                </Card>
               ))}
             </div>
           </div>
@@ -262,7 +262,7 @@ export default function HomePage() {
                     </li>
                   ))}
                 </ul>
-                <NextUIButton
+                <Button
                   size='lg'
                   color='warning'
                   as={Link}
@@ -271,7 +271,7 @@ export default function HomePage() {
                   className='text-primary shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out'
                 >
                   View API Documentation
-                </NextUIButton>
+                </Button>
               </div>
               <div className='lg:w-1/2'>
                 <Image
@@ -301,7 +301,7 @@ export default function HomePage() {
               Join AddressData today and experience the difference accurate,
               structured address data can make.
             </p>
-            <NextUIButton
+            <Button
               size='lg'
               as={Link}
               href='/login'
@@ -309,7 +309,7 @@ export default function HomePage() {
               className='bg-warning text-primary hover:bg-warning/90 shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out'
             >
               Access Portal
-            </NextUIButton>
+            </Button>
           </div>
         </section>
       </main>

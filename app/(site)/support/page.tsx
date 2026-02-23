@@ -3,12 +3,12 @@
 
 import { SiteHeader } from '@/components/layout/header'
 import {
-  Card as NextUICard,
-  CardHeader as NextUICardHeader,
-  CardBody as NextUICardBody,
-  Button as NextUIButton,
-  Input as NextUIInput,
-  Textarea as NextUITextarea,
+  Card,
+  CardHeader,
+  CardBody,
+  Button,
+  Input,
+  Textarea,
 } from '@heroui/react'
 import { LifeBuoy, Mail, MessageSquare } from 'lucide-react'
 import Link from 'next/link'
@@ -24,8 +24,8 @@ export default function SupportPage() {
       <SiteHeader />
       <main className='flex-grow max-w-7xl mx-auto px-4 py-12'>
         <div className='max-w-3xl mx-auto'>
-          <NextUICard className='shadow-xl rounded-xl p-2 bg-background'>
-            <NextUICardHeader className='flex flex-col items-center text-center pt-6 pb-2'>
+          <Card className='shadow-xl rounded-xl p-2 bg-background'>
+            <CardHeader className='flex flex-col items-center text-center pt-6 pb-2'>
               <div className='inline-flex items-center justify-center rounded-full bg-secondary/10 p-3 mb-4'>
                 <LifeBuoy className='h-10 w-10 text-secondary' />
               </div>
@@ -35,8 +35,8 @@ export default function SupportPage() {
               <p className='text-lg text-muted-foreground mt-1'>
                 We&apos;re here to assist you with any questions or issues.
               </p>
-            </NextUICardHeader>
-            <NextUICardBody className='space-y-10 pt-0 text-foreground/90'>
+            </CardHeader>
+            <CardBody className='space-y-10 pt-0 text-foreground/90'>
               <div className='flex justify-center my-6'>
                 <Image
                   src='https://res.cloudinary.com/seapane-cloud/seapane-bucket/addressdata/meta/address-illustration-pana.svg'
@@ -57,7 +57,7 @@ export default function SupportPage() {
                     help, please email us. We aim to respond within 24-48
                     business hours.
                   </p>
-                  <NextUIButton
+                  <Button
                     as={Link}
                     href='mailto:support@addressdata.ng'
                     color='warning'
@@ -65,7 +65,7 @@ export default function SupportPage() {
                     radius='md'
                   >
                     support@addressdata.ng
-                  </NextUIButton>
+                  </Button>
                 </div>
                 <div className='space-y-3'>
                   <h2 className='text-2xl font-semibold flex items-center text-primary'>
@@ -76,7 +76,7 @@ export default function SupportPage() {
                     Join our community forum to ask questions, share solutions,
                     and connect with other developers and users of AddressData.
                   </p>
-                  <NextUIButton
+                  <Button
                     as={Link}
                     href='#'
                     variant='bordered'
@@ -86,7 +86,7 @@ export default function SupportPage() {
                     radius='md'
                   >
                     Visit Forum (Coming Soon)
-                  </NextUIButton>
+                  </Button>
                 </div>
               </section>
 
@@ -98,14 +98,14 @@ export default function SupportPage() {
                 </h2>
                 <form className='space-y-6'>
                   <div className='grid md:grid-cols-2 gap-6'>
-                    <NextUIInput
+                    <Input
                       id='firstName'
                       label='First Name'
                       placeholder='Your First Name'
                       variant='bordered'
                       classNames={{ label: 'text-base text-primary' }}
                     />
-                    <NextUIInput
+                    <Input
                       id='lastName'
                       label='Last Name'
                       placeholder='Your Last Name'
@@ -114,7 +114,7 @@ export default function SupportPage() {
                     />
                   </div>
                   <div>
-                    <NextUIInput
+                    <Input
                       id='email'
                       type='email'
                       label='Email Address'
@@ -131,7 +131,7 @@ export default function SupportPage() {
                     />
                   </div>
                   <div>
-                    <NextUIInput
+                    <Input
                       id='subject'
                       label='Subject'
                       placeholder='API Key Issue'
@@ -140,7 +140,7 @@ export default function SupportPage() {
                     />
                   </div>
                   <div>
-                    <NextUITextarea
+                    <Textarea
                       id='message'
                       label='Message'
                       placeholder='Describe your issue or question in detail...'
@@ -150,7 +150,7 @@ export default function SupportPage() {
                     />
                   </div>
                   <div className='text-center pt-2'>
-                    <NextUIButton
+                    <Button
                       type='submit'
                       color='warning'
                       size='lg'
@@ -159,12 +159,12 @@ export default function SupportPage() {
                       className='shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out text-primary'
                     >
                       Send Message (Form Inactive)
-                    </NextUIButton>
+                    </Button>
                   </div>
                 </form>
               </section>
-            </NextUICardBody>
-          </NextUICard>
+            </CardBody>
+          </Card>
         </div>
       </main>
       <Footer />

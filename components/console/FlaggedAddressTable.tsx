@@ -2,21 +2,21 @@
 
 import type { AddressSubmission } from '@/types'
 import {
-  Table as NextUITable,
-  TableHeader as NextUITableHeader,
-  TableColumn as NextUITableColumn,
-  TableBody as NextUITableBody,
-  TableRow as NextUITableRow,
-  TableCell as NextUITableCell,
-  Chip as NextUIChip,
-  Button as NextUIButton,
+  Table,
+  TableHeader,
+  TableColumn,
+  TableBody,
+  TableRow,
+  TableCell,
+  Chip,
+  Button,
   Modal,
   ModalContent,
   ModalHeader,
   ModalBody,
   ModalFooter,
   useDisclosure,
-  Textarea as NextUITextarea,
+  Textarea,
   ScrollShadow,
   Tooltip,
 } from '@heroui/react'
@@ -106,31 +106,31 @@ export function FlaggedAddressTable({
         hideScrollBar
         className='h-[600px] w-full border shadow-md rounded-lg'
       >
-        <NextUITable aria-label='Flagged Addresses Table' removeWrapper>
-          <NextUITableHeader>
-            <NextUITableColumn>USER</NextUITableColumn>
-            <NextUITableColumn>SUBMITTED ADDRESS</NextUITableColumn>
-            <NextUITableColumn>GOOGLE MAPS SUGGESTION</NextUITableColumn>
-            <NextUITableColumn>AI REASON</NextUITableColumn>
-            <NextUITableColumn>TYPE</NextUITableColumn>
-            <NextUITableColumn>SUBMITTED AT</NextUITableColumn>
-            <NextUITableColumn className='text-right'>
+        <Table aria-label='Flagged Addresses Table' removeWrapper>
+          <TableHeader>
+            <TableColumn>USER</TableColumn>
+            <TableColumn>SUBMITTED ADDRESS</TableColumn>
+            <TableColumn>GOOGLE MAPS SUGGESTION</TableColumn>
+            <TableColumn>AI REASON</TableColumn>
+            <TableColumn>TYPE</TableColumn>
+            <TableColumn>SUBMITTED AT</TableColumn>
+            <TableColumn className='text-right'>
               ACTIONS
-            </NextUITableColumn>
-          </NextUITableHeader>
-          <NextUITableBody
+            </TableColumn>
+          </TableHeader>
+          <TableBody
             items={addresses}
             emptyContent='No addresses pending review.'
           >
             {(submission) => (
-              <NextUITableRow key={submission.id}>
-                <NextUITableCell>
+              <TableRow key={submission.id}>
+                <TableCell>
                   <div>{submission.userName || 'N/A'}</div>
                   <div className='text-xs text-foreground-500'>
                     {submission.userEmail || 'N/A'}
                   </div>
-                </NextUITableCell>
-                <NextUITableCell className='max-w-xs'>
+                </TableCell>
+                <TableCell className='max-w-xs'>
                   <Tooltip
                     content={formatFullAddress(submission.submittedAddress)}
                     placement='top-start'
@@ -139,8 +139,8 @@ export function FlaggedAddressTable({
                       {formatFullAddress(submission.submittedAddress)}
                     </div>
                   </Tooltip>
-                </NextUITableCell>
-                <NextUITableCell className='max-w-xs'>
+                </TableCell>
+                <TableCell className='max-w-xs'>
                   <Tooltip
                     content={submission.googleMapsSuggestion || 'N/A'}
                     placement='top-start'
@@ -149,10 +149,10 @@ export function FlaggedAddressTable({
                       {submission.googleMapsSuggestion || 'N/A'}
                     </div>
                   </Tooltip>
-                </NextUITableCell>
-                <NextUITableCell className='max-w-xs'>
+                </TableCell>
+                <TableCell className='max-w-xs'>
                   {submission.aiFlaggedReason ? (
-                    <NextUIChip
+                    <Chip
                       size='sm'
                       variant='flat'
                       color='warning'
@@ -165,27 +165,27 @@ export function FlaggedAddressTable({
                       >
                         {submission.aiFlaggedReason}
                       </span>
-                    </NextUIChip>
+                    </Chip>
                   ) : (
-                    <NextUIChip
+                    <Chip
                       size='sm'
                       variant='flat'
                       color='default'
                       startContent={<Info className='h-3 w-3' />}
                     >
                       No specific AI reason
-                    </NextUIChip>
+                    </Chip>
                   )}
-                </NextUITableCell>
-                <NextUITableCell className='capitalize text-xs font-semibold'>
+                </TableCell>
+                <TableCell className='capitalize text-xs font-semibold'>
                   {submission.propertyType || 'N/A'}
-                </NextUITableCell>
-                <NextUITableCell>
+                </TableCell>
+                <TableCell>
                   {format(new Date(submission.submittedAt), 'PPp')}
-                </NextUITableCell>
-                <NextUITableCell className='text-right space-x-2'>
+                </TableCell>
+                <TableCell className='text-right space-x-2'>
                   <Tooltip content='Approve Submission' placement='top'>
-                    <NextUIButton
+                    <Button
                       isIconOnly
                       size='sm'
                       variant='light'
@@ -194,10 +194,10 @@ export function FlaggedAddressTable({
                       aria-label='Approve'
                     >
                       <CheckCircle className='h-5 w-5' />
-                    </NextUIButton>
+                    </Button>
                   </Tooltip>
                   <Tooltip content='Reject Submission' placement='top'>
-                    <NextUIButton
+                    <Button
                       isIconOnly
                       size='sm'
                       variant='light'
@@ -206,13 +206,13 @@ export function FlaggedAddressTable({
                       aria-label='Reject'
                     >
                       <XCircle className='h-5 w-5' />
-                    </NextUIButton>
+                    </Button>
                   </Tooltip>
-                </NextUITableCell>
-              </NextUITableRow>
+                </TableCell>
+              </TableRow>
             )}
-          </NextUITableBody>
-        </NextUITable>
+          </TableBody>
+        </Table>
       </ScrollShadow>
 
       <Modal
@@ -228,7 +228,7 @@ export function FlaggedAddressTable({
               </ModalHeader>
               <ModalBody>
                 <p>Are you sure you want to approve this address submission?</p>
-                <NextUITextarea
+                <Textarea
                   label='Optional review notes...'
                   variant='bordered'
                   value={reviewNotes}
@@ -236,10 +236,10 @@ export function FlaggedAddressTable({
                 />
               </ModalBody>
               <ModalFooter>
-                <NextUIButton variant='light' onPress={onCloseModal}>
+                <Button variant='light' onPress={onCloseModal}>
                   Cancel
-                </NextUIButton>
-                <NextUIButton
+                </Button>
+                <Button
                   color='success'
                   onPress={() => {
                     handleAction('approved')
@@ -247,7 +247,7 @@ export function FlaggedAddressTable({
                   className='text-white shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out'
                 >
                   Approve
-                </NextUIButton>
+                </Button>
               </ModalFooter>
             </>
           )}
@@ -270,7 +270,7 @@ export function FlaggedAddressTable({
                   Are you sure you want to reject this address submission? This
                   action cannot be undone.
                 </p>
-                <NextUITextarea
+                <Textarea
                   label='Reason for rejection (optional)...'
                   variant='bordered'
                   value={reviewNotes}
@@ -278,10 +278,10 @@ export function FlaggedAddressTable({
                 />
               </ModalBody>
               <ModalFooter>
-                <NextUIButton variant='light' onPress={onCloseModal}>
+                <Button variant='light' onPress={onCloseModal}>
                   Cancel
-                </NextUIButton>
-                <NextUIButton
+                </Button>
+                <Button
                   color='danger'
                   onPress={() => {
                     handleAction('rejected')
@@ -289,7 +289,7 @@ export function FlaggedAddressTable({
                   className='text-white shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out'
                 >
                   Reject
-                </NextUIButton>
+                </Button>
               </ModalFooter>
             </>
           )}

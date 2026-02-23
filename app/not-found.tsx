@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { Button as NextUIButton } from '@heroui/react'
+import { Button } from '@heroui/react'
 import { SearchX } from 'lucide-react'
 import { SiteHeader } from '@/components/layout/header'
 
@@ -24,7 +24,7 @@ export default function NotFound() {
           <p className='text-md text-foreground-500 mt-2'>
             It might have been moved or deleted.
           </p>
-          <NextUIButton
+          <Button
             as={Link}
             href='/'
             color='warning'
@@ -32,7 +32,7 @@ export default function NotFound() {
             size='lg'
           >
             Go back to Homepage
-          </NextUIButton>
+          </Button>
         </div>
       </main>
     </div>

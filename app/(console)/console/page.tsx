@@ -2,9 +2,9 @@
 
 import Link from 'next/link'
 import {
-  Card as NextUICard,
-  CardHeader as NextUICardHeader,
-  CardBody as NextUICardBody,
+  Card,
+  CardHeader,
+  CardBody,
 } from '@heroui/react'
 import { ConsoleLogInForm } from '@/components/forms/ConsoleLogInForm'
 import { ShieldAlert } from 'lucide-react'
@@ -23,8 +23,8 @@ export default function ConsoleLoginPage() {
         />
         <span className='font-bold text-2xl text-primary'>AddressData</span>
       </Link>
-      <NextUICard className='w-full max-w-md shadow-xl p-2 md:p-4 rounded-xl bg-background'>
-        <NextUICardHeader className='flex flex-col items-center text-center pt-6 pb-2'>
+      <Card className='w-full max-w-md shadow-xl p-2 md:p-4 rounded-xl bg-background'>
+        <CardHeader className='flex flex-col items-center text-center pt-6 pb-2'>
           <div className='flex justify-center mb-2'>
             <ShieldAlert className='h-10 w-10 text-danger' />
           </div>
@@ -33,8 +33,8 @@ export default function ConsoleLoginPage() {
             Access restricted to authorized personnel. Please use your Haqqman
             Workmail.
           </p>
-        </NextUICardHeader>
-        <NextUICardBody className='pt-2'>
+        </CardHeader>
+        <CardBody className='pt-2'>
           <ConsoleLogInForm />
           <p className='mt-6 text-center text-sm text-muted-foreground'>
             Not a Console User?{' '}
@@ -45,8 +45,8 @@ export default function ConsoleLoginPage() {
               Go to Portal
             </Link>
           </p>
-        </NextUICardBody>
-      </NextUICard>
+        </CardBody>
+      </Card>
     </div>
   )
 }

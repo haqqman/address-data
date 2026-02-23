@@ -5,10 +5,10 @@ import { UserSubmissionsTable } from '@/components/console/UserSubmissionsTable'
 import { getAddressSubmissions } from '@/app/actions/addressActions'
 import type { AddressSubmission, User } from '@/types'
 import {
-  Skeleton as NextUISkeleton,
-  Card as NextUICard,
-  CardHeader as NextUICardHeader,
-  CardBody as NextUICardBody,
+  Skeleton,
+  Card,
+  CardHeader,
+  CardBody,
 } from '@heroui/react'
 import { AlertTriangle } from 'lucide-react'
 import { useAuth } from '@/contexts/auth-context'
@@ -67,8 +67,8 @@ export default function ConsoleUserSubmissionsPage() {
         </p>
       </div>
 
-      <NextUICard className='shadow-xl rounded-xl bg-background'>
-        <NextUICardHeader className='px-6 pt-6 pb-2'>
+      <Card className='shadow-xl rounded-xl bg-background'>
+        <CardHeader className='px-6 pt-6 pb-2'>
           <div className='flex flex-col space-y-0.5'>
             <h2 className='text-xl font-semibold text-primary'>
               All Submissions
@@ -78,19 +78,19 @@ export default function ConsoleUserSubmissionsPage() {
               current status.
             </p>
           </div>
-        </NextUICardHeader>
-        <NextUICardBody className='p-2 md:p-4'>
+        </CardHeader>
+        <CardBody className='p-2 md:p-4'>
           {(isLoading || authLoading) && (
             <div className='space-y-4'>
-              <NextUISkeleton className='h-10 w-full rounded-lg bg-default-200' />
-              <NextUISkeleton className='h-10 w-full rounded-lg bg-default-200' />
-              <NextUISkeleton className='h-10 w-full rounded-lg bg-default-200' />
+              <Skeleton className='h-10 w-full rounded-lg bg-default-200' />
+              <Skeleton className='h-10 w-full rounded-lg bg-default-200' />
+              <Skeleton className='h-10 w-full rounded-lg bg-default-200' />
             </div>
           )}
 
           {error && !isLoading && (
-            <NextUICard className='mt-4 bg-danger-50 border-danger-200 rounded-xl'>
-              <NextUICardBody className='p-4'>
+            <Card className='mt-4 bg-danger-50 border-danger-200 rounded-xl'>
+              <CardBody className='p-4'>
                 <div className='flex items-center'>
                   <AlertTriangle className='h-5 w-5 text-danger mr-3' />
                   <div>
@@ -98,15 +98,15 @@ export default function ConsoleUserSubmissionsPage() {
                     <p className='text-sm text-danger-600'>{error}</p>
                   </div>
                 </div>
-              </NextUICardBody>
-            </NextUICard>
+              </CardBody>
+            </Card>
           )}
 
           {!isLoading && !authLoading && !error && (
             <UserSubmissionsTable submissions={allSubmissions} />
           )}
-        </NextUICardBody>
-      </NextUICard>
+        </CardBody>
+      </Card>
     </div>
   )
 }

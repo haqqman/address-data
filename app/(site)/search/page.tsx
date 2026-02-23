@@ -9,7 +9,7 @@ import {
   CardBody,
   Spinner,
   Divider,
-  Link as NextUILink,
+  Link,
   Chip,
 } from '@heroui/react'
 import { searchByTerm } from '@/app/actions/searchActions'
@@ -20,7 +20,7 @@ import {
   Search as SearchIcon,
   AlertTriangle,
 } from 'lucide-react'
-import Link from 'next/link'
+import NextLink from 'next/link'
 import { format } from 'date-fns'
 import { Footer } from '@/components/layout/footer'
 
@@ -140,13 +140,13 @@ function SearchResults() {
                     key={estate.id}
                     className='p-4 border rounded-lg hover:bg-default-50 transition-colors'
                   >
-                    <NextUILink
-                      as={Link}
+                    <Link
+                      as={NextLink}
                       href={`/estates/${estate.id}`}
                       className='font-bold text-lg text-primary'
                     >
                       {estate.name}
-                    </NextUILink>
+                    </Link>
                     <p className='text-sm text-foreground-600 flex items-center gap-2 mt-1'>
                       <MapPin className='h-4 w-4 text-secondary' />
                       {formatLocation(estate.location)}

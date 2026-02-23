@@ -4,17 +4,17 @@ import { useState, useEffect, useCallback } from 'react'
 import { ApiKeyManagementTable } from '@/components/console/ApiKeyManagementTable'
 import type { APIKey } from '@/types'
 import {
-  Skeleton as NextUISkeleton,
-  Card as NextUICard,
-  CardHeader as NextUICardHeader,
-  CardBody as NextUICardBody,
-  Button as NextUIButton,
+  Skeleton,
+  Card,
+  CardHeader,
+  CardBody,
+  Button,
   Modal,
   ModalContent,
   ModalHeader,
   ModalBody,
   ModalFooter,
-  Input as NextUIInput,
+  Input,
   useDisclosure,
   Autocomplete,
   AutocompleteItem,
@@ -119,7 +119,7 @@ export default function ConsoleApiKeysPage() {
             Oversee, create, and revoke API keys for portal users.
           </p>
         </div>
-        <NextUIButton
+        <Button
           onPress={onOpen}
           color='warning'
           className='text-primary shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out'
@@ -129,11 +129,11 @@ export default function ConsoleApiKeysPage() {
           }
         >
           Create New API Key
-        </NextUIButton>
+        </Button>
       </div>
 
-      <NextUICard className='shadow-xl rounded-xl bg-background'>
-        <NextUICardHeader className='px-6 pt-6 pb-2'>
+      <Card className='shadow-xl rounded-xl bg-background'>
+        <CardHeader className='px-6 pt-6 pb-2'>
           <div className='flex flex-col space-y-0.5'>
             <h2 className='text-xl font-semibold text-primary'>
               All Developer API Keys
@@ -143,19 +143,19 @@ export default function ConsoleApiKeysPage() {
               and usage.
             </p>
           </div>
-        </NextUICardHeader>
-        <NextUICardBody className='p-2 md:p-4'>
+        </CardHeader>
+        <CardBody className='p-2 md:p-4'>
           {isLoading && (
             <div className='space-y-4'>
-              <NextUISkeleton className='h-10 w-full rounded-lg bg-default-200' />
-              <NextUISkeleton className='h-10 w-full rounded-lg bg-default-200' />
-              <NextUISkeleton className='h-10 w-full rounded-lg bg-default-200' />
+              <Skeleton className='h-10 w-full rounded-lg bg-default-200' />
+              <Skeleton className='h-10 w-full rounded-lg bg-default-200' />
+              <Skeleton className='h-10 w-full rounded-lg bg-default-200' />
             </div>
           )}
 
           {error && !isLoading && (
-            <NextUICard className='mt-4 bg-danger-50 border-danger-200 rounded-xl'>
-              <NextUICardBody className='p-4'>
+            <Card className='mt-4 bg-danger-50 border-danger-200 rounded-xl'>
+              <CardBody className='p-4'>
                 <div className='flex items-center'>
                   <AlertTriangle className='h-5 w-5 text-danger mr-3' />
                   <div>
@@ -163,8 +163,8 @@ export default function ConsoleApiKeysPage() {
                     <p className='text-sm text-danger-600'>{error}</p>
                   </div>
                 </div>
-              </NextUICardBody>
-            </NextUICard>
+              </CardBody>
+            </Card>
           )}
 
           {!isLoading && !error && (
@@ -173,8 +173,8 @@ export default function ConsoleApiKeysPage() {
               onActionComplete={handleActionComplete}
             />
           )}
-        </NextUICardBody>
-      </NextUICard>
+        </CardBody>
+      </Card>
 
       <Modal isOpen={isOpen} onOpenChange={onOpenChange} backdrop='blur'>
         <ModalContent>
@@ -215,7 +215,7 @@ export default function ConsoleApiKeysPage() {
                     </AutocompleteItem>
                   )}
                 </Autocomplete>
-                <NextUIInput
+                <Input
                   label='API Key Name (Optional)'
                   placeholder="User's Main App Key"
                   variant='bordered'
@@ -225,14 +225,14 @@ export default function ConsoleApiKeysPage() {
                 {error && <p className='text-sm text-danger-500'>{error}</p>}
               </ModalBody>
               <ModalFooter>
-                <NextUIButton
+                <Button
                   variant='light'
                   onPress={modalOnClose}
                   disabled={isCreating}
                 >
                   Cancel
-                </NextUIButton>
-                <NextUIButton
+                </Button>
+                <Button
                   color='warning'
                   onPress={handleCreateNewKey}
                   isLoading={isCreating}
@@ -240,7 +240,7 @@ export default function ConsoleApiKeysPage() {
                   className='text-primary shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out'
                 >
                   {isCreating ? 'Creating...' : 'Create API Key'}
-                </NextUIButton>
+                </Button>
               </ModalFooter>
             </>
           )}

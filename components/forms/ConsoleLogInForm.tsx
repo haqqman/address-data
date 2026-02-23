@@ -4,7 +4,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm, Controller } from 'react-hook-form'
 import * as z from 'zod'
-import { Button as NextUIButton, Input as NextUIInput } from '@heroui/react'
+import { Button, Input } from '@heroui/react'
 
 import { useAuth } from '@/contexts/auth-context'
 import { useState } from 'react'
@@ -88,7 +88,7 @@ export function ConsoleLogInForm() {
         name='email'
         control={control}
         render={({ field }) => (
-          <NextUIInput
+          <Input
             {...field}
             label='Email Address'
             placeholder='example@haqqman.com'
@@ -108,7 +108,7 @@ export function ConsoleLogInForm() {
         name='password'
         control={control}
         render={({ field }) => (
-          <NextUIInput
+          <Input
             {...field}
             label='Password'
             type='password'
@@ -124,7 +124,7 @@ export function ConsoleLogInForm() {
           />
         )}
       />
-      <NextUIButton
+      <Button
         type='submit'
         color='warning'
         fullWidth
@@ -133,7 +133,7 @@ export function ConsoleLogInForm() {
         className='text-primary shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out'
       >
         {isLoading ? 'Logging In...' : 'Log In'}
-      </NextUIButton>
+      </Button>
     </form>
   )
 }

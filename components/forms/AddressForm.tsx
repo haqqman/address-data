@@ -4,12 +4,12 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm, Controller } from 'react-hook-form'
 import * as z from 'zod'
 import {
-  Button as NextUIButton,
-  Input as NextUIInput,
-  Card as NextUICard,
-  CardBody as NextUICardBody,
-  Select as NextUISelect,
-  SelectItem as NextUISelectItem,
+  Button,
+  Input,
+  Card,
+  CardBody,
+  Select,
+  SelectItem,
 } from '@heroui/react'
 import { submitAddress } from '@/app/actions/addressActions'
 import { CheckCircle, AlertTriangle, Info } from 'lucide-react'
@@ -232,10 +232,10 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
     <>
       <form onSubmit={handleSubmit(onSubmit)} className='space-y-6'>
         {submissionStatus && (
-          <NextUICard
+          <Card
             className={`mb-6 ${submissionStatus.type === 'success' ? 'bg-success-50 border-success-200' : submissionStatus.type === 'error' ? 'bg-danger-50 border-danger-200' : 'bg-secondary-50 border-secondary-200'}`}
           >
-            <NextUICardBody className='p-4'>
+            <CardBody className='p-4'>
               <div className='flex items-center'>
                 {submissionStatus.type === 'success' && (
                   <CheckCircle className='h-5 w-5 text-success mr-3' />
@@ -263,14 +263,14 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
                   </p>
                 </div>
               </div>
-            </NextUICardBody>
-          </NextUICard>
+            </CardBody>
+          </Card>
         )}
         <Controller
           name='street'
           control={control}
           render={({ field }) => (
-            <NextUIInput
+            <Input
               {...field}
               label='Street'
               placeholder='123 Main Street'
@@ -282,7 +282,7 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
           )}
         />
         <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-          <NextUISelect
+          <Select
             label='State'
             placeholder='Select a state'
             variant='bordered'
@@ -293,12 +293,12 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
             onChange={(e) => handleStateChange(e.target.value)}
           >
             {states.map((state) => (
-              <NextUISelectItem key={state.name}>
+              <SelectItem key={state.name}>
                 {state.name}
-              </NextUISelectItem>
+              </SelectItem>
             ))}
-          </NextUISelect>
-          <NextUISelect
+          </Select>
+          <Select
             label='LGA (Local Government Area)'
             placeholder='Select an LGA'
             variant='bordered'
@@ -310,15 +310,15 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
             onChange={(e) => handleLgaChange(e.target.value)}
           >
             {lgas.map((lga) => (
-              <NextUISelectItem key={lga.name}>
+              <SelectItem key={lga.name}>
                 {lga.name}
-              </NextUISelectItem>
+              </SelectItem>
             ))}
-          </NextUISelect>
+          </Select>
         </div>
         <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
           {watchedStateName === 'FCT' ? (
-            <NextUIInput
+            <Input
               label='City'
               value='Abuja'
               isReadOnly
@@ -332,7 +332,7 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
               name='city'
               control={control}
               render={({ field }) => (
-                <NextUISelect
+                <Select
                   {...field}
                   label='City / Town'
                   placeholder='Select a city or town'
@@ -345,11 +345,11 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
                   onChange={(e) => field.onChange(e.target.value)}
                 >
                   {cities.map((city) => (
-                    <NextUISelectItem key={city.name}>
+                    <SelectItem key={city.name}>
                       {city.name}
-                    </NextUISelectItem>
+                    </SelectItem>
                   ))}
-                </NextUISelect>
+                </Select>
               )}
             />
           )}
@@ -357,7 +357,7 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
             name='areaDistrict'
             control={control}
             render={({ field }) => (
-              <NextUISelect
+              <Select
                 {...field}
                 label='District'
                 placeholder='Select a district'
@@ -377,11 +377,11 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
                 }
               >
                 {cities.map((district) => (
-                  <NextUISelectItem key={district.name}>
+                  <SelectItem key={district.name}>
                     {district.name}
-                  </NextUISelectItem>
+                  </SelectItem>
                 ))}
-              </NextUISelect>
+              </Select>
             )}
           />
         </div>
@@ -390,7 +390,7 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
             name='zipCode'
             control={control}
             render={({ field }) => (
-              <NextUIInput
+              <Input
                 {...field}
                 label='Zip Code (Optional)'
                 placeholder='100001'
@@ -404,7 +404,7 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
             name='propertyType'
             control={control}
             render={({ field }) => (
-              <NextUISelect
+              <Select
                 {...field}
                 label='Property Type'
                 placeholder='Select property type'
@@ -414,17 +414,17 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
                 selectedKeys={[field.value]}
                 onChange={(e) => field.onChange(e.target.value)}
               >
-                <NextUISelectItem key='residential'>
+                <SelectItem key='residential'>
                   Residential
-                </NextUISelectItem>
-                <NextUISelectItem key='commercial'>
+                </SelectItem>
+                <SelectItem key='commercial'>
                   Commercial
-                </NextUISelectItem>
-              </NextUISelect>
+                </SelectItem>
+              </Select>
             )}
           />
         </div>
-        <NextUIButton
+        <Button
           type='submit'
           color='warning'
           className='w-full md:w-auto text-primary shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out'
@@ -432,7 +432,7 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
           disabled={isSubmitting || !user}
         >
           {isSubmitting ? 'Submitting...' : 'Submit'}
-        </NextUIButton>
+        </Button>
       </form>
     </>
   )

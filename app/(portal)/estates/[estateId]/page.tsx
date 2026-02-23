@@ -13,7 +13,7 @@ import {
   Skeleton,
   Button,
   Input,
-  Link as NextUILink,
+  Link,
   Divider,
   Chip,
 } from '@heroui/react'
@@ -159,7 +159,7 @@ export default function ManageEstatePage() {
               <p className='font-semibold text-danger-700'>Error</p>
               <p className='text-sm text-danger-600'>{error}</p>
               <Button
-                as={NextUILink}
+                as={Link}
                 href='/estates'
                 size='sm'
                 variant='light'
@@ -307,13 +307,13 @@ export default function ManageEstatePage() {
               {estate.googleMapLink && (
                 <div className='flex items-center'>
                   <Globe className='h-5 w-5 text-secondary mr-3' />
-                  <NextUILink
+                  <Link
                     href={estate.googleMapLink}
                     isExternal
                     showAnchorIcon
                   >
                     View on Google Maps
-                  </NextUILink>
+                  </Link>
                 </div>
               )}
               <div className='flex items-center'>

@@ -2,13 +2,13 @@
 
 import type { AddressSubmission } from '@/types'
 import {
-  Table as NextUITable,
-  TableHeader as NextUITableHeader,
-  TableColumn as NextUITableColumn,
-  TableBody as NextUITableBody,
-  TableRow as NextUITableRow,
-  TableCell as NextUITableCell,
-  Chip as NextUIChip,
+  Table,
+  TableHeader,
+  TableColumn,
+  TableBody,
+  TableRow,
+  TableCell,
+  Chip,
   ScrollShadow,
   Tooltip,
 } from '@heroui/react'
@@ -51,30 +51,30 @@ export function UserSubmissionsTable({
       hideScrollBar
       className='h-[600px] w-full border shadow-md rounded-lg'
     >
-      <NextUITable aria-label='User Submissions Table' removeWrapper>
-        <NextUITableHeader>
-          <NextUITableColumn>USER</NextUITableColumn>
-          <NextUITableColumn>SUBMITTED ADDRESS</NextUITableColumn>
-          <NextUITableColumn>ADC</NextUITableColumn>
-          <NextUITableColumn>TYPE</NextUITableColumn>
-          <NextUITableColumn>STATUS</NextUITableColumn>
-          <NextUITableColumn>SUBMITTED AT</NextUITableColumn>
-          <NextUITableColumn>REVIEWED AT</NextUITableColumn>
-          <NextUITableColumn>AI REASON / NOTES</NextUITableColumn>
-        </NextUITableHeader>
-        <NextUITableBody
+      <Table aria-label='User Submissions Table' removeWrapper>
+        <TableHeader>
+          <TableColumn>USER</TableColumn>
+          <TableColumn>SUBMITTED ADDRESS</TableColumn>
+          <TableColumn>ADC</TableColumn>
+          <TableColumn>TYPE</TableColumn>
+          <TableColumn>STATUS</TableColumn>
+          <TableColumn>SUBMITTED AT</TableColumn>
+          <TableColumn>REVIEWED AT</TableColumn>
+          <TableColumn>AI REASON / NOTES</TableColumn>
+        </TableHeader>
+        <TableBody
           items={submissions}
           emptyContent='No submissions found.'
         >
           {(submission) => (
-            <NextUITableRow key={submission.id}>
-              <NextUITableCell>
+            <TableRow key={submission.id}>
+              <TableCell>
                 <div>{submission.userName || 'N/A'}</div>
                 <div className='text-xs text-foreground-500'>
                   {submission.userEmail || 'N/A'}
                 </div>
-              </NextUITableCell>
-              <NextUITableCell className='max-w-xs'>
+              </TableCell>
+              <TableCell className='max-w-xs'>
                 <Tooltip
                   content={formatFullAddress(submission.submittedAddress)}
                   placement='top-start'
@@ -83,15 +83,15 @@ export function UserSubmissionsTable({
                     {formatFullAddress(submission.submittedAddress)}
                   </div>
                 </Tooltip>
-              </NextUITableCell>
-              <NextUITableCell className='font-mono text-xs'>
+              </TableCell>
+              <TableCell className='font-mono text-xs'>
                 {submission.adc || 'N/A'}
-              </NextUITableCell>
-              <NextUITableCell className='capitalize text-xs font-semibold'>
+              </TableCell>
+              <TableCell className='capitalize text-xs font-semibold'>
                 {submission.propertyType || 'N/A'}
-              </NextUITableCell>
-              <NextUITableCell>
-                <NextUIChip
+              </TableCell>
+              <TableCell>
+                <Chip
                   size='sm'
                   color={getStatusChipColor(submission.status)}
                   variant='flat'
@@ -100,17 +100,17 @@ export function UserSubmissionsTable({
                     .split('-')
                     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
                     .join(' ')}
-                </NextUIChip>
-              </NextUITableCell>
-              <NextUITableCell>
+                </Chip>
+              </TableCell>
+              <TableCell>
                 {format(new Date(submission.submittedAt), 'PPp')}
-              </NextUITableCell>
-              <NextUITableCell>
+              </TableCell>
+              <TableCell>
                 {submission.reviewedAt
                   ? format(new Date(submission.reviewedAt), 'PPp')
                   : 'N/A'}
-              </NextUITableCell>
-              <NextUITableCell
+              </TableCell>
+              <TableCell
                 className='max-w-xs truncate'
                 title={submission.aiFlaggedReason || 'N/A'}
               >
@@ -119,11 +119,11 @@ export function UserSubmissionsTable({
                   submission.status === 'rejected'
                     ? 'Manually Reviewed'
                     : 'N/A')}
-              </NextUITableCell>
-            </NextUITableRow>
+              </TableCell>
+            </TableRow>
           )}
-        </NextUITableBody>
-      </NextUITable>
+        </TableBody>
+      </Table>
     </ScrollShadow>
   )
 }

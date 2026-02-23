@@ -2,13 +2,13 @@
 
 import Link from 'next/link'
 import {
-  Button as NextUIButton,
+  Button,
   Dropdown,
   DropdownTrigger,
   DropdownMenu,
   DropdownItem,
   DropdownSection,
-  User as NextUIUser,
+  User,
 } from '@heroui/react'
 import {
   Users,
@@ -24,13 +24,13 @@ import { cn } from '@/lib/utils'
 import { useAuth } from '@/contexts/auth-context'
 import Image from 'next/image'
 import type { ReactNode } from 'react'
-import type { User } from '@/types'
+import type * as Types from '@/types'
 
 interface NavItem {
   href: string
   label: string
   icon: ReactNode
-  roles?: Array<User['role']>
+  roles?: Array<Types.User['role']>
 }
 
 const baseNavItems: NavItem[] = [
@@ -99,7 +99,7 @@ export function ConsoleTopbar() {
         </Link>
         <nav className='flex items-center space-x-1'>
           {navItems.map((item) => (
-            <NextUIButton
+            <Button
               key={item.href}
               variant='ghost'
               as={Link}
@@ -117,20 +117,20 @@ export function ConsoleTopbar() {
               startContent={item.icon}
             >
               {item.label}
-            </NextUIButton>
+            </Button>
           ))}
         </nav>
         <div className='ml-auto flex items-center space-x-4'>
           {user && (
             <Dropdown placement='bottom-end' backdrop='blur'>
               <DropdownTrigger>
-                <NextUIButton
+                <Button
                   isIconOnly
                   variant='ghost'
                   className='relative h-8 w-8 rounded-full'
                 >
                   <UserCircle className='h-7 w-7 text-primary' />
-                </NextUIButton>
+                </Button>
               </DropdownTrigger>
               <DropdownMenu aria-label='Console User Actions' variant='flat'>
                 <DropdownSection showDivider>
@@ -139,7 +139,7 @@ export function ConsoleTopbar() {
                     key='profile'
                     className='h-14 gap-2 opacity-100 cursor-default'
                   >
-                    <NextUIUser
+                    <User
                       name={user.displayName || 'Console User'}
                       description={user.email}
                       avatarProps={{

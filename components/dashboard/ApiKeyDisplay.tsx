@@ -2,18 +2,18 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import {
-  Button as NextUIButton,
-  Input as NextUIInput,
-  Card as NextUICard,
-  CardHeader as NextUICardHeader,
-  CardBody as NextUICardBody,
+  Button,
+  Input,
+  Card,
+  CardHeader,
+  CardBody,
   Popover,
   PopoverTrigger,
   PopoverContent,
   Spinner,
   Listbox,
   ListboxItem,
-  Chip as NextUIChip,
+  Chip,
 } from '@heroui/react'
 import {
   Copy,
@@ -130,8 +130,8 @@ export function ApiKeyDisplay() {
 
   return (
     <>
-      <NextUICard className='shadow-lg rounded-xl mb-8 bg-background'>
-        <NextUICardHeader className='px-6 pt-6 pb-2'>
+      <Card className='shadow-lg rounded-xl mb-8 bg-background'>
+        <CardHeader className='px-6 pt-6 pb-2'>
           <div className='flex flex-col space-y-0.5'>
             <h2 className='text-xl font-semibold text-primary'>
               Generate New API Key
@@ -140,8 +140,8 @@ export function ApiKeyDisplay() {
               Create a new pair of API keys to access AddressData services.
             </p>
           </div>
-        </NextUICardHeader>
-        <NextUICardBody className='space-y-6 p-6'>
+        </CardHeader>
+        <CardBody className='space-y-6 p-6'>
           {newlyGeneratedKey && (
             <div className='space-y-4 p-4 border border-success-200 bg-success-50 rounded-lg'>
               <h3 className='text-lg font-semibold text-success-700'>
@@ -151,14 +151,14 @@ export function ApiKeyDisplay() {
                 Please save your Private Key securely. It will{' '}
                 <strong className='font-bold'>not</strong> be shown again.
               </p>
-              <NextUIInput
+              <Input
                 label='Newly Generated Public Key'
                 value={newlyGeneratedKey.publicKey}
                 isReadOnly
                 variant='bordered'
                 fullWidth
                 endContent={
-                  <NextUIButton
+                  <Button
                     isIconOnly
                     variant='light'
                     onPress={() =>
@@ -170,10 +170,10 @@ export function ApiKeyDisplay() {
                     aria-label='Copy Public Key'
                   >
                     <Copy className='h-4 w-4' />
-                  </NextUIButton>
+                  </Button>
                 }
               />
-              <NextUIInput
+              <Input
                 label='Newly Generated Private Key'
                 type={showPrivateKey ? 'text' : 'password'}
                 value={newlyGeneratedKey.privateKey}
@@ -182,7 +182,7 @@ export function ApiKeyDisplay() {
                 fullWidth
                 endContent={
                   <div className='flex items-center'>
-                    <NextUIButton
+                    <Button
                       isIconOnly
                       variant='light'
                       onPress={() => setShowPrivateKey(!showPrivateKey)}
@@ -195,8 +195,8 @@ export function ApiKeyDisplay() {
                       ) : (
                         <Eye className='h-4 w-4' />
                       )}
-                    </NextUIButton>
-                    <NextUIButton
+                    </Button>
+                    <Button
                       isIconOnly
                       variant='light'
                       onPress={() =>
@@ -208,7 +208,7 @@ export function ApiKeyDisplay() {
                       aria-label='Copy Private Key'
                     >
                       <Copy className='h-4 w-4' />
-                    </NextUIButton>
+                    </Button>
                   </div>
                 }
               />
@@ -228,7 +228,7 @@ export function ApiKeyDisplay() {
           </div>
 
           <div className='flex flex-col sm:flex-row gap-4 items-end'>
-            <NextUIInput
+            <Input
               label='API Key Name (Optional)'
               placeholder='My App Key'
               variant='bordered'
@@ -238,7 +238,7 @@ export function ApiKeyDisplay() {
             />
             <Popover placement='top'>
               <PopoverTrigger>
-                <NextUIButton
+                <Button
                   color='warning' // Main CTA uses accent color
                   className='text-primary w-full sm:w-auto shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out'
                   isLoading={isGenerating}
@@ -248,7 +248,7 @@ export function ApiKeyDisplay() {
                   }
                 >
                   {isGenerating ? 'Generating...' : 'Generate New Key Pair'}
-                </NextUIButton>
+                </Button>
               </PopoverTrigger>
               <PopoverContent>
                 <div className='px-1 py-2'>
@@ -258,24 +258,24 @@ export function ApiKeyDisplay() {
                   <div className='text-tiny'>
                     This will create a new set of API keys.
                   </div>
-                  <NextUIButton
+                  <Button
                     size='sm'
                     color='warning'
                     className='mt-2 text-primary w-full shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out'
                     onPress={handleGenerateNewKey}
                   >
                     Confirm &amp; Generate
-                  </NextUIButton>
+                  </Button>
                 </div>
               </PopoverContent>
             </Popover>
           </div>
           {error && <p className='text-sm text-danger-500 mt-2'>{error}</p>}
-        </NextUICardBody>
-      </NextUICard>
+        </CardBody>
+      </Card>
 
-      <NextUICard className='shadow-lg rounded-xl bg-background'>
-        <NextUICardHeader className='px-6 pt-6 pb-2'>
+      <Card className='shadow-lg rounded-xl bg-background'>
+        <CardHeader className='px-6 pt-6 pb-2'>
           <div className='flex flex-col space-y-0.5'>
             <h2 className='text-xl font-semibold text-primary'>
               Your Existing API Keys
@@ -284,8 +284,8 @@ export function ApiKeyDisplay() {
               Manage your existing API keys.
             </p>
           </div>
-        </NextUICardHeader>
-        <NextUICardBody className='p-6'>
+        </CardHeader>
+        <CardBody className='p-6'>
           {isLoadingKeys && (
             <div className='flex justify-center items-center py-8'>
               <Spinner label='Loading your keys...' color='warning' />
@@ -339,15 +339,15 @@ export function ApiKeyDisplay() {
                       </div>
                     </div>
                     <div className='flex items-center space-x-2'>
-                      <NextUIChip
+                      <Chip
                         size='sm'
                         color={key.isActive ? 'success' : 'danger'}
                         variant='flat'
                       >
                         {key.isActive ? 'Active' : 'Revoked'}
-                      </NextUIChip>
+                      </Chip>
                       {key.isActive && (
-                        <NextUIButton
+                        <Button
                           isIconOnly
                           size='sm'
                           variant='light'
@@ -356,7 +356,7 @@ export function ApiKeyDisplay() {
                           aria-label='Revoke API Key'
                         >
                           <Trash2 className='h-4 w-4' />
-                        </NextUIButton>
+                        </Button>
                       )}
                     </div>
                   </div>
@@ -364,8 +364,8 @@ export function ApiKeyDisplay() {
               ))}
             </Listbox>
           )}
-        </NextUICardBody>
-      </NextUICard>
+        </CardBody>
+      </Card>
     </>
   )
 }

@@ -16,14 +16,13 @@ import {
   TableBody,
   TableRow,
   TableCell,
-  Link as NextUILink,
   Chip,
   Select,
   SelectItem,
   type Selection,
 } from '@heroui/react'
 import { AlertTriangle, PlusCircle, Search } from 'lucide-react'
-import Link from 'next/link'
+import NextLink from 'next/link'
 
 export default function EstatesPage() {
   const [estates, setEstates] = useState<Estate[]>([])
@@ -123,7 +122,7 @@ export default function EstatesPage() {
           </p>
         </div>
         <Button
-          as={Link}
+          as={NextLink}
           href='/submit-estate'
           color='warning'
           className='text-primary shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out'
@@ -226,7 +225,7 @@ export default function EstatesPage() {
                     </TableCell>
                     <TableCell>
                       <Button
-                        as={NextUILink}
+                        as={NextLink}
                         href={`/estates/${item.id}`}
                         size='sm'
                         variant='light'

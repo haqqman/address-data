@@ -1,7 +1,7 @@
 'use client'
 
 import {
-  Button as NextUIButton,
+  Button,
   Card,
   CardBody,
   CardHeader,
@@ -40,7 +40,7 @@ export default function DashboardPage() {
           </p>
         </div>
         <div className='flex gap-4'>
-          <NextUIButton
+          <Button
             as={Link}
             href='/submit-address'
             color='warning'
@@ -48,8 +48,8 @@ export default function DashboardPage() {
             startContent={<PlusCircle className='h-4 w-4' />}
           >
             Submit Address
-          </NextUIButton>
-          <NextUIButton
+          </Button>
+          <Button
             as={Link}
             href='/submit-estate'
             color='secondary'
@@ -58,7 +58,7 @@ export default function DashboardPage() {
             startContent={<PlusCircle className='h-4 w-4' />}
           >
             Submit Estate
-          </NextUIButton>
+          </Button>
         </div>
       </div>
 

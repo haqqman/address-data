@@ -2,16 +2,16 @@
 
 import type { AddressSubmission } from '@/types'
 import {
-  Card as NextUICard,
-  CardHeader as NextUICardHeader,
-  CardBody as NextUICardBody,
-  Table as NextUITable,
-  TableHeader as NextUITableHeader,
-  TableColumn as NextUITableColumn,
-  TableBody as NextUITableBody,
-  TableRow as NextUITableRow,
-  TableCell as NextUITableCell,
-  Chip as NextUIChip,
+  Card,
+  CardHeader,
+  CardBody,
+  Table,
+  TableHeader,
+  TableColumn,
+  TableBody,
+  TableRow,
+  TableCell,
+  Chip,
   ScrollShadow,
 } from '@heroui/react'
 import { format } from 'date-fns'
@@ -53,59 +53,59 @@ export function AddressList({ addresses, title }: AddressListProps) {
 
   if (addresses.length === 0) {
     return (
-      <NextUICard className='shadow-lg rounded-xl mt-8'>
-        <NextUICardHeader className='px-6 pt-6 pb-2'>
+      <Card className='shadow-lg rounded-xl mt-8'>
+        <CardHeader className='px-6 pt-6 pb-2'>
           <div className='flex flex-col space-y-0.5'>
             <h2 className='text-xl font-semibold text-primary'>{title}</h2>
           </div>
-        </NextUICardHeader>
-        <NextUICardBody className='p-6'>
+        </CardHeader>
+        <CardBody className='p-6'>
           <p className='text-foreground-500'>
             You haven't contributed any addresses yet.
           </p>
-        </NextUICardBody>
-      </NextUICard>
+        </CardBody>
+      </Card>
     )
   }
 
   return (
-    <NextUICard className='shadow-lg rounded-xl mt-8'>
-      <NextUICardHeader className='px-6 pt-6 pb-2'>
+    <Card className='shadow-lg rounded-xl mt-8'>
+      <CardHeader className='px-6 pt-6 pb-2'>
         <div className='flex flex-col space-y-0.5'>
           <h2 className='text-xl font-semibold text-primary'>{title}</h2>
           <p className='text-sm text-foreground-500'>
             View the status of your address contributions.
           </p>
         </div>
-      </NextUICardHeader>
-      <NextUICardBody className='p-0 md:p-2'>
+      </CardHeader>
+      <CardBody className='p-0 md:p-2'>
         <ScrollShadow hideScrollBar className='h-[400px] w-full'>
-          <NextUITable aria-label='Address Contributions List' removeWrapper>
-            <NextUITableHeader>
-              <NextUITableColumn>ADDRESS</NextUITableColumn>
-              <NextUITableColumn className={isMobile ? 'hidden' : ''}>
+          <Table aria-label='Address Contributions List' removeWrapper>
+            <TableHeader>
+              <TableColumn>ADDRESS</TableColumn>
+              <TableColumn className={isMobile ? 'hidden' : ''}>
                 ADC
-              </NextUITableColumn>
-              <NextUITableColumn>SUBMITTED</NextUITableColumn>
-              <NextUITableColumn>TYPE</NextUITableColumn>
-              <NextUITableColumn>STATUS</NextUITableColumn>
-              <NextUITableColumn className={isMobile ? 'hidden' : ''}>
+              </TableColumn>
+              <TableColumn>SUBMITTED</TableColumn>
+              <TableColumn>TYPE</TableColumn>
+              <TableColumn>STATUS</TableColumn>
+              <TableColumn className={isMobile ? 'hidden' : ''}>
                 NOTES/REASON
-              </NextUITableColumn>
-            </NextUITableHeader>
-            <NextUITableBody
+              </TableColumn>
+            </TableHeader>
+            <TableBody
               items={addresses}
               emptyContent='No contributions found.'
             >
               {(item) => (
-                <NextUITableRow key={item.id}>
-                  <NextUITableCell
+                <TableRow key={item.id}>
+                  <TableCell
                     className='max-w-xs truncate'
                     title={formatAddress(item.submittedAddress)}
                   >
                     {formatAddress(item.submittedAddress)}
-                  </NextUITableCell>
-                  <NextUITableCell
+                  </TableCell>
+                  <TableCell
                     className={
                       isMobile
                         ? 'hidden font-mono text-xs'
@@ -113,15 +113,15 @@ export function AddressList({ addresses, title }: AddressListProps) {
                     }
                   >
                     {item.adc || 'N/A'}
-                  </NextUITableCell>
-                  <NextUITableCell>
+                  </TableCell>
+                  <TableCell>
                     {format(new Date(item.submittedAt), 'PP')}
-                  </NextUITableCell>
-                  <NextUITableCell className='capitalize text-xs font-semibold'>
+                  </TableCell>
+                  <TableCell className='capitalize text-xs font-semibold'>
                     {item.propertyType || 'N/A'}
-                  </NextUITableCell>
-                  <NextUITableCell>
-                    <NextUIChip
+                  </TableCell>
+                  <TableCell>
+                    <Chip
                       color={getStatusChipColor(item.status)}
                       size='sm'
                       variant='flat'
@@ -133,9 +133,9 @@ export function AddressList({ addresses, title }: AddressListProps) {
                             word.charAt(0).toUpperCase() + word.slice(1),
                         )
                         .join(' ')}
-                    </NextUIChip>
-                  </NextUITableCell>
-                  <NextUITableCell
+                    </Chip>
+                  </TableCell>
+                  <TableCell
                     className={
                       isMobile
                         ? 'hidden max-w-xs truncate'
@@ -149,13 +149,13 @@ export function AddressList({ addresses, title }: AddressListProps) {
                         : item.status === 'approved'
                           ? 'Approved'
                           : '-'}
-                  </NextUITableCell>
-                </NextUITableRow>
+                  </TableCell>
+                </TableRow>
               )}
-            </NextUITableBody>
-          </NextUITable>
+            </TableBody>
+          </Table>
         </ScrollShadow>
-      </NextUICardBody>
-    </NextUICard>
+      </CardBody>
+    </Card>
   )
 }

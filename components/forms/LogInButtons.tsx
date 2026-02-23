@@ -1,6 +1,6 @@
 'use client'
 
-import { Button as NextUIButton } from '@heroui/react'
+import { Button } from '@heroui/react'
 import { Chrome, Github } from 'lucide-react'
 import { useAuth } from '@/contexts/auth-context'
 import { useRouter } from 'next/navigation'
@@ -53,7 +53,7 @@ export function LogInButtons() {
           {errorMessage}
         </div>
       )}
-      <NextUIButton
+      <Button
         variant='bordered'
         fullWidth
         onClick={() => handleLogIn('google')}
@@ -63,8 +63,8 @@ export function LogInButtons() {
         className='shadow-sm hover:shadow-md hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out'
       >
         {isLoadingGoogle ? 'Authenticating...' : 'Log in with Google'}
-      </NextUIButton>
-      <NextUIButton
+      </Button>
+      <Button
         variant='bordered'
         fullWidth
         onClick={() => handleLogIn('github')}
@@ -74,7 +74,7 @@ export function LogInButtons() {
         className='shadow-sm hover:shadow-md hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out'
       >
         {isLoadingGitHub ? 'Authenticating...' : 'Log in with GitHub'}
-      </NextUIButton>
+      </Button>
     </div>
   )
 }

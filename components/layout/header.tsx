@@ -9,7 +9,7 @@ import {
   NavbarMenuToggle,
   NavbarMenu,
   NavbarMenuItem,
-  Button as NextUIButton,
+  Button,
   Spinner,
 } from '@heroui/react'
 import Image from 'next/image'
@@ -32,7 +32,7 @@ export function SiteHeader() {
     }
     if (user) {
       return (
-        <NextUIButton
+        <Button
           as={Link}
           href='/dashboard'
           color='warning'
@@ -40,11 +40,11 @@ export function SiteHeader() {
           className='text-primary shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out font-semibold'
         >
           Go to Dashboard
-        </NextUIButton>
+        </Button>
       )
     }
     return (
-      <NextUIButton
+      <Button
         as={Link}
         href='/login'
         color='warning'
@@ -52,7 +52,7 @@ export function SiteHeader() {
         className='text-primary shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out font-semibold'
       >
         Portal
-      </NextUIButton>
+      </Button>
     )
   }
 
@@ -79,7 +79,7 @@ export function SiteHeader() {
       <NavbarContent className='hidden sm:flex gap-4' justify='center'>
         {menuItems.map((item, index) => (
           <NavbarItem key={`${item.name}-${index}`}>
-            <NextUIButton
+            <Button
               as={Link}
               color='default'
               href={item.href}
@@ -87,7 +87,7 @@ export function SiteHeader() {
               className='text-foreground'
             >
               {item.name}
-            </NextUIButton>
+            </Button>
           </NavbarItem>
         ))}
       </NavbarContent>

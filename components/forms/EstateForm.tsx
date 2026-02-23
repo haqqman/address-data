@@ -4,12 +4,12 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm, Controller } from 'react-hook-form'
 import * as z from 'zod'
 import {
-  Button as NextUIButton,
-  Input as NextUIInput,
-  Card as NextUICard,
-  CardBody as NextUICardBody,
-  Select as NextUISelect,
-  SelectItem as NextUISelectItem,
+  Button,
+  Input,
+  Card,
+  CardBody,
+  Select,
+  SelectItem,
 } from '@heroui/react'
 import { submitEstate } from '@/app/actions/estateActions'
 import { CheckCircle, AlertTriangle, Info } from 'lucide-react'
@@ -226,10 +226,10 @@ export function EstateForm({ onSubmissionSuccess }: EstateFormProps) {
     <>
       <form onSubmit={handleSubmit(onSubmit)} className='space-y-6'>
         {submissionStatus && (
-          <NextUICard
+          <Card
             className={`mb-6 ${submissionStatus.type === 'success' ? 'bg-success-50 border-success-200' : submissionStatus.type === 'error' ? 'bg-danger-50 border-danger-200' : 'bg-secondary-50 border-secondary-200'}`}
           >
-            <NextUICardBody className='p-4'>
+            <CardBody className='p-4'>
               <div className='flex items-center'>
                 {submissionStatus.type === 'success' && (
                   <CheckCircle className='h-5 w-5 text-success mr-3' />
@@ -253,14 +253,14 @@ export function EstateForm({ onSubmissionSuccess }: EstateFormProps) {
                   </p>
                 </div>
               </div>
-            </NextUICardBody>
-          </NextUICard>
+            </CardBody>
+          </Card>
         )}
         <Controller
           name='name'
           control={control}
           render={({ field }) => (
-            <NextUIInput
+            <Input
               {...field}
               label='Estate Name'
               placeholder='Banana Island Estate'
@@ -272,7 +272,7 @@ export function EstateForm({ onSubmissionSuccess }: EstateFormProps) {
           )}
         />
         <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-          <NextUISelect
+          <Select
             label='State'
             placeholder='Select a state'
             variant='bordered'
@@ -283,13 +283,13 @@ export function EstateForm({ onSubmissionSuccess }: EstateFormProps) {
             onChange={(e) => handleStateChange(e.target.value)}
           >
             {states.map((state) => (
-              <NextUISelectItem key={state.name}>
+              <SelectItem key={state.name}>
                 {state.name}
-              </NextUISelectItem>
+              </SelectItem>
             ))}
-          </NextUISelect>
+          </Select>
 
-          <NextUISelect
+          <Select
             label={'LGA (Local Government Area)'}
             placeholder={'Select an LGA'}
             variant='bordered'
@@ -301,11 +301,11 @@ export function EstateForm({ onSubmissionSuccess }: EstateFormProps) {
             onChange={(e) => handleLgaChange(e.target.value)}
           >
             {lgas.map((lga) => (
-              <NextUISelectItem key={lga.name}>
+              <SelectItem key={lga.name}>
                 {lga.name}
-              </NextUISelectItem>
+              </SelectItem>
             ))}
-          </NextUISelect>
+          </Select>
         </div>
 
         <div className='grid grid-cols-1 md:grid-cols-1 gap-6'>
@@ -314,7 +314,7 @@ export function EstateForm({ onSubmissionSuccess }: EstateFormProps) {
               name='district'
               control={control}
               render={({ field }) => (
-                <NextUISelect
+                <Select
                   {...field}
                   label='District'
                   placeholder='Select a district'
@@ -329,11 +329,11 @@ export function EstateForm({ onSubmissionSuccess }: EstateFormProps) {
                   onChange={(e) => field.onChange(e.target.value)}
                 >
                   {cities.map((district) => (
-                    <NextUISelectItem key={district.name}>
+                    <SelectItem key={district.name}>
                       {district.name}
-                    </NextUISelectItem>
+                    </SelectItem>
                   ))}
-                </NextUISelect>
+                </Select>
               )}
             />
           ) : (
@@ -341,7 +341,7 @@ export function EstateForm({ onSubmissionSuccess }: EstateFormProps) {
               name='city'
               control={control}
               render={({ field }) => (
-                <NextUISelect
+                <Select
                   {...field}
                   label='City / Town'
                   placeholder='Select a city or town'
@@ -356,11 +356,11 @@ export function EstateForm({ onSubmissionSuccess }: EstateFormProps) {
                   onChange={(e) => field.onChange(e.target.value)}
                 >
                   {cities.map((city) => (
-                    <NextUISelectItem key={city.name}>
+                    <SelectItem key={city.name}>
                       {city.name}
-                    </NextUISelectItem>
+                    </SelectItem>
                   ))}
-                </NextUISelect>
+                </Select>
               )}
             />
           )}
@@ -370,7 +370,7 @@ export function EstateForm({ onSubmissionSuccess }: EstateFormProps) {
           name='googleMapLink'
           control={control}
           render={({ field }) => (
-            <NextUIInput
+            <Input
               {...field}
               label='Google Maps Link (Optional)'
               placeholder='https://maps.app.goo.gl/...'
@@ -381,7 +381,7 @@ export function EstateForm({ onSubmissionSuccess }: EstateFormProps) {
             />
           )}
         />
-        <NextUIButton
+        <Button
           type='submit'
           color='warning'
           className='w-full md:w-auto text-primary shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out'
@@ -389,7 +389,7 @@ export function EstateForm({ onSubmissionSuccess }: EstateFormProps) {
           disabled={isSubmitting || !user}
         >
           {isSubmitting ? 'Submitting for Review...' : 'Submit Estate'}
-        </NextUIButton>
+        </Button>
       </form>
     </>
   )
