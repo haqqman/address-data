@@ -7,6 +7,12 @@
     color: hsl(var(--heroui-foreground));
   }
 
+  *,
+  ::before,
+  ::after {
+    border-color: var(--color-gray-300);
+  }
+
   h1,
   h2,
   h3 {
