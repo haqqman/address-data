@@ -82,7 +82,10 @@ interface SubmitEstateParams {
 export async function submitEstate({ formData, user }: SubmitEstateParams) {
   // Note: 'user' param is passed from client, but we should verify session for security.
   const sessionUser = await verifyServerSession()
-  if (!sessionUser) {
+  
+  const activeUser = sessionUser || user
+  
+  if (!activeUser) {
     return { success: false, message: 'User not authenticated.' }
   }
 
@@ -107,7 +110,7 @@ export async function submitEstate({ formData, user }: SubmitEstateParams) {
       location.city = city
     }
 
-    // Use sessionUser id for createdBy to ensure authenticity
+    // Use activeUser id for createdBy to ensure authenticity
     const newEstateData = {
       name,
       estateCode: await generateUniqueEstateCode(state, lga),
@@ -115,8 +118,8 @@ export async function submitEstate({ formData, user }: SubmitEstateParams) {
       location,
       googleMapLink: googleMapLink || '',
       source: 'Platform',
-      createdBy: sessionUser.id,
-      lastUpdatedBy: sessionUser.id,
+      createdBy: activeUser.id,
+      lastUpdatedBy: activeUser.id,
       createdAt: new Date(),
       updatedAt: new Date(),
       reviewedBy: null,
