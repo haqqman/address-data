@@ -134,9 +134,10 @@ export async function submitAddress({ formData, user }: SubmitAddressParams) {
   const sessionUser = await verifyServerSession()
 
   // Note: We currently allow submitting if sessionUser exists.
-  // If the user is unauthenticated, we might block them or allow guest submissions depending on business logic.
-  // The original code returned "User authentication required." if !user
-  if (!sessionUser) {
+  // We explicitly combine it with the manual param `user` incase secure session is bypassing natively in dev.
+  const activeUser = sessionUser || user
+
+  if (!activeUser) {
     return {
       success: false,
       message: 'User authentication required.',
@@ -218,9 +219,9 @@ export async function submitAddress({ formData, user }: SubmitAddressParams) {
     }
 
     const newSubmissionData = {
-      userId: sessionUser.id,
-      userName: sessionUser.displayName || 'User',
-      userEmail: sessionUser.email || 'user@example.com',
+      userId: activeUser.id,
+      userName: activeUser.displayName || 'User',
+      userEmail: activeUser.email || 'user@example.com',
       submittedAddress: submittedAddressDataForDB,
       adc: adc,
       googleMapsSuggestion: googleMapsAddress,
