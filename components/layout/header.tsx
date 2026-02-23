@@ -49,7 +49,7 @@ export function SiteHeader() {
         href='/login'
         color='warning'
         radius='md'
-        className='text-primary shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out font-semibold'
+        className='text-primary text-lg shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0.5 transition-transform duration-150 ease-in-out font-semibold'
       >
         Portal
       </Button>
@@ -60,7 +60,7 @@ export function SiteHeader() {
     <Navbar
       onMenuOpenChange={setIsMenuOpen}
       isMenuOpen={isMenuOpen}
-      className='sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60'
+      className='sticky top-0 z-50 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60'
       maxWidth='xl'
     >
       <NavbarContent justify='start'>
@@ -84,7 +84,7 @@ export function SiteHeader() {
               color='default'
               href={item.href}
               variant='light'
-              className='text-foreground'
+              className='text-lg'
             >
               {item.name}
             </Button>
@@ -105,7 +105,7 @@ export function SiteHeader() {
           <NavbarMenuItem key={`${item.name}-${index}`}>
             <Link
               href={item.href}
-              className='w-full block py-2 text-foreground hover:text-primary'
+              className='w-full block py-2 hover:text-primary'
               onClick={() => setIsMenuOpen(false)}
             >
               {item.name}
