@@ -10,6 +10,8 @@ import {
   CardBody,
   Select,
   SelectItem,
+  Autocomplete,
+  AutocompleteItem,
 } from '@heroui/react'
 import { submitAddress } from '@/app/actions/addressActions'
 import { getEstates } from '@/app/actions/estateActions'
@@ -291,31 +293,39 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
             name='estateId'
             control={control}
             render={({ field }) => (
-              <Select
-                {...field}
+              <Autocomplete
                 label='Estate (Optional)'
-                placeholder='Select an estate'
+                placeholder='Search for an estate or select None'
                 variant='bordered'
                 isLoading={isLoadingEstates}
-                selectedKeys={field.value ? [field.value] : []}
-                onChange={(e) => {
-                  const val = e.target.value === 'none' ? '' : e.target.value
+                selectedKey={field.value || null}
+                onSelectionChange={(key) => {
+                  const val = key === 'none' || !key ? '' : key.toString()
                   field.onChange(val)
-                  const selectedEstate = estates.find(est => est.id === val)
-                  setValue('estateName', selectedEstate ? selectedEstate.name : '', { shouldValidate: false })
+                  const selectedEstate = estates.find((est) => est.id === val)
+                  setValue(
+                    'estateName',
+                    selectedEstate ? selectedEstate.name : '',
+                    { shouldValidate: false }
+                  )
                 }}
+                onBlur={field.onBlur}
+                ref={field.ref}
+                name={field.name}
+                isInvalid={!!errors.estateId}
+                errorMessage={errors.estateId?.message}
               >
                 {[
-                  <SelectItem key="none">
+                  <AutocompleteItem key="none">
                     None
-                  </SelectItem>,
+                  </AutocompleteItem>,
                   ...estates.map((estate) => (
-                    <SelectItem key={estate.id}>
+                    <AutocompleteItem key={estate.id}>
                       {estate.name}
-                    </SelectItem>
-                  ))
+                    </AutocompleteItem>
+                  )),
                 ]}
-              </Select>
+              </Autocomplete>
             )}
           />
           <Controller
