@@ -5,11 +5,15 @@ import { User } from '@/types'
 
 export async function verifyServerSession(): Promise<User | null> {
   const cookieStore = await cookies()
-  const sessionCookie = cookieStore.get('session')?.value
+  const consoleSessionCookie = cookieStore.get('console_session')?.value
+  const portalSessionCookie = cookieStore.get('portal_session')?.value
+  const legacySessionCookie = cookieStore.get('session')?.value
 
-  if (!sessionCookie) {
-    return null
-  }
+  const sessionCookie =
+    consoleSessionCookie || portalSessionCookie || legacySessionCookie
+  const preferredCollection = consoleSessionCookie ? 'consoleUsers' : 'users'
+
+  if (!sessionCookie) return null
 
   try {
     const decodedClaims = await adminAuth.verifySessionCookie(
@@ -18,13 +22,12 @@ export async function verifyServerSession(): Promise<User | null> {
     )
     const uid = decodedClaims.uid
 
-    // Check consoleUsers first (prioritize admins)
-    let userDoc = await adminDb.collection('consoleUsers').doc(uid).get()
-    let collectionName = 'consoleUsers'
+    let userDoc = await adminDb.collection(preferredCollection).doc(uid).get()
 
     if (!userDoc.exists) {
-      userDoc = await adminDb.collection('users').doc(uid).get()
-      collectionName = 'users'
+      const fallbackCollection =
+        preferredCollection === 'consoleUsers' ? 'users' : 'consoleUsers'
+      userDoc = await adminDb.collection(fallbackCollection).doc(uid).get()
     }
 
     if (!userDoc.exists) {

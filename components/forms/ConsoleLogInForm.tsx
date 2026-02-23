@@ -47,23 +47,7 @@ export function ConsoleLogInForm() {
     setIsLoading(true)
     setErrorMessage(null)
     try {
-      const userCredential = await signInWithEmail(
-        values.email,
-        values.password,
-        true,
-      )
-      if (userCredential) {
-        const idToken = await userCredential.user.getIdToken()
-        const res = await fetch('/api/console/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ idToken }),
-        })
-        if (!res.ok) {
-          setErrorMessage('Session could not be established. Please try again.')
-        }
-        // Redirect is already handled by the auth context — no router.push here.
-      }
+      await signInWithEmail(values.email, values.password, true)
     } catch (error: any) {
       const friendlyErrorMessage =
         error.code === 'auth/invalid-credential' ||

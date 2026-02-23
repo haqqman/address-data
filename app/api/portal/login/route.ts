@@ -17,14 +17,14 @@ export async function POST(request: NextRequest) {
       expiresIn,
     })
     const cookieStore = await cookies()
-    cookieStore.set('console_session', sessionCookie, {
+    cookieStore.set('portal_session', sessionCookie, {
       maxAge: expiresIn,
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
     })
     return NextResponse.json({ isLogged: true }, { status: 200 })
   } catch (error) {
-    console.error('Error creating session cookie:', error)
+    console.error('Error creating portal session cookie:', error)
     return NextResponse.json({ isLogged: false }, { status: 401 })
   }
 }

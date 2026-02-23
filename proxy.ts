@@ -30,7 +30,9 @@ export async function proxy(request: NextRequest) {
 
   // --- Authentication Logic for /console/* routes ---
   if (pathname.startsWith('/console')) {
-    const session = request.cookies.get('session')?.value
+    const session =
+      request.cookies.get('console_session')?.value ||
+      request.cookies.get('session')?.value
 
     // The console login page itself is at /console. No need to check for a session there.
     if (pathname === '/console') {

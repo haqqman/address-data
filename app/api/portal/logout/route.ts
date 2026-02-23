@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(_: NextRequest) {
   const cookieStore = await cookies()
-  cookieStore.delete('console_session')
+  cookieStore.delete('portal_session')
   cookieStore.delete('session')
   return NextResponse.json({ isLogged: false }, { status: 200 })
 }

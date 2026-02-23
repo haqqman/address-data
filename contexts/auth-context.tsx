@@ -245,6 +245,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     try {
       const appUser = await syncUserWithFirestore(firebaseUser)
+
+      // Server actions rely on this cookie for auth context.
+      const idToken = await firebaseUser.getIdToken()
+      const sessionEndpoint = isConsoleRole(appUser.role)
+        ? '/api/console/login'
+        : '/api/portal/login'
+      const sessionRes = await fetch(sessionEndpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ idToken }),
+      })
+      if (!sessionRes.ok) {
+        throw new Error('Session could not be established. Please try again.')
+      }
+
       setUser(appUser)
       setLoading(false)
       const redirectPath = isConsoleRole(appUser.role)
@@ -319,11 +334,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       await firebaseSignOut(auth)
       setUser(null)
-      if (isConsole) {
-        await fetch('/api/console/logout', {
-          method: 'POST',
-        })
-      }
+      const logoutEndpoint = isConsole
+        ? '/api/console/logout'
+        : '/api/portal/logout'
+      await fetch(logoutEndpoint, {
+        method: 'POST',
+      })
       router.push(isConsole ? '/console' : '/login')
     } catch (error) {
       console.error('Error signing out:', error)
