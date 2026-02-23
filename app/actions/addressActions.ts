@@ -79,23 +79,49 @@ export async function lookupZipCode(addressParameters: {
   lga: string
   state: string
 }): Promise<string | null> {
-  // Simulate an API call to Google Maps Geocoding to extract postal_code
-  // In a real implementation this would fetch from Google's Maps API
-  if (!addressParameters.street || !addressParameters.city || !addressParameters.state) {
+  const { street, city, lga, state } = addressParameters
+  if (!street || !city || !state) {
     return null
   }
+
+  // Construct a query string prioritizing the granular details.
+  const addressQuery = `${street}, ${city}, ${lga}, ${state}, Nigeria`
   
-  await new Promise((resolve) => setTimeout(resolve, 800))
+  // Use a dedicated Google Maps API Key if available, or fallback to the generic project API key.
+  const apiKey = process.env.GOOGLE_MAPS_API_KEY || process.env.NEXT_PUBLIC_FIREBASE_API_KEY
   
-  // Return a mocked reasonable Nigerian zip code based on state for demonstration
-  const stateMap: Record<string, string> = {
-    'Lagos': '100001',
-    'FCT': '900001',
-    'Rivers': '500001',
-    'Kano': '700001',
+  if (!apiKey) {
+    console.warn('No Google Maps API Key found for geocoding.')
+    return null
+  }
+
+  try {
+    const response = await fetch(
+      `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(addressQuery)}&key=${apiKey}`
+    )
+
+    if (!response.ok) {
+      console.error('Failed to fetch from Google Maps API', await response.text())
+      return null
+    }
+
+    const data = await response.json()
+
+    if (data.status === 'OK' && data.results && data.results.length > 0) {
+      // Look through the address components of the best match to extract the postal_code
+      for (const component of data.results[0].address_components) {
+        if (component.types.includes('postal_code')) {
+          return component.long_name
+        }
+      }
+    } else {
+      console.log('Google Maps API returned no valid postal code for query:', addressQuery, data.status)
+    }
+  } catch (error) {
+    console.error('Network or parsing error fetching Zip Code:', error)
   }
   
-  return stateMap[addressParameters.state] || '100000'
+  return null
 }
 
 interface SubmitAddressParams {
