@@ -218,7 +218,7 @@ export async function submitAddress({ formData, user }: SubmitAddressParams) {
       country: country,
     }
 
-    const newSubmissionData = {
+    const newSubmissionDataRaw = {
       userId: activeUser.id,
       userName: activeUser.displayName || 'User',
       userEmail: activeUser.email || 'user@example.com',
@@ -233,6 +233,10 @@ export async function submitAddress({ formData, user }: SubmitAddressParams) {
       reviewerId: status === 'approved' ? 'system-ai' : null,
       reviewNotes: status === 'approved' ? 'Auto-approved by AI.' : undefined,
     }
+
+    const newSubmissionData = Object.fromEntries(
+      Object.entries(newSubmissionDataRaw).filter(([_, v]) => v !== undefined)
+    )
 
     const docRef = await adminDb
       .collection('addressSubmissions')
