@@ -2,9 +2,6 @@
 
 import { SiteHeader } from '@/components/layout/header'
 import {
-  Card,
-  CardHeader,
-  CardBody,
   Link,
   Divider,
   Code,
@@ -118,30 +115,53 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
   return (
     <div className='flex flex-col min-h-screen'>
       <SiteHeader />
-      <main className='flex-grow max-w-7xl mx-auto px-4 py-12'>
-        <Card className='max-w-4xl mx-auto'>
-          <CardHeader className='flex flex-col items-center text-center pt-6 pb-4'>
-            <div className='inline-flex items-center justify-center rounded-full bg-secondary/10 p-3 mb-4'>
-              <BookOpen className='h-10 w-10 text-secondary' />
+      <main className='flex-grow max-w-7xl mx-auto px-4 py-12 flex flex-col md:flex-row gap-8 lg:gap-16 items-start'>
+        {/* Sidebar Navigation */}
+        <aside className='w-full md:w-64 flex-shrink-0'>
+          <div className='md:sticky md:top-28 space-y-8'>
+            <div>
+              <h3 className='font-semibold text-lg text-primary mb-4'>Overview</h3>
+              <ul className='space-y-3 text-sm'>
+                <li><Link href="#introduction" className="text-foreground/80 hover:text-secondary transition-colors">Introduction</Link></li>
+                <li><Link href="#authentication" className="text-foreground/80 hover:text-secondary transition-colors">Authentication</Link></li>
+                <li><Link href="#rate-limiting-pricing" className="text-foreground/80 hover:text-secondary transition-colors">Rate Limits & Pricing</Link></li>
+                <li><Link href="#base-url" className="text-foreground/80 hover:text-secondary transition-colors">API Base URL</Link></li>
+              </ul>
             </div>
-            <h1 className='text-3xl md:text-4xl font-bold text-primary'>
+            <div>
+              <h3 className='font-semibold text-lg text-primary mb-4'>Endpoints</h3>
+              <ul className='space-y-3 text-sm'>
+                <li><Link href="#address-endpoints" className="text-foreground/80 hover:text-secondary transition-colors">Address Services</Link></li>
+                <li><Link href="#estate-endpoints" className="text-foreground/80 hover:text-secondary transition-colors">Estates</Link></li>
+                <li><Link href="#geography-endpoints" className="text-foreground/80 hover:text-secondary transition-colors">Geography</Link></li>
+              </ul>
+            </div>
+            <div>
+              <h3 className='font-semibold text-lg text-primary mb-4'>Reference</h3>
+              <ul className='space-y-3 text-sm'>
+                <li><Link href="#address-object" className="text-foreground/80 hover:text-secondary transition-colors">Data Objects</Link></li>
+                <li><Link href="#error-codes" className="text-foreground/80 hover:text-secondary transition-colors">Error Handling</Link></li>
+                <li><Link href="#support" className="text-foreground/80 hover:text-secondary transition-colors">Support</Link></li>
+              </ul>
+            </div>
+          </div>
+        </aside>
+
+        {/* Main Content */}
+        <div className='flex-grow max-w-4xl min-w-0'>
+          <div className='mb-12'>
+            <div className='inline-flex items-center justify-center rounded-xl bg-secondary/10 p-4 mb-6'>
+              <BookOpen className='h-8 w-8 text-secondary' />
+            </div>
+            <h1 className='text-3xl md:text-5xl font-bold text-primary tracking-tight'>
               API Documentation
             </h1>
-            <p className='text-lg text-muted-foreground mt-1'>
+            <p className='text-xl text-muted-foreground mt-4'>
               Integrate AddressData into your applications seamlessly.
             </p>
-          </CardHeader>
-          <CardBody className='space-y-10 text-lg pt-0 text-foreground/90'>
-            <div className='flex justify-center my-6'>
-              <Image
-                src='https://res.cloudinary.com/seapane-cloud/seapane-bucket/addressdata/meta/address-illustration-cuate.svg'
-                alt='API Documentation Illustration'
-                width={350}
-                height={300}
-                data-ai-hint='developer documentation'
-              />
-            </div>
+          </div>
 
+          <div className='space-y-16 text-lg text-foreground/90'>
             <section id='introduction'>
               <h2 className='text-2xl font-semibold mb-3 flex items-center text-primary'>
                 <Zap className='mr-2 h-6 w-6 text-secondary' /> Introduction
@@ -631,8 +651,8 @@ fetch('${API_BASE_URL}/address/lookup-by-code/ADC123XYZ', {
                 Go to Support
               </Link>
             </section>
-          </CardBody>
-        </Card>
+          </div>
+        </div>
       </main>
       <Footer />
     </div>
