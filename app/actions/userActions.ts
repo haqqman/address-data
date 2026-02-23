@@ -91,13 +91,30 @@ export async function createConsoleUser(
     const { email, password, firstName, lastName, phoneNumber, role } =
       validation.data
 
-    // Create Auth User
-    const userRecord = await adminAuth.createUser({
-      email,
-      password,
-      displayName: `${firstName} ${lastName}`,
-      phoneNumber: phoneNumber || undefined,
-    })
+    let userRecord
+    try {
+      // Try to create the Auth User
+      userRecord = await adminAuth.createUser({
+        email,
+        password,
+        displayName: `${firstName} ${lastName}`,
+        phoneNumber: phoneNumber || undefined,
+      })
+    } catch (authError: any) {
+      if (authError.code === 'auth/email-already-exists') {
+        // User exists in auth but might not have a consoleUsers doc
+        userRecord = await adminAuth.getUserByEmail(email)
+        
+        // Update their auth profile to match the new details
+        await adminAuth.updateUser(userRecord.uid, {
+          password,
+          displayName: `${firstName} ${lastName}`,
+          phoneNumber: phoneNumber || undefined,
+        })
+      } else {
+        throw authError
+      }
+    }
 
     const userProfile: Omit<User, 'id'> = {
       email,
@@ -111,13 +128,12 @@ export async function createConsoleUser(
       lastLogin: new Date(),
     }
 
-    // Create Firestore Document
     await adminDb
       .collection('consoleUsers')
       .doc(userRecord.uid)
       .set({
         ...userProfile,
-        createdAt: new Date(), // Admin SDK handles native JS Date objects fine
+        createdAt: new Date(),
         lastLogin: new Date(),
       })
 
