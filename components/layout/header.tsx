@@ -60,7 +60,7 @@ export function SiteHeader() {
     <Navbar
       onMenuOpenChange={setIsMenuOpen}
       isMenuOpen={isMenuOpen}
-      className='sticky top-0 z-50 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60'
+      className='sticky top-0 z-50 w-full border-b border-gray-500 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60'
       maxWidth='xl'
     >
       <NavbarContent justify='start'>
