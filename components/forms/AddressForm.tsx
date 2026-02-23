@@ -328,7 +328,7 @@ export function AddressForm({ onSubmissionSuccess }: AddressFormProps) {
                 placeholder='Search for an estate or select None'
                 variant='bordered'
                 isLoading={isLoadingEstates}
-                selectedKey={field.value || null}
+                selectedKey={field.value || 'none'}
                 onSelectionChange={(key) => {
                   const val = key === 'none' || !key ? '' : key.toString()
                   field.onChange(val)
