@@ -42,7 +42,9 @@ service cloud.firestore {
     }
 
     function isValidSize() {
-      return request.resource.size < 1000000;
+      // NOTE: request.resource.size is invalid in Firestore (only valid in Firebase Storage). 
+      // Firestore enforces a 1MB size limit natively.
+      return true;
     }
     
     function isValidNewDoc() {
