@@ -58,12 +58,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const syncUserWithFirestore = async (
     firebaseUser: FirebaseUser,
+    isConsoleAttempt: boolean = false
   ): Promise<User> => {
     if (!db) throw new Error('Firestore not available. User sync failed.')
 
-    const determinedRole = determineUserRole(firebaseUser.email)
-    const useConsoleCollection = isConsoleRole(determinedRole)
-    const collectionName = useConsoleCollection ? 'consoleUsers' : 'users'
+    const collectionName = isConsoleAttempt ? 'consoleUsers' : 'users'
     const userDocRef = doc(db, collectionName, firebaseUser.uid)
     const userDocSnap = await getDoc(userDocRef)
 
@@ -92,7 +91,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return appUser
     } else {
       // New user registration
-      if (useConsoleCollection) {
+      if (isConsoleAttempt) {
         // Prevent social logins from creating a console user profile directly
         const isPassword = firebaseUser.providerData.some(
           (p) => p.providerId === 'password'
@@ -111,6 +110,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const userLastName =
         firebaseUser.displayName?.split(' ').slice(1).join(' ') || ''
 
+      const determinedRole = isConsoleAttempt ? determineUserRole(firebaseUser.email) : 'user'
+
       const newUserProfile: Omit<User, 'id' | 'createdAt' | 'lastLogin'> & {
         createdAt: any
         lastLogin: any
@@ -120,7 +121,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         lastName: userLastName,
         displayName:
           firebaseUser.displayName || `${userFirstName} ${userLastName}`.trim(),
-        role: determinedRole, // Assign correct role instead of hardcoding 'user'
+        role: determinedRole,
         authProvider: firebaseUser.providerData[0]?.providerId || 'unknown',
         phoneNumber: firebaseUser.phoneNumber || null,
         createdAt: serverTimestamp(),
@@ -129,8 +130,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       await setDoc(userDocRef, newUserProfile)
 
-      // Send welcome email to new user
-      if (newUserProfile.email) {
+      // Send welcome email to new user only if not console
+      if (!isConsoleAttempt && newUserProfile.email) {
         sendWelcomeEmail({
           name: newUserProfile.displayName || 'there',
           email: newUserProfile.email,
@@ -162,22 +163,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setLoading(true)
         if (firebaseUser) {
           try {
-            // Check collections based on email domain to avoid permission errors
-            const portalDocRef = doc(db!, 'users', firebaseUser.uid)
-            const isHaqqmanEmail = firebaseUser.email?.endsWith('@haqqman.com')
+            const isConsoleContext = typeof window !== 'undefined' && window.location.pathname.startsWith('/console');
 
-            let consoleDocSnap
-            if (isHaqqmanEmail) {
+            let userDocSnap;
+            if (isConsoleContext) {
               const consoleDocRef = doc(db!, 'consoleUsers', firebaseUser.uid)
-              consoleDocSnap = await getDoc(consoleDocRef)
-            }
-            const portalDocSnap = await getDoc(portalDocRef)
-
-            let userDocSnap
-            if (consoleDocSnap?.exists()) {
-              userDocSnap = consoleDocSnap
-            } else if (portalDocSnap.exists()) {
-              userDocSnap = portalDocSnap
+              userDocSnap = await getDoc(consoleDocRef)
+            } else {
+              const portalDocRef = doc(db!, 'users', firebaseUser.uid)
+              userDocSnap = await getDoc(portalDocRef)
             }
 
             if (userDocSnap?.exists()) {
@@ -195,9 +189,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               // First login may not have a profile document yet.
               // Bootstrap it instead of immediately signing out.
               console.warn(
-                `[AuthProvider] User ${firebaseUser.uid} authenticated but not found in any user collection.`,
+                `[AuthProvider] User ${firebaseUser.uid} authenticated but not found in current context. Syncing...`,
               )
-              const appUser = await syncUserWithFirestore(firebaseUser)
+              const appUser = await syncUserWithFirestore(firebaseUser, isConsoleContext)
               setUser(appUser)
             }
           } catch (error) {
@@ -223,40 +217,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   ) => {
     setLoading(true)
 
-    // Check for user in Firestore collections
-    const portalDocRef = doc(db!, 'users', firebaseUser.uid)
-    const portalDocSnap = await getDoc(portalDocRef)
-
-    // Only check consoleUsers if necessary
-    const isHaqqmanEmail = firebaseUser.email?.endsWith('@haqqman.com')
-    let consoleDocSnap
-
-    if (isConsoleAttempt || isHaqqmanEmail) {
-      const consoleDocRef = doc(db!, 'consoleUsers', firebaseUser.uid)
-      consoleDocSnap = await getDoc(consoleDocRef)
-    }
-
-    // If it's a console login attempt, the user MUST exist in `consoleUsers` or be a valid haqqman email trying to create one.
-    if (isConsoleAttempt && (!consoleDocSnap || !consoleDocSnap.exists())) {
-      if (!isHaqqmanEmail) {
-        console.warn(
-          '[AuthProvider] Console login attempted by non-console user.',
-        )
-        await firebaseSignOut(auth!)
-        setUser(null)
-        setLoading(false)
-        const authError = new Error('Access Denied. Not a valid console user.')
-          ; (authError as any).code = 'auth/unauthorized-console-user'
-        throw authError
-      }
-    }
-
     try {
-      const appUser = await syncUserWithFirestore(firebaseUser)
+      if (isConsoleAttempt) {
+        // Only check consoleUsers
+        const consoleDocRef = doc(db!, 'consoleUsers', firebaseUser.uid)
+        const consoleDocSnap = await getDoc(consoleDocRef)
+        const isHaqqmanEmail = firebaseUser.email?.endsWith('@haqqman.com')
+
+        if (!consoleDocSnap.exists() && !isHaqqmanEmail) {
+          console.warn('[AuthProvider] Console login attempted by non-console user or unauthorized email.')
+          await firebaseSignOut(auth!)
+          setUser(null)
+          setLoading(false)
+          const authError = new Error('Access Denied. Not a valid console user.')
+            ; (authError as any).code = 'auth/unauthorized-console-user'
+          throw authError
+        }
+      }
+
+      const appUser = await syncUserWithFirestore(firebaseUser, isConsoleAttempt)
 
       // Server actions rely on this cookie for auth context.
       const idToken = await firebaseUser.getIdToken()
-      const sessionEndpoint = isConsoleRole(appUser.role)
+      const sessionEndpoint = isConsoleAttempt
         ? '/api/console/login'
         : '/api/portal/login'
       const sessionRes = await fetch(sessionEndpoint, {
@@ -270,7 +253,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       setUser(appUser)
       setLoading(false)
-      const redirectPath = isConsoleRole(appUser.role)
+      const redirectPath = isConsoleAttempt
         ? '/console/dashboard'
         : '/dashboard'
       router.push(redirectPath)
