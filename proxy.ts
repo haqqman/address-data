@@ -13,11 +13,13 @@ export async function proxy(request: NextRequest) {
     /^10\./.test(hostname) ||
     /^192\.168\./.test(hostname) ||
     /^172\.(1[6-9]|2\d|3[0-1])\./.test(hostname)
+  const isPrivateIpv6 = /^f[cd]/.test(hostname) // Check for IPv6 Unique Local Addresses (ULA)
   const isLocalHost =
     hostname === 'localhost' ||
     hostname === '[::1]' ||
     hostname.endsWith('.localhost') ||
-    isPrivateIpv4
+    isPrivateIpv4 ||
+    isPrivateIpv6
   const shouldEnforceConsoleDomain = isProduction && !isLocalHost
   const CONSOLE_HOSTNAME =
     (process.env.NEXT_PUBLIC_CONSOLE_HOSTNAME || 'console.localhost')
