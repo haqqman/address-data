@@ -6,12 +6,29 @@ export async function proxy(request: NextRequest) {
   const pathname = nextUrl.pathname
 
   // --- Domain Protection Logic ---
-  const hostname = nextUrl.hostname
+  const hostname = nextUrl.hostname.toLowerCase()
   const isProduction = process.env.NODE_ENV === 'production'
+  const isPrivateIpv4 =
+    /^127\./.test(hostname) ||
+    /^10\./.test(hostname) ||
+    /^192\.168\./.test(hostname) ||
+    /^172\.(1[6-9]|2\d|3[0-1])\./.test(hostname)
+  const isPrivateIpv6 = /^f[cd]/.test(hostname) // Check for IPv6 Unique Local Addresses (ULA)
+  const isLocalHost =
+    hostname === 'localhost' ||
+    hostname === '[::1]' ||
+    hostname.endsWith('.localhost') ||
+    isPrivateIpv4 ||
+    isPrivateIpv6
+  const shouldEnforceConsoleDomain = isProduction && !isLocalHost
   const CONSOLE_HOSTNAME =
-    process.env.NEXT_PUBLIC_CONSOLE_HOSTNAME || 'console.localhost'
+    (process.env.NEXT_PUBLIC_CONSOLE_HOSTNAME || 'console.localhost')
+      .replace(/^https?:\/\//, '')
+      .replace(/:\d+$/, '')
+      .replace(/\/$/, '')
+      .toLowerCase()
 
-  if (isProduction) {
+  if (shouldEnforceConsoleDomain) {
     const isOnConsoleDomain = hostname === CONSOLE_HOSTNAME
     const isAccessingConsole = pathname.startsWith('/console')
 
