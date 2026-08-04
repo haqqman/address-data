@@ -1,12 +1,14 @@
 'use client'
 
 import type { ReactNode } from 'react'
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useCallback, useEffect, useState } from 'react'
 import type { User as FirebaseUser } from 'firebase/auth'
 import {
   GoogleAuthProvider,
   GithubAuthProvider,
   signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   signOut as firebaseSignOut,
   onAuthStateChanged,
   signInWithEmailAndPassword,
@@ -43,6 +45,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
   const router = useRouter()
+  const [redirectHandled, setRedirectHandled] = useState(false)
 
   const determineUserRole = (
     email: string | null | undefined,
@@ -147,6 +150,81 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }
 
+  const handleSuccessfulLogin = useCallback(async (
+    firebaseUser: FirebaseUser,
+    isConsoleAttempt: boolean = false,
+  ) => {
+    setLoading(true)
+
+    try {
+      if (isConsoleAttempt) {
+        // Only check consoleUsers
+        const consoleDocRef = doc(db!, 'consoleUsers', firebaseUser.uid)
+        const consoleDocSnap = await getDoc(consoleDocRef)
+        const isHaqqmanEmail = firebaseUser.email?.endsWith('@haqqman.com')
+
+        if (!consoleDocSnap.exists() && !isHaqqmanEmail) {
+          console.warn('[AuthProvider] Console login attempted by non-console user or unauthorized email.')
+          await firebaseSignOut(auth!)
+          setUser(null)
+          setLoading(false)
+          const authError = new Error('Access Denied. Not a valid console user.')
+            ; (authError as any).code = 'auth/unauthorized-console-user'
+          throw authError
+        }
+      }
+
+      const appUser = await syncUserWithFirestore(firebaseUser, isConsoleAttempt)
+
+      // Server actions rely on this cookie for auth context.
+      const idToken = await firebaseUser.getIdToken()
+      const sessionEndpoint = isConsoleAttempt
+        ? '/api/console/login'
+        : '/api/portal/login'
+      const sessionRes = await fetch(sessionEndpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ idToken }),
+      })
+      if (!sessionRes.ok) {
+        throw new Error('Session could not be established. Please try again.')
+      }
+
+      setUser(appUser)
+      setLoading(false)
+      const redirectPath = isConsoleAttempt
+        ? '/console/dashboard'
+        : '/dashboard'
+      router.push(redirectPath)
+      return firebaseUser
+    } catch (e) {
+      console.error('[AuthProvider] Error in handleSuccessfulLogin:', e)
+      await firebaseSignOut(auth!)
+      setUser(null)
+      setLoading(false)
+      throw e
+    }
+  }, [router])
+
+  useEffect(() => {
+    if (!auth || redirectHandled) return
+
+    const handleRedirectLogin = async () => {
+      try {
+        const result = await getRedirectResult(auth)
+        if (result?.user) {
+          await handleSuccessfulLogin(result.user, false)
+        }
+      } catch (error) {
+        console.error('[AuthProvider] Error handling redirect login:', error)
+      } finally {
+        setRedirectHandled(true)
+      }
+    }
+
+    handleRedirectLogin()
+  }, [redirectHandled, handleSuccessfulLogin])
+
   useEffect(() => {
     if (!auth || !db) {
       console.error(
@@ -211,62 +289,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => unsubscribe()
   }, [])
 
-  const handleSuccessfulLogin = async (
-    firebaseUser: FirebaseUser,
-    isConsoleAttempt: boolean = false,
-  ) => {
-    setLoading(true)
-
-    try {
-      if (isConsoleAttempt) {
-        // Only check consoleUsers
-        const consoleDocRef = doc(db!, 'consoleUsers', firebaseUser.uid)
-        const consoleDocSnap = await getDoc(consoleDocRef)
-        const isHaqqmanEmail = firebaseUser.email?.endsWith('@haqqman.com')
-
-        if (!consoleDocSnap.exists() && !isHaqqmanEmail) {
-          console.warn('[AuthProvider] Console login attempted by non-console user or unauthorized email.')
-          await firebaseSignOut(auth!)
-          setUser(null)
-          setLoading(false)
-          const authError = new Error('Access Denied. Not a valid console user.')
-            ; (authError as any).code = 'auth/unauthorized-console-user'
-          throw authError
-        }
-      }
-
-      const appUser = await syncUserWithFirestore(firebaseUser, isConsoleAttempt)
-
-      // Server actions rely on this cookie for auth context.
-      const idToken = await firebaseUser.getIdToken()
-      const sessionEndpoint = isConsoleAttempt
-        ? '/api/console/login'
-        : '/api/portal/login'
-      const sessionRes = await fetch(sessionEndpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ idToken }),
-      })
-      if (!sessionRes.ok) {
-        throw new Error('Session could not be established. Please try again.')
-      }
-
-      setUser(appUser)
-      setLoading(false)
-      const redirectPath = isConsoleAttempt
-        ? '/console/dashboard'
-        : '/dashboard'
-      router.push(redirectPath)
-      return firebaseUser
-    } catch (e) {
-      console.error('[AuthProvider] Error in handleSuccessfulLogin:', e)
-      await firebaseSignOut(auth!)
-      setUser(null)
-      setLoading(false)
-      throw e
-    }
-  }
-
   const signInWithGoogle = async (): Promise<FirebaseUser | null> => {
     if (!auth) throw new Error('Firebase auth not initialized.')
     setLoading(true)
@@ -288,7 +310,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const provider = new GithubAuthProvider()
       const result = await signInWithPopup(auth, provider)
       return await handleSuccessfulLogin(result.user, false)
-    } catch (error) {
+    } catch (error: any) {
+      const errorCode = error?.code
+      if (errorCode === 'auth/popup-closed-by-user' || errorCode === 'auth/popup-blocked') {
+        try {
+          const provider = new GithubAuthProvider()
+          await signInWithRedirect(auth, provider)
+          return null
+        } catch (redirectError) {
+          console.error('[AuthProvider] Error signing in with GitHub (redirect):', redirectError)
+        }
+      }
       console.error('[AuthProvider] Error signing in with GitHub:', error)
       setLoading(false)
       throw error
